@@ -80,7 +80,7 @@ export async function loginAction(
 
   return {
     success: true,
-    redirectUrl: "/",
+    redirectUrl: "/dashboard",
   };
 }
 
@@ -162,6 +162,6 @@ export async function changePasswordAction(
 
   return {
     success: true,
-    redirectUrl: "/",
+    redirectUrl: "/dashboard",
   };
 }

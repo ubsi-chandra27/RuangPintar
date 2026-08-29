@@ -41,10 +41,17 @@ export default async function HomePage() {
               </p>
             </div>
 
+            <Link
+              href="/dashboard"
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-500/20 transition-all"
+            >
+              <span>Buka Dashboard</span>
+            </Link>
+
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 font-semibold text-sm transition-colors"
+                className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 font-semibold text-sm transition-colors cursor-pointer"
               >
                 <LogOut className="size-4" />
                 <span>Keluar dari Akun (Logout)</span>

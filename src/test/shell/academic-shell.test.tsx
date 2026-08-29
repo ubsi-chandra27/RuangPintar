@@ -1,0 +1,62 @@
+import React from "react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { AcademicShell } from "@/shared/components/shell/academic-shell";
+
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/dashboard",
+}));
+
+const mockUser = {
+  id: "01J000000000000000000TEACH1",
+  username: "guru_ahmad",
+  nama_lengkap: "Ahmad Dahlan",
+  peran_dasar: "TEACHER",
+  sekolah_id: "01J00000000000000000000001",
+};
+
+describe("AcademicShell Component (Phase 05)", () => {
+  it("renders shell layout with topbar, sidebar, and main content", () => {
+    render(
+      <AcademicShell user={mockUser}>
+        <div data-testid="test-content">Konten Dashboard</div>
+      </AcademicShell>
+    );
+
+    expect(screen.getByTestId("test-content")).toBeInTheDocument();
+    expect(screen.getByLabelText("Navigasi Utama")).toBeInTheDocument();
+    expect(screen.getByLabelText("Menu Pengguna")).toBeInTheDocument();
+  });
+
+  it("toggles sidebar compact rail on collapse button click", () => {
+    render(
+      <AcademicShell user={mockUser}>
+        <div>Konten</div>
+      </AcademicShell>
+    );
+
+    const toggleButton = screen.getByLabelText(/Ciutkan Sidebar ke Rail/i);
+    expect(toggleButton).toBeInTheDocument();
+
+    fireEvent.click(toggleButton);
+
+    const expandButton = screen.getByLabelText(/Buka Sidebar Lengkap/i);
+    expect(expandButton).toBeInTheDocument();
+  });
+
+  it("opens user menu dropdown on click and displays identity", () => {
+    render(
+      <AcademicShell user={mockUser}>
+        <div>Konten</div>
+      </AcademicShell>
+    );
+
+    const userMenuButton = screen.getByLabelText("Menu Pengguna");
+    fireEvent.click(userMenuButton);
+
+    expect(screen.getByText("Akun Aktif")).toBeInTheDocument();
+    expect(screen.getByText("Ganti Kata Sandi")).toBeInTheDocument();
+    expect(screen.getByText("Keluar dari Akun")).toBeInTheDocument();
+  });
+});

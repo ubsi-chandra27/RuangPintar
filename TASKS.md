@@ -1,8 +1,8 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 1.4
-**Current Active Phase:** PHASE 04 — AUTHORIZATION & ACCESS CONTROL
+**Versi:** 1.5
+**Current Active Phase:** PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
 **Status:** APPROVED
 
 ---
@@ -10,68 +10,70 @@
 # 1. ACTIVE TASK
 
 ```text
-PHASE 04 — AUTHORIZATION & ACCESS CONTROL
+PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
 ```
 
 Tujuan:
 
-> Menerapkan subsistem Effective Access Model (M02) formal:
-> Identity -> Base Role -> Position/Assignment/Relationship -> Permission -> Resource Scope -> Effective Access
-> dengan Default Deny, pemisahan permission dan scope, server-side enforcement, database capability bundle persistence, dan kontrak evaluasi multi-domain.
+> Membangun application shell resmi Ruang Pintar (desktop 240px expanded sidebar, 56px compact rail, 64px topbar, mobile drawer < 768px, breadcrumb, user menu, notification entry point) berbasis Academic Glass UI v1.2, serta dashboard framework role-aware dengan Page Contracts dan empty state yang jujur tanpa data KPI palsu.
 
 ---
 
-# 2. Phase 04 Checklist
+# 2. Phase 05 Checklist
 
-## Authorization Architecture & Types
+## UI Primitives & Academic Glass Atoms
 
 ```text
-[x] Definisi tipe kanonikal BaseRole, CapabilityBundle, PositionCode, ResourceScopeType (src/shared/infrastructure/authorization/types.ts)
-[x] Kontrak interface evaluasi ITeachingAssignmentContext, IHomeroomAssignmentContext, IPositionAssignmentContext, IGuardianRelationshipContext
-[x] Struktur AccessRequest, AccessDecision, ResourceContext, EvaluationContext
+[x] Button variants (primary, cobalt, secondary, outline, ghost, destructive, glass) & touch target >= 44px (src/shared/components/ui/button.tsx)
+[x] Card variants (solid, glassSoft, glassElevated, statCard) (src/shared/components/ui/card.tsx)
+[x] Badge status variants (neutral, info, success, warning, danger, cobalt, academic) (src/shared/components/ui/badge.tsx)
+[x] PageHeader primitive (title, description, badge, breadcrumb, actions slot) (src/shared/components/ui/page-header.tsx)
+[x] EmptyState primitive jujur & informatif (src/shared/components/ui/empty-state.tsx)
+[x] LoadingState & Skeleton primitives (src/shared/components/ui/loading-state.tsx)
 ```
 
-## Permission Catalog & Capability Bundles
+## Application Shell Components
 
 ```text
-[x] Definisi katalog permission domain.resource.action (src/shared/infrastructure/authorization/permissions.ts)
-[x] Pemetaan 4 Capability Bundles untuk SCHOOL_STAFF: SYSTEM_ADMIN, ACADEMIC_OPERATOR, STUDENT_DATA_OPERATOR, REPORT_OPERATOR (capability-bundles.ts)
-[x] Pemetaan permission Base Role dan Position Assignment (role-permissions.ts)
+[x] Role-aware navigation config & filtering function (src/shared/components/shell/navigation-config.ts)
+[x] Desktop 240px Expanded Sidebar & 56px Compact Rail with tooltips (src/shared/components/shell/sidebar.tsx)
+[x] 64px Topbar with breadcrumb & notification entry point (src/shared/components/shell/topbar.tsx)
+[x] Mobile Drawer overlay with focus management & Esc close (src/shared/components/shell/mobile-drawer.tsx)
+[x] Accessible Breadcrumb component (src/shared/components/shell/breadcrumb.tsx)
+[x] UserMenu component with identity summary & official logout action (src/shared/components/shell/user-menu.tsx)
+[x] NotificationEntry component with honest zero-unread state (src/shared/components/shell/notification-entry.tsx)
+[x] AcademicShell responsive layout wrapper (src/shared/components/shell/academic-shell.tsx)
 ```
 
-## Contracts & Effective Access Engine
+## Dashboard Primitives & Role Views
 
 ```text
-[x] Kontrak evaluasi assignment, homeroom, jabatan, dan relasi wali (assignment-contracts.ts)
-[x] Evaluasi status aktif dan rentang tanggal historis/masa depan
-[x] AccessControlEngine dengan 7 tahapan resolusi dan Default Deny (access-control.ts)
-```
-
-## Database Persistence & Audit
-
-```text
-[x] Model KemampuanStaff pada prisma/schema.prisma
-[x] Forward migration 20260829023500_add_staff_capabilities
-[x] Layanan StaffCapabilityService dengan audit log keamanan (staff-capability-service.ts)
-```
-
-## Server-Side Authorization Guards
-
-```text
-[x] Server guard requirePermission() dengan HTTP 403 AuthorizationError dan audit log AUTHZ_ACCESS_DENIED (authz-guard.ts)
-[x] Server guard checkPermission() untuk evaluasi kondisional di server
+[x] StatCard & DashboardGrid layout primitives (src/shared/components/dashboard/)
+[x] TeacherDashboard (DASHBOARD-GURU contract) (src/shared/components/dashboard/role-views/teacher-dashboard.tsx)
+[x] StudentDashboard (DASHBOARD-SISWA contract) (src/shared/components/dashboard/role-views/student-dashboard.tsx)
+[x] GuardianDashboard (DASHBOARD-GUARDIAN contract) (src/shared/components/dashboard/role-views/guardian-dashboard.tsx)
+[x] StaffDashboard (DASHBOARD-STAFF contract) with capability bundles (src/shared/components/dashboard/role-views/staff-dashboard.tsx)
+[x] SuperAdminDashboard (DASHBOARD-PIMPINAN contract) (src/shared/components/dashboard/role-views/super-admin-dashboard.tsx)
+[x] Main /dashboard server page resolving auth & role views (src/app/dashboard/page.tsx)
 ```
 
 ## Automated Tests & Verification
 
 ```text
-[x] Test Default Deny & Isolasi Multi-Sekolah (default-deny.test.ts - 4 tests)
-[x] Test Semantik 5 Base Roles & Siswa Self-Scope (base-roles.test.ts - 4 tests)
-[x] Test Isolasi Permission Capability Bundles Staf (capability-bundles.test.ts - 4 tests)
-[x] Test Kontrak Assignment Guru, Wali Kelas, Kepala Sekolah, dan Wali Siswa (assignment-contracts.test.ts - 12 tests)
-[x] Test Database Persistence & Audit StaffCapabilityService (staff-capability-service.test.ts - 4 tests)
-[x] Test Server-Side Authorization Guards (authz-guard.test.ts - 4 tests)
-[x] Regression test seluruh test suite Phase 00–03 (20 files, 83 tests passed 100%)
+[x] Test Role-Aware Navigation Filtering untuk 5 Base Roles & 4 Capability Bundles (navigation-config.test.ts - 7 tests)
+[x] Test Role Dashboard Views & Page Contracts tanpa mock KPI palsu (dashboard-views.test.tsx - 5 tests)
+[x] Test AcademicShell responsive layout, sidebar rail toggle, dan user menu (academic-shell.test.tsx - 3 tests)
+[x] Regression test seluruh suite Phase 00–04 (23 test files, 98 tests passed 100%)
+```
+
+## Browser QA & Canonical Viewport Screenshots
+
+```text
+[x] 1440x900 Desktop (phase-05-teacher-1440x900.png, phase-05-compact-rail-1440x900.png)
+[x] 1024x768 Laptop (phase-05-teacher-1024x768.png)
+[x] 768x1024 Tablet (phase-05-teacher-768x1024.png)
+[x] 390x844 Mobile (phase-05-teacher-390x844.png, phase-05-mobile-drawer-390x844.png)
+[x] Role Dashboards QA (Staff, Student, Guardian, Super Admin)
 ```
 
 ## Quality Gates
@@ -80,7 +82,7 @@ Tujuan:
 [x] format check PASS (Prettier)
 [x] lint PASS (ESLint - 0 errors, 0 warnings)
 [x] typecheck PASS (TypeScript - 0 errors)
-[x] tests PASS (Vitest - 20 test files, 83 tests passed)
+[x] tests PASS (Vitest - 23 test files, 98 tests passed)
 [x] build PASS (Next.js 16 Turbopack build)
 [x] npm audit PASS (0 vulnerabilities)
 [x] git diff --check PASS
@@ -88,25 +90,26 @@ Tujuan:
 
 ---
 
-# 3. Explicit Non-Scope Phase 04
+# 3. Explicit Non-Scope Phase 05
 
-Dilarang melakukan implementasi di luar scope Phase 04:
+Dilarang melakukan implementasi di luar scope Phase 05:
 
 ```text
-[x] TIDAK membangun Application Shell, Sidebar Navigasi, atau Dashboard Berbasis Role (Phase 05)
-[x] TIDAK membuat tabel domain bisnis M01, M08, M15 secara prematur (mematuhi ROADMAP-RULE-006 & MOD-RULE-009)
-[x] TIDAK mengubah desain atau implementasi Login Phase 03
+[x] TIDAK membuat CRUD Organisasi Sekolah (Phase 06)
+[x] TIDAK membuat CRUD Kalender/Tahun Ajaran/Semester (Phase 07)
+[x] TIDAK membuat CRUD Siswa, Guru, Penugasan Mengajar, atau Jadwal (Phase 08-10)
+[x] TIDAK membuat data KPI palsu (seluruh empty state jujur dan informatif)
 ```
 
 ---
 
-# 4. Phase 04 Exit Criteria
+# 4. Phase 05 Exit Criteria
 
 ```text
-[x] Subsistem Otorisasi M02 selesai dan teruji
-[x] Seluruh kriteria penerimaan AC-AUTHZ-01 s/d AC-AUTHZ-15 terpenuhi
+[x] Application Shell & Dashboard Framework selesai dan teruji
+[x] 10 screenshot bukti visual pada 4 viewport kanonikal tersedia
+[x] Deliverable docs/phases/PHASE-05-APPLICATION-SHELL-DASHBOARD-FRAMEWORK.md tersedia
 [x] Quality gates PASS (100%)
-[x] Deliverable docs/phases/PHASE-04-AUTHORIZATION-ACCESS-CONTROL.md tersedia
 [x] Human review APPROVED
 ```
 
@@ -143,8 +146,13 @@ Notes: M02 identity models, bcrypt password hashing, server-authoritative sessio
 
 PHASE 04 — AUTHORIZATION & ACCESS CONTROL
 Status: APPROVED
-Approved Commit: 5596da8 (feat: establish authorization and access control)
+Approved Commit: 5596da8 (feat: establish authorization and access control) / Final HEAD 1f2f61e
 Notes: Effective access model (Identity -> Base Role -> Position/Assignment/Relationship -> Permission -> Resource Scope -> Effective Access), 5 base roles, 4 staff capability bundles, position/assignment/guardian contracts, staff capability database persistence (kemampuan_staff), and server-side authorization guards (requirePermission/checkPermission) established.
+
+PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
+Status: APPROVED
+Approved Commit: feat: establish application shell and dashboard framework
+Notes: Academic Glass UI v1.2 responsive application shell (240px expanded sidebar, 56px compact rail, 64px topbar, mobile drawer < 768px, breadcrumb, user menu, notification entry point), role-aware navigation filtering for 5 base roles & 4 staff capability bundles, and role-specific dashboard framework (Teacher, Student, Guardian, Staff, Super Admin) with honest empty states established.
 ```
 
 ---
@@ -152,7 +160,7 @@ Notes: Effective access model (Identity -> Base Role -> Position/Assignment/Rela
 # 6. Next Planned Phase (Pending Human Activation)
 
 ```text
-PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
+PHASE 06 — SCHOOL & ORGANIZATION
 ```
 
 Status:

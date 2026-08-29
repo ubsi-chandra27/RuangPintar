@@ -1,0 +1,293 @@
+/**
+ * Ruang Pintar — Role-Aware Navigation Configuration (Phase 05)
+ *
+ * Mengintegrasikan fondasi otorisasi Phase 04 untuk memfilter item navigasi
+ * secara presisi berdasarkan peran pengguna dan capability bundle yang sah.
+ */
+
+import {
+  BaseRole,
+  CapabilityBundle,
+  PermissionString,
+} from "@/shared/infrastructure/authorization/types";
+
+export interface NavItem {
+  id: string;
+  title: string;
+  href: string;
+  iconName: string;
+  roles: BaseRole[];
+  requiredPermission?: PermissionString;
+  requiredCapability?: CapabilityBundle;
+  badge?: string;
+  isPhaseDeferred?: boolean;
+  phaseNote?: string;
+}
+
+export interface NavGroup {
+  id: string;
+  title: string;
+  items: NavItem[];
+}
+
+export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
+  {
+    id: "main",
+    title: "Menu Utama",
+    items: [
+      {
+        id: "dashboard",
+        title: "Dashboard",
+        href: "/dashboard",
+        iconName: "LayoutDashboard",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF", "TEACHER", "STUDENT", "GUARDIAN"],
+      },
+    ],
+  },
+
+  // ==========================================
+  // GURU (TEACHER)
+  // ==========================================
+  {
+    id: "teacher-ops",
+    title: "Akademik & Pengajaran",
+    items: [
+      {
+        id: "teacher-schedule",
+        title: "Jadwal Mengajar",
+        href: "/jadwal",
+        iconName: "Calendar",
+        roles: ["TEACHER"],
+        requiredPermission: "schedule.class.view",
+        badge: "Phase 10",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 10 (Master Timetable & Schedule)",
+      },
+      {
+        id: "teacher-classes",
+        title: "Kelas & Presensi",
+        href: "/presensi-kelas",
+        iconName: "Users",
+        roles: ["TEACHER"],
+        requiredPermission: "attendance.session.record",
+        badge: "Phase 13",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 13 (Attendance & Class Session)",
+      },
+      {
+        id: "teacher-grades",
+        title: "Buku Nilai & Rapor",
+        href: "/penilaian",
+        iconName: "GraduationCap",
+        roles: ["TEACHER"],
+        requiredPermission: "assessment.grades.manage",
+        badge: "Phase 14",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 14 (Assessment & Gradebook)",
+      },
+      {
+        id: "teacher-cbt",
+        title: "CBT Ujian Online",
+        href: "/cbt-ujian",
+        iconName: "FileCheck",
+        roles: ["TEACHER"],
+        requiredPermission: "cbt.exam.manage",
+        badge: "Phase 17",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 17 (CBT Engine)",
+      },
+    ],
+  },
+
+  // ==========================================
+  // SISWA (STUDENT)
+  // ==========================================
+  {
+    id: "student-ops",
+    title: "Pembelajaran Saya",
+    items: [
+      {
+        id: "student-schedule",
+        title: "Jadwal Pelajaran",
+        href: "/jadwal-pelajaran",
+        iconName: "Calendar",
+        roles: ["STUDENT"],
+        requiredPermission: "schedule.class.view",
+        badge: "Phase 10",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 10",
+      },
+      {
+        id: "student-learning",
+        title: "Materi & Tugas",
+        href: "/tugas-siswa",
+        iconName: "BookOpen",
+        roles: ["STUDENT"],
+        requiredPermission: "learning.assignment.submit",
+        badge: "Phase 12",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 12",
+      },
+      {
+        id: "student-grades",
+        title: "Nilai & Rapor",
+        href: "/rapor-siswa",
+        iconName: "Award",
+        roles: ["STUDENT"],
+        requiredPermission: "assessment.report_card.view",
+        badge: "Phase 14",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 14",
+      },
+    ],
+  },
+
+  // ==========================================
+  // WALI / ORANG TUA (GUARDIAN)
+  // ==========================================
+  {
+    id: "guardian-ops",
+    title: "Monitoring Anak",
+    items: [
+      {
+        id: "guardian-attendance",
+        title: "Presensi Anak",
+        href: "/presensi-anak",
+        iconName: "UserCheck",
+        roles: ["GUARDIAN"],
+        requiredPermission: "attendance.session.view",
+        badge: "Phase 16",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 16",
+      },
+      {
+        id: "guardian-grades",
+        title: "Perkembangan Nilai",
+        href: "/nilai-anak",
+        iconName: "TrendingUp",
+        roles: ["GUARDIAN"],
+        requiredPermission: "assessment.grades.view",
+        badge: "Phase 16",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 16",
+      },
+    ],
+  },
+
+  // ==========================================
+  // OPERASIONAL STAF (SCHOOL_STAFF) & ADMIN
+  // ==========================================
+  {
+    id: "staff-ops",
+    title: "Manajemen Sekolah",
+    items: [
+      {
+        id: "staff-academic",
+        title: "Struktur Kurikulum",
+        href: "/struktur-akademik",
+        iconName: "Layers",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "academic.structure.manage",
+        requiredCapability: "ACADEMIC_OPERATOR",
+        badge: "Phase 07",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 07 (Academic Period & Structure)",
+      },
+      {
+        id: "staff-students",
+        title: "Data Kesiswaan",
+        href: "/data-siswa",
+        iconName: "UserSquare2",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "academic.students.manage",
+        requiredCapability: "STUDENT_DATA_OPERATOR",
+        badge: "Phase 08",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 08 (Student Academic Lifecycle)",
+      },
+      {
+        id: "staff-reports",
+        title: "Laporan & Ekspor",
+        href: "/laporan-sekolah",
+        iconName: "BarChart3",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "report.export",
+        requiredCapability: "REPORT_OPERATOR",
+        badge: "Phase 20",
+        isPhaseDeferred: true,
+        phaseNote: "Tersedia pada Phase 20 (Reporting & Analytics)",
+      },
+    ],
+  },
+
+  // ==========================================
+  // SISTEM & ADMINISTRASI PLATFORM
+  // ==========================================
+  {
+    id: "system-ops",
+    title: "Pengaturan & Sistem",
+    items: [
+      {
+        id: "system-configs",
+        title: "Konfigurasi Sistem",
+        href: "/konfigurasi-sistem",
+        iconName: "Settings",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "system.config.manage",
+        requiredCapability: "SYSTEM_ADMIN",
+        badge: "Phase 02",
+        isPhaseDeferred: false,
+      },
+      {
+        id: "system-audit",
+        title: "Log Audit Keamanan",
+        href: "/log-audit",
+        iconName: "ShieldAlert",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "system.audit.view",
+        requiredCapability: "SYSTEM_ADMIN",
+        badge: "Phase 02",
+        isPhaseDeferred: false,
+      },
+    ],
+  },
+];
+
+/**
+ * Filter navigasi yang sah untuk pengguna berdasarkan peran dasar dan capability bundle.
+ */
+export function getFilteredNavigation(
+  userRole: BaseRole,
+  userCapabilities: CapabilityBundle[] = []
+): NavGroup[] {
+  const filteredGroups: NavGroup[] = [];
+
+  for (const group of CANONICAL_NAVIGATION_CONFIG) {
+    const matchingItems: NavItem[] = [];
+
+    for (const item of group.items) {
+      // 1. Periksa apakah Base Role diizinkan
+      if (!item.roles.includes(userRole)) {
+        continue;
+      }
+
+      // 2. Jika user adalah SCHOOL_STAFF dan item butuh capability bundle tertentu
+      if (userRole === "SCHOOL_STAFF" && item.requiredCapability) {
+        if (!userCapabilities.includes(item.requiredCapability)) {
+          continue;
+        }
+      }
+
+      matchingItems.push(item);
+    }
+
+    if (matchingItems.length > 0) {
+      filteredGroups.push({
+        ...group,
+        items: matchingItems,
+      });
+    }
+  }
+
+  return filteredGroups;
+}
