@@ -129,7 +129,7 @@ Notes: SQLite database, Prisma ORM, 26-char ULID, platform foundation models (M0
 
 PHASE 03 — AUTHENTICATION & IDENTITY
 Status: APPROVED
-Approved Commit: feat: implement authentication and identity
+Approved Commit: 1e88e47 (feat: implement authentication and identity)
 Notes: M02 identity models, bcrypt password hashing, server-authoritative session store, HttpOnly cookie, rate limiting, must_change_password flow, audit integration, Academic Glass UI login screen, and Playwright browser QA established.
 ```
 
