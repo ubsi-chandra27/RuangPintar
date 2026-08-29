@@ -1,79 +1,91 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 1.5
-**Current Active Phase:** PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
-**Status:** APPROVED
+**Versi:** 1.6
+**Current Active Phase:** PHASE 06 — SCHOOL & ORGANIZATION
+**Status:** APPROVED — READY FOR CLOSURE & CHECKPOINT
 
 ---
 
 # 1. ACTIVE TASK
 
 ```text
-PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
+PHASE 06 — SCHOOL & ORGANIZATION
 ```
 
 Tujuan:
 
-> Membangun application shell resmi Ruang Pintar (desktop 240px expanded sidebar, 56px compact rail, 64px topbar, mobile drawer < 768px, breadcrumb, user menu, notification entry point) berbasis Academic Glass UI v1.2, serta dashboard framework role-aware dengan Page Contracts dan empty state yang jujur tanpa data KPI palsu.
+> Mengimplementasikan domain School & Organization (M01) mencakup profil sekolah generic (SD/SMP/SMA/SMK/UMUM), unit organisasi hierarkis self-referential dengan aturan History-Preserving, katalog master jabatan kanonikal & kustom snake_case semantik unik per sekolah, alokasi penugasan personil ke jabatan struktural dengan validasi personil aktif, transaksi atomik Prisma, pencatatan append-oriented audit log, antarmuka Academic Glass UI v1.2 berbasis 4 tab, dan otorisasi server-side requirePermission() tanpa penambahan skema/migration baru.
 
 ---
 
-# 2. Phase 05 Checklist
+# 2. Phase 06 Checklist
 
-## UI Primitives & Academic Glass Atoms
+## Domain Layer & Validation
 
 ```text
-[x] Button variants (primary, cobalt, secondary, outline, ghost, destructive, glass) & touch target >= 44px (src/shared/components/ui/button.tsx)
-[x] Card variants (solid, glassSoft, glassElevated, statCard) (src/shared/components/ui/card.tsx)
-[x] Badge status variants (neutral, info, success, warning, danger, cobalt, academic) (src/shared/components/ui/badge.tsx)
-[x] PageHeader primitive (title, description, badge, breadcrumb, actions slot) (src/shared/components/ui/page-header.tsx)
-[x] EmptyState primitive jujur & informatif (src/shared/components/ui/empty-state.tsx)
-[x] LoadingState & Skeleton primitives (src/shared/components/ui/loading-state.tsx)
+[x] Domain types & DTOs (src/modules/school/domain/school-types.ts)
+[x] Domain custom error classes (src/modules/school/domain/school-errors.ts)
+[x] Zod validation schemas with generic jenjang, safe logo URL, and unique uppercase snake_case position codes (src/modules/school/domain/school-validation.ts)
 ```
 
-## Application Shell Components
+## Infrastructure Layer & Persistence
 
 ```text
-[x] Role-aware navigation config & filtering function (src/shared/components/shell/navigation-config.ts)
-[x] Desktop 240px Expanded Sidebar & 56px Compact Rail with tooltips (src/shared/components/shell/sidebar.tsx)
-[x] 64px Topbar with breadcrumb & notification entry point (src/shared/components/shell/topbar.tsx)
-[x] Mobile Drawer overlay with focus management & Esc close (src/shared/components/shell/mobile-drawer.tsx)
-[x] Accessible Breadcrumb component (src/shared/components/shell/breadcrumb.tsx)
-[x] UserMenu component with identity summary & official logout action (src/shared/components/shell/user-menu.tsx)
-[x] NotificationEntry component with honest zero-unread state (src/shared/components/shell/notification-entry.tsx)
-[x] AcademicShell responsive layout wrapper (src/shared/components/shell/academic-shell.tsx)
+[x] SchoolRepository with Prisma interactive transactions ($transaction) and recordAuditEvent (src/modules/school/infrastructure/school-repository.ts)
+[x] Zero New Migrations (Menggunakan model eksisting Sekolah, UnitOrganisasi, Jabatan, PenugasanJabatan, LogAudit)
 ```
 
-## Dashboard Primitives & Role Views
+## Application Services Layer
 
 ```text
-[x] StatCard & DashboardGrid layout primitives (src/shared/components/dashboard/)
-[x] TeacherDashboard (DASHBOARD-GURU contract) (src/shared/components/dashboard/role-views/teacher-dashboard.tsx)
-[x] StudentDashboard (DASHBOARD-SISWA contract) (src/shared/components/dashboard/role-views/student-dashboard.tsx)
-[x] GuardianDashboard (DASHBOARD-GUARDIAN contract) (src/shared/components/dashboard/role-views/guardian-dashboard.tsx)
-[x] StaffDashboard (DASHBOARD-STAFF contract) with capability bundles (src/shared/components/dashboard/role-views/staff-dashboard.tsx)
-[x] SuperAdminDashboard (DASHBOARD-PIMPINAN contract) (src/shared/components/dashboard/role-views/super-admin-dashboard.tsx)
-[x] Main /dashboard server page resolving auth & role views (src/app/dashboard/page.tsx)
+[x] SchoolProfileService: Get profile & atomic update with audit (src/modules/school/application/school-profile-service.ts)
+[x] OrganizationUnitService: Get units, create, update, and history-preserving delete (src/modules/school/application/organization-unit-service.ts)
+[x] PositionService: Get positions, create semantic code, update, and history-preserving delete (src/modules/school/application/position-service.ts)
+[x] PositionAssignmentService: Get assignments, assign personnel (with active personil invariant check), end assignment (SELESAI), and cancel assignment (DIBATALKAN) (src/modules/school/application/position-assignment-service.ts)
+```
+
+## Server Actions & Authorization
+
+```text
+[x] Server-side guards requireAuth() & requirePermission("academic.school.manage" / "academic.structure.manage") (src/app/actions/school-actions.ts)
+[x] Atomic mutation, single toast feedback payload, and revalidatePath("/sekolah")
+```
+
+## Presentation Layer (Academic Glass UI v1.2)
+
+```text
+[x] SchoolProfileForm with inline validation & responsive layout (src/modules/school/presentation/school-profile-form.tsx)
+[x] OrganizationUnitsView with hierarchy badge, create/edit modal, & destructive confirmation modal (src/modules/school/presentation/organization-units-view.tsx)
+[x] PositionsView with canonical badge, scope level, create/edit modal, & destructive delete modal (src/modules/school/presentation/positions-view.tsx)
+[x] PositionAssignmentsView with status filter, assign modal, end modal, & cancel modal (src/modules/school/presentation/position-assignments-view.tsx)
+[x] SchoolManagementTabs unifying all 4 management areas (src/modules/school/presentation/school-management-tabs.tsx)
+[x] /sekolah server page integrated with AcademicShell, PageHeader, Breadcrumb, and Badge (src/app/sekolah/page.tsx)
+[x] Role-aware navigation activated for authorized roles in navigation-config.ts (src/shared/components/shell/navigation-config.ts)
 ```
 
 ## Automated Tests & Verification
 
 ```text
-[x] Test Role-Aware Navigation Filtering untuk 5 Base Roles & 4 Capability Bundles (navigation-config.test.ts - 7 tests)
-[x] Test Role Dashboard Views & Page Contracts tanpa mock KPI palsu (dashboard-views.test.tsx - 5 tests)
-[x] Test AcademicShell responsive layout, sidebar rail toggle, dan user menu (academic-shell.test.tsx - 3 tests)
-[x] Regression test seluruh suite Phase 00–04 (23 test files, 98 tests passed 100%)
+[x] Test SchoolProfileService (5 tests)
+[x] Test OrganizationUnitService with hierarchy & history preservation (6 tests)
+[x] Test PositionService with semantic code & history preservation (5 tests)
+[x] Test PositionAssignmentService with personil validation & lifecycle (6 tests)
+[x] Test Authorization & Access Control Matrix for M01 (9 tests)
+[x] Test School Presentation Views & Tabs (5 tests)
+[x] Regression test seluruh suite Phase 00–05 (29 test files, 134 tests passed 100%)
 ```
 
 ## Browser QA & Canonical Viewport Screenshots
 
 ```text
-[x] 1440x900 Desktop (phase-05-teacher-1440x900.png, phase-05-compact-rail-1440x900.png)
-[x] 1024x768 Laptop (phase-05-teacher-1024x768.png)
-[x] 768x1024 Tablet (phase-05-teacher-768x1024.png)
-[x] 390x844 Mobile (phase-05-teacher-390x844.png, phase-05-mobile-drawer-390x844.png)
-[x] Role Dashboards QA (Staff, Student, Guardian, Super Admin)
+[x] 1440x900 Desktop Large (01_desktop_large_1440x900_profile.png)
+[x] 1024x768 Desktop Standard (02_desktop_standard_1024x768_units.png)
+[x] 768x1024 Tablet Portrait (03_tablet_portrait_768x1024_positions.png)
+[x] 390x844 Mobile Phone (04_mobile_phone_390x844_assignments.png)
+[x] Modal Tambah Unit (05_modal_create_unit.png)
+[x] Modal Tambah Jabatan (06_modal_create_position.png)
+[x] Modal Tugaskan Personil (07_modal_assign_position.png)
 ```
 
 ## Quality Gates
@@ -82,7 +94,7 @@ Tujuan:
 [x] format check PASS (Prettier)
 [x] lint PASS (ESLint - 0 errors, 0 warnings)
 [x] typecheck PASS (TypeScript - 0 errors)
-[x] tests PASS (Vitest - 23 test files, 98 tests passed)
+[x] tests PASS (Vitest - 29 test files, 134 tests passed)
 [x] build PASS (Next.js 16 Turbopack build)
 [x] npm audit PASS (0 vulnerabilities)
 [x] git diff --check PASS
@@ -90,33 +102,34 @@ Tujuan:
 
 ---
 
-# 3. Explicit Non-Scope Phase 05
+# 3. Explicit Non-Scope Phase 06
 
-Dilarang melakukan implementasi di luar scope Phase 05:
+Dilarang melakukan implementasi di luar scope Phase 06:
 
 ```text
-[x] TIDAK membuat CRUD Organisasi Sekolah (Phase 06)
-[x] TIDAK membuat CRUD Kalender/Tahun Ajaran/Semester (Phase 07)
-[x] TIDAK membuat CRUD Siswa, Guru, Penugasan Mengajar, atau Jadwal (Phase 08-10)
-[x] TIDAK membuat data KPI palsu (seluruh empty state jujur dan informatif)
+[x] TIDAK membuat Tahun Ajaran, Semester, atau Rombel (Ruang lingkup Phase 07)
+[x] TIDAK membuat Biodata Siswa atau Enrollment (Ruang lingkup Phase 08)
+[x] TIDAK membuat Penugasan Mengajar Guru / Mapel (Ruang lingkup Phase 09)
+[x] TIDAK membuat Jadwal Pelajaran (Ruang lingkup Phase 10)
+[x] TIDAK membuat migrasi database baru (0 new migrations)
 ```
 
 ---
 
-# 4. Phase 05 Exit Criteria
+# 4. Phase 06 Exit Criteria
 
 ```text
-[x] Application Shell & Dashboard Framework selesai dan teruji
-[x] 10 screenshot bukti visual pada 4 viewport kanonikal tersedia
-[x] Deliverable docs/phases/PHASE-05-APPLICATION-SHELL-DASHBOARD-FRAMEWORK.md tersedia
+[x] Domain School & Organization selesai dan teruji secara menyeluruh
+[x] 7 screenshot bukti visual pada 4 viewport kanonikal dan modal tersedia
+[x] Deliverable docs/phases/PHASE-06-SCHOOL-ORGANIZATION.md tersedia
 [x] Quality gates PASS (100%)
-[x] Human review APPROVED
+[x] Human Review Decision (APPROVED)
 ```
 
-Status akhir:
+Status saat ini:
 
 ```text
-APPROVED
+APPROVED — READY FOR CLOSURE & CHECKPOINT
 ```
 
 ---
@@ -127,44 +140,38 @@ APPROVED
 PHASE 00 — PROJECT BOOTSTRAP & ENVIRONMENT BASELINE
 Status: APPROVED
 Approved Commit: 0fe8151 (chore: establish Ruang Pintar project baseline)
-Notes: Baseline Next.js 16 + React 19 + TypeScript + Tailwind CSS v4 + ESLint + Prettier + Vitest established.
 
 PHASE 01 — PRODUCT & REQUIREMENT LOCK
 Status: APPROVED
 Approved Commit: daa3ac7 (docs: lock Ruang Pintar product requirements)
-Notes: Canonical product definition, 5 base roles, positions/assignments, M01-M21 module inventory, domain invariants, manual scheduling + intelligent conflict detection, BRD->PRD->FRD->AC traceability locked.
 
 PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION
 Status: APPROVED
 Approved Commit: 3135db0 (feat: establish database persistence and platform foundation) / Final HEAD cc9249f
-Notes: SQLite database, Prisma ORM, 26-char ULID, platform foundation models (M01-M05), global config uniqueness, append-oriented audit service boundary, outbox, and private storage adapter established.
 
 PHASE 03 — AUTHENTICATION & IDENTITY
 Status: APPROVED
 Approved Commit: 1e88e47 (feat: implement authentication and identity) / Final HEAD c7a151b
-Notes: M02 identity models, bcrypt password hashing, server-authoritative session store, HttpOnly cookie, rate limiting, must_change_password flow, audit integration, Academic Glass UI login screen, and Playwright browser QA established.
 
 PHASE 04 — AUTHORIZATION & ACCESS CONTROL
 Status: APPROVED
 Approved Commit: 5596da8 (feat: establish authorization and access control) / Final HEAD 1f2f61e
-Notes: Effective access model (Identity -> Base Role -> Position/Assignment/Relationship -> Permission -> Resource Scope -> Effective Access), 5 base roles, 4 staff capability bundles, position/assignment/guardian contracts, staff capability database persistence (kemampuan_staff), and server-side authorization guards (requirePermission/checkPermission) established.
 
 PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
 Status: APPROVED
-Approved Commit: 9125a26 (feat: establish application shell and dashboard framework)
-Notes: Academic Glass UI v1.2 responsive application shell (240px expanded sidebar, 56px compact rail, 64px topbar, mobile drawer < 768px, breadcrumb, user menu, notification entry point), role-aware navigation filtering for 5 base roles & 4 staff capability bundles, and role-specific dashboard framework (Teacher, Student, Guardian, Staff, Super Admin) with honest empty states established.
+Approved Commit: 9125a26 (feat: establish application shell and dashboard framework) / Final HEAD 9ff3223
 ```
 
 ---
 
-# 6. Next Planned Phase (Pending Human Activation)
+# 6. Next Planned Phase (Pending Human Review Decision)
 
 ```text
-PHASE 06 — SCHOOL & ORGANIZATION
+PHASE 07 — ACADEMIC PERIOD & STRUCTURE
 ```
 
 Status:
 
 ```text
-NOT ACTIVE
+NOT STARTED
 ```

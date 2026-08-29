@@ -16,7 +16,7 @@
 | **PHASE 03** | Authentication & Identity | **APPROVED** | Human Approved & Checkpointed (`1e88e47`) |
 | **PHASE 04** | Authorization & Access Control | **APPROVED** | Human Approved & Checkpointed (`5596da8`) |
 | **PHASE 05** | Application Shell & Dashboard Framework | **APPROVED** | Human Approved & Checkpointed (`9125a26`) |
-| **PHASE 06** | School & Organization | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
+| **PHASE 06** | School & Organization | **APPROVED** | Human Approved — Ready for Closure & Checkpoint |
 | **PHASE 07** | Academic Period & Structure | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 08** | Student Academic Lifecycle | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 09** | Teacher & Teaching Assignment | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
@@ -38,6 +38,10 @@
 
 ### Dokumen Deliverable Fase
 
-- `docs/phases/PHASE-01-PRODUCT-REQUIREMENT-LOCK.md` — Konsolidasi dan Penguncian Requirement & Domain Product Ruang Pintar
-- `docs/phases/PHASE-02-DATABASE-PERSISTENCE-PLATFORM-FOUNDATION.md` — Fondasi Database SQLite, Prisma ORM, ULID, Outbox, Audit, dan Storage Adapter
-- `docs/phases/PHASE-03-AUTHENTICATION-IDENTITY.md` — Autentikasi, Akun Pengguna, Server-Authoritative Session, Brute Force Rate Limiting, dan Login UI Academic Glass
+- Phase 00: `docs/phases/PHASE-00-BOOTSTRAP-BASELINE.md`
+- Phase 01: `docs/phases/PHASE-01-REQUIREMENTS-LOCK.md`
+- Phase 02: `docs/phases/PHASE-02-DATABASE-PLATFORM-FOUNDATION.md`
+- Phase 03: `docs/phases/PHASE-03-AUTHENTICATION-IDENTITY.md`
+- Phase 04: `docs/phases/PHASE-04-AUTHORIZATION-ACCESS-CONTROL.md`
+- Phase 05: `docs/phases/PHASE-05-APPLICATION-SHELL-DASHBOARD-FRAMEWORK.md`
+- Phase 06: `docs/phases/PHASE-06-SCHOOL-ORGANIZATION.md`

@@ -20,6 +20,7 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
+  Building2,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -40,6 +41,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   BarChart3,
   Settings,
   ShieldAlert,
+  Building2,
 };
 
 export interface MobileDrawerProps {

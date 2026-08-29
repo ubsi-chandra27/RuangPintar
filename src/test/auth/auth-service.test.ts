@@ -33,7 +33,7 @@ describe("Auth Service (M02) — Authentication & Session Lifecycle", () => {
 
   beforeEach(async () => {
     // Reset rate limiter & failed attempts for the test user between test cases
-    await prisma.logPercobaanLogin.deleteMany({ where: { identifier: testUser } });
+    await prisma.logPercobaanLogin.deleteMany();
     await prisma.pengguna.update({
       where: { id: createdUserId },
       data: { percobaan_login_gagal: 0, status_akun: "AKTIF" },

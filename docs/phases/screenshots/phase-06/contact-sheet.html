@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Pintar — Phase 06 Visual QA Contact Sheet</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+    }
+    body {
+      margin: 0;
+      padding: 32px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      max-width: 1400px;
+      margin: 0 auto 32px auto;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0 0 8px 0;
+      color: #ffffff;
+    }
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+      gap: 32px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-col: column;
+    }
+    .card-header {
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .badge {
+      font-size: 12px;
+      font-family: monospace;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .card-body {
+      padding: 16px;
+      background: #0b0f19;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ruang Pintar — Phase 06 Visual QA Contact Sheet</h1>
+    <p>Verifikasi Responsif Antarmuka School & Organization (Academic Glass UI v1.2) pada 4 Viewport Kanonikal</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="title">1. Profil Sekolah (Desktop Large)</span>
+        <span class="badge">1440 × 900</span>
+      </div>
+      <div class="card-body">
+        <img src="01_desktop_large_1440x900_profile.png" alt="01 Desktop Large">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">2. Unit Organisasi (Desktop Standard)</span>
+        <span class="badge">1024 × 768</span>
+      </div>
+      <div class="card-body">
+        <img src="02_desktop_standard_1024x768_units.png" alt="02 Desktop Standard">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">3. Master Jabatan (Tablet Portrait)</span>
+        <span class="badge">768 × 1024</span>
+      </div>
+      <div class="card-body">
+        <img src="03_tablet_portrait_768x1024_positions.png" alt="03 Tablet Portrait">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">4. Penugasan Personil (Mobile Phone)</span>
+        <span class="badge">390 × 844</span>
+      </div>
+      <div class="card-body">
+        <img src="04_mobile_phone_390x844_assignments.png" alt="04 Mobile Phone">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">5. Modal Tambah Unit Organisasi</span>
+        <span class="badge">Dialog Modal</span>
+      </div>
+      <div class="card-body">
+        <img src="05_modal_create_unit.png" alt="05 Modal Create Unit">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">6. Modal Tambah Master Jabatan</span>
+        <span class="badge">Dialog Modal</span>
+      </div>
+      <div class="card-body">
+        <img src="06_modal_create_position.png" alt="06 Modal Create Position">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">7. Modal Penugasan Personil</span>
+        <span class="badge">Dialog Modal</span>
+      </div>
+      <div class="card-body">
+        <img src="07_modal_assign_position.png" alt="07 Modal Assign Position">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

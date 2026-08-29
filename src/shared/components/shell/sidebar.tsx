@@ -19,6 +19,7 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
+  Building2,
   ChevronLeft,
   ChevronRight,
   LucideIcon,
@@ -41,6 +42,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   BarChart3,
   Settings,
   ShieldAlert,
+  Building2,
 };
 
 export interface SidebarProps {

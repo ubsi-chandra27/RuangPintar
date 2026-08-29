@@ -182,6 +182,16 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
     title: "Manajemen Sekolah",
     items: [
       {
+        id: "staff-school",
+        title: "Profil & Organisasi",
+        href: "/sekolah",
+        iconName: "Building2",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "academic.school.view",
+        badge: "Phase 06",
+        isPhaseDeferred: false,
+      },
+      {
         id: "staff-academic",
         title: "Struktur Kurikulum",
         href: "/struktur-akademik",
