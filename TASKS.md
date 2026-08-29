@@ -1,214 +1,141 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 1.0  
-**Current Active Phase:** PHASE 00  
-**Status:** APPROVED  
+**Versi:** 1.1
+**Current Active Phase:** PHASE 01 — PRODUCT & REQUIREMENT LOCK
+**Status:** APPROVED
 
 ---
 
 # 1. ACTIVE TASK
 
 ```text
-PHASE 00 — PROJECT BOOTSTRAP & ENVIRONMENT BASELINE
+PHASE 01 — PRODUCT & REQUIREMENT LOCK
 ```
 
 Tujuan:
 
-> Membuat baseline project Next.js yang bersih, reproducible, sehat, dan siap menerima phase berikutnya tanpa membangun fitur bisnis.
+> Mengonsolidasikan, menyinkronkan, dan mengunci seluruh definisi produk, personas/aktor, model otorisasi, lingkup modul M01–M21, aturan bisnis domain, keputusan penjadwalan, requirement fungsional, dan matriks ketertelusuran sebelum fase implementasi teknis berikutnya.
 
 ---
 
-# 2. Prerequisite
+# 2. Phase 01 Checklist
 
-Sebelum coding:
+## Analisis & Audit Dokumen
 
 ```text
-[x] Baca AGENTS.md
-[x] Baca MEMORY.md
-[x] Baca TASKS.md
-[x] Baca docs/BRD.md
-[x] Baca docs/PRD.md
-[x] Baca docs/FRD.md
-[x] Baca docs/00–09
+[x] Audit BRD.md
+[x] Audit PRD.md
+[x] Audit FRD.md
+[x] Audit docs/00 s/d 09
+[x] Resolusi & sinkronisasi istilah antar dokumen
 ```
 
----
-
-# 3. Phase 00 Checklist
-
-## Environment
+## Definisi Produk & Aktor
 
 ```text
-[x] Audit OS
-[x] Audit Node.js
-[x] Audit npm/package manager
-[x] Audit Git
-[x] Audit workspace
-[x] Audit existing repository
+[x] Product statement, value proposition, non-goals terkunci
+[x] 5 Base Role resmi dikonfirmasi (SUPER_ADMIN, SCHOOL_STAFF, TEACHER, STUDENT, GUARDIAN)
+[x] Position & Assignment dipisahkan secara tegas dari Base Role
+[x] Staff capability bundle terdokumentasi
+[x] Multi-level readiness (SD, SMP, SMA, SMK) dikonfirmasi
 ```
 
-## Bootstrap
+## Otorisasi & Lingkup Modul
 
 ```text
-[x] Next.js stable secure baseline
-[x] TypeScript
-[x] App Router
-[x] Tailwind CSS
-[x] import alias
-[x] minimal modular project structure
+[x] Role & Access Matrix (Least Privilege, Default Deny, Scoped Access)
+[x] Inventarisasi modul M01 s/d M21 (Tujuan, Aktor, Scope V1, Non-scope, Future)
+[x] Domain invariants dan business rules terkunci
 ```
 
-## Tooling
+## Keputusan Penjadwalan & FRD
 
 ```text
-[x] ESLint
-[x] Formatter
-[x] Typecheck script
-[x] Test foundation
-[x] Build script
-[x] .env.example bila diperlukan
-[x] .gitignore
+[x] Keputusan Scheduling: Manual scheduling + intelligent conflict detection
+[x] Non-scope scheduling: Automatic timetable generator = future enhancement
+[x] Functional requirements diperbarui (FR-SCHD-006)
 ```
 
-## Smoke
+## Traceability & Acceptance Criteria
 
 ```text
-[x] App dapat dijalankan
-[x] Homepage minimum dapat dirender
-[x] Tidak ada runtime error obvious
+[x] Matriks ketertelusuran: BRD -> PRD -> FRD -> AC
+[x] Acceptance criteria testable untuk use case kritis
+[x] Deliverable fase dibuat: docs/phases/PHASE-01-PRODUCT-REQUIREMENT-LOCK.md
 ```
 
-## Quality Gate
+## Quality Gates & Git Verification
 
 ```text
-[x] install PASS
-[x] dev/smoke PASS
-[x] typecheck PASS
-[x] lint PASS
 [x] format check PASS
+[x] lint PASS
+[x] typecheck PASS
 [x] test PASS
-[x] production build PASS
-```
-
-## Git
-
-```text
-[x] Inspect git status
-[x] Inspect git diff
-[x] Tidak ada incidental files
-[x] Checkpoint mengikuti policy Human
+[x] build PASS
+[x] git diff --check PASS
 ```
 
 ---
 
-# 4. Explicit Non-Scope Phase 00
+# 3. Explicit Non-Scope Phase 01
 
-Jangan membuat:
+Dilarang melakukan implementasi kode pada Phase 01:
 
 ```text
-[ ] Login final
-[ ] Authentication
-[ ] Authorization
-[ ] Prisma domain schema
-[ ] Student
-[ ] Teacher
-[ ] Academic structure
-[ ] Dashboard final
-[ ] Application Shell final
-[ ] Attendance
-[ ] Learning
-[ ] Assessment
-[ ] Gradebook
-[ ] CBT
-[ ] Guardian
-[ ] Communication
-[ ] Reporting
-[ ] Integration
-[ ] AI feature
+[x] TIDAK membuat halaman aplikasi / UI screens
+[x] TIDAK membuat komponen React / UI kit components
+[x] TIDAK membuat Authentication engine / session logic
+[x] TIDAK membuat Authorization middleware / permission engine
+[x] TIDAK membuat Prisma domain schema / migration
+[x] TIDAK membuat API routes / controllers
+[x] TIDAK membuat Automatic timetable generator
 ```
-
-Checklist di atas adalah **larangan**, bukan pekerjaan.
 
 ---
 
-# 5. Phase 00 Exit Criteria
-
-Phase dapat dikirim ke Human Review jika:
+# 4. Phase 01 Exit Criteria
 
 ```text
-[x] Scope sesuai
+[x] Seluruh requirement kanonikal tersinkronisasi
 [x] Technical gates PASS
-[x] Tidak ada domain feature leakage
-[x] Working tree dipahami
-[x] Laporan phase lengkap
+[x] Tidak ada code feature leakage
+[x] Deliverable docs/phases/PHASE-01-PRODUCT-REQUIREMENT-LOCK.md tersedia
+[x] Human review APPROVED
 ```
 
-Status akhir AI:
+Status akhir:
 
 ```text
-READY FOR HUMAN REVIEW
+APPROVED
 ```
 
 ---
 
-# 6. Do Not Proceed
-
-Setelah Phase 00:
+# 5. Completed Phase History
 
 ```text
-STOP.
-```
+PHASE 00 — PROJECT BOOTSTRAP & ENVIRONMENT BASELINE
+Status: APPROVED
+Approved Commit: 0fe8151 (chore: establish Ruang Pintar project baseline)
+Notes: Baseline Next.js 16 + React 19 + TypeScript + Tailwind CSS v4 + ESLint + Prettier + Vitest established.
 
-Jangan mulai Phase 01 tanpa Human Approval.
+PHASE 01 — PRODUCT & REQUIREMENT LOCK
+Status: APPROVED
+Approved Commit: docs: lock Ruang Pintar product requirements
+Notes: Canonical product definition, 5 base roles, positions/assignments, M01-M21 module inventory, domain invariants, manual scheduling + intelligent conflict detection, BRD->PRD->FRD->AC traceability locked.
+```
 
 ---
 
-# 7. Next Planned Phase
+# 6. Next Planned Phase (Pending Human Activation)
 
 ```text
-PHASE 01 — ACADEMIC GLASS UI FOUNDATION
+PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION (or per roadmap)
 ```
 
 Status:
 
 ```text
 NOT ACTIVE
-```
-
----
-
-# 8. Roadmap Reference
-
-Roadmap lengkap:
-
-```text
-docs/08-IMPLEMENTATION-ROADMAP.md
-```
-
----
-
-# 9. AI Rules Reference
-
-Aturan lengkap:
-
-```text
-docs/09-AI-CODING-RULES.md
-```
-
----
-
-# 10. Human Review Update Template
-
-Setelah review, Human/agent dapat memperbarui bagian berikut:
-
-```text
-PHASE 00 STATUS:
-APPROVED
-
-APPROVED COMMIT:
-chore: establish Ruang Pintar project baseline
-
-NOTES:
-Human Review Approved. Baseline Next.js 16 + React 19 + TypeScript + Tailwind CSS v4 + ESLint + Prettier + Vitest established. Quality gates PASS. Phase 01 remains NOT ACTIVE pending next explicit human instructions.
 ```

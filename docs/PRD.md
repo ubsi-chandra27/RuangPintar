@@ -363,6 +363,11 @@ Actual Class Session
 
 Guru melakukan aktivitas presensi/administrasi terhadap Actual Class Session.
 
+Strategi Penjadwalan:
+- Penjadwalan V1 menggunakan pendekatan **manual scheduling + intelligent conflict detection** (deteksi bentrok guru, rombel/kelas, ruang, dan slot waktu).
+- Keputusan jadwal akhir ditentukan oleh manusia.
+- Automatic timetable generator adalah **non-scope V1 (future enhancement)**.
+
 ---
 
 # 15. Learning Product Requirement

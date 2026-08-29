@@ -197,6 +197,9 @@ Actual Class Session menjadi konteks untuk presensi kelas dan administrasi perte
 ## FR-SCHD-005
 Guru hanya dapat membuka sesi yang berada dalam Teaching Assignment/scope yang sah.
 
+## FR-SCHD-006
+Sistem menyediakan manual scheduling dengan intelligent conflict detection yang mendeteksi potensi bentrok guru, rombel/kelas, ruang, dan slot waktu sebelum publikasi jadwal.
+
 ---
 
 # 10. Teacher Dashboard
