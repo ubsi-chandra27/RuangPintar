@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Pintar — Login Visual Fidelity Contact Sheet</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    body {
+      margin: 0;
+      padding: 32px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      max-width: 1400px;
+      margin: 0 auto 32px auto;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    h1 { font-size: 24px; margin: 0 0 8px 0; color: #fff; }
+    p { margin: 0; color: var(--text-muted); font-size: 14px; }
+    .grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+      gap: 32px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-header {
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title { font-weight: 600; font-size: 15px; }
+    .badge {
+      font-size: 12px;
+      font-family: monospace;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .card-body {
+      padding: 16px;
+      background: #0b0f19;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ruang Pintar — Login Visual Fidelity Contact Sheet</h1>
+    <p>Verifikasi Visual Fidelity Halaman Login Ruang Pintar pada 4 Viewport Kanonikal</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="title">1. Desktop Large (Split View 58/42)</span>
+        <span class="badge">1440 × 900</span>
+      </div>
+      <div class="card-body">
+        <img src="login-1440x900.png" alt="Desktop Large 1440x900">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">2. Tablet Landscape (Split View 58/42)</span>
+        <span class="badge">1024 × 768</span>
+      </div>
+      <div class="card-body">
+        <img src="login-1024x768.png" alt="Tablet Landscape 1024x768">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">3. Tablet Portrait (Form Top, Hero Bottom)</span>
+        <span class="badge">768 × 1024</span>
+      </div>
+      <div class="card-body">
+        <img src="login-768x1024.png" alt="Tablet Portrait 768x1024">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="title">4. Mobile Phone (Form-First, Hero Bottom)</span>
+        <span class="badge">390 × 844</span>
+      </div>
+      <div class="card-body">
+        <img src="login-390x844.png" alt="Mobile Phone 390x844">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

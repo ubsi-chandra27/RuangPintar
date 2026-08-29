@@ -24,8 +24,8 @@ describe("Smoke Test — Project Baseline & Auth Views", () => {
   it("renders LoginPage visual elements and form correctly", () => {
     render(<LoginPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Masuk ke Ruang Pintar");
-    expect(screen.getByLabelText("Username")).toBeInTheDocument();
-    expect(screen.getByLabelText("Kata Sandi")).toBeInTheDocument();
+    expect(screen.getByLabelText("Username", { selector: "input" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Kata sandi", { selector: "input" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /masuk/i })).toBeInTheDocument();
   });
 

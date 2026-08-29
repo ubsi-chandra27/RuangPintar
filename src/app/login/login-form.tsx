@@ -1,26 +1,37 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { loginAction, AuthActionResult } from "@/app/actions/auth-actions";
+import { Label } from "@/shared/components/ui/label";
+import { Input } from "@/shared/components/ui/input";
+import { PasswordInput } from "@/shared/components/ui/password-input";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { TextLink } from "@/shared/components/ui/text-link";
+import { Button } from "@/shared/components/ui/button";
+import { InputError } from "@/shared/components/ui/input-error";
 
-export function LoginForm() {
+export function LoginForm({ status }: { status?: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     startTransition(async () => {
       const result: AuthActionResult = await loginAction(null, formData);
       if (!result.success) {
         setErrorMessage(result.error ?? "Login gagal. Silakan coba lagi.");
+        // Reset password input on failure for security
+        const passwordInput = form.querySelector<HTMLInputElement>('input[name="password"]');
+        if (passwordInput) {
+          passwordInput.value = "";
+          passwordInput.focus();
+        }
       } else if (result.redirectUrl) {
         router.push(result.redirectUrl);
         router.refresh();
@@ -29,103 +40,88 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
-      {errorMessage && (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-5 w-full" noValidate={false}>
+      {/* Optional Success Status Banner */}
+      {status && (
         <div
-          role="alert"
-          className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-sm text-rose-800 shadow-sm transition-all"
+          role="status"
+          className="rounded-[10px] border border-emerald-200 bg-emerald-50 p-3 text-xs sm:text-sm font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
         >
-          <AlertCircle className="size-5 shrink-0 text-rose-600 mt-0.5" />
-          <span className="leading-snug">{errorMessage}</span>
+          {status}
         </div>
       )}
 
       {/* Username Field */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="username" className="text-sm font-semibold text-slate-700 select-none">
+        <Label htmlFor="username" className="text-xs sm:text-sm font-semibold text-[#0F172A]">
           Username
-        </label>
-        <input
+        </Label>
+        <Input
           id="username"
           name="username"
           type="text"
           autoComplete="username"
           required
           disabled={isPending}
-          placeholder="Masukkan username akun Anda"
-          className="h-12 w-full rounded-[10px] border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-3 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 transition-colors text-[15px]"
+          isError={Boolean(errorMessage)}
+          placeholder="Masukkan username"
+          inputSize="lg"
+          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-[#F8FAFC] sm:bg-white"
         />
+        <InputError message={errorMessage} />
       </div>
 
       {/* Password Field */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="password" className="text-sm font-semibold text-slate-700 select-none">
-          Kata Sandi
-        </label>
-        <div className="relative">
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            required
-            disabled={isPending}
-            placeholder="Masukkan kata sandi"
-            className="h-12 w-full rounded-[10px] border border-slate-300 bg-white pl-4 pr-12 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-3 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 transition-colors text-[15px]"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
-            aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-slate-400 hover:text-slate-700 focus:outline-none transition-colors"
-          >
-            {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-          </button>
-        </div>
+        <Label htmlFor="password" className="text-xs sm:text-sm font-semibold text-[#0F172A]">
+          Kata sandi
+        </Label>
+        <PasswordInput
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          required
+          disabled={isPending}
+          isError={Boolean(errorMessage)}
+          placeholder="Masukkan kata sandi"
+          inputSize="lg"
+          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-[#F8FAFC] sm:bg-white"
+        />
       </div>
 
       {/* Remember Me & Forgot Password Row */}
-      <div className="flex items-center justify-between min-h-[44px]">
-        <label className="flex items-center gap-2.5 cursor-pointer select-none text-sm text-slate-600">
-          <input
-            id="remember"
-            name="remember"
-            type="checkbox"
-            disabled={isPending}
-            className="size-4.5 rounded border-slate-300 text-slate-800 focus:ring-blue-500"
-          />
-          <span>Ingat saya</span>
-        </label>
+      <div className="flex items-center justify-between min-h-[36px] sm:min-h-11">
+        <Checkbox
+          id="remember"
+          name="remember"
+          label="Ingat saya"
+          disabled={isPending}
+          className="text-xs sm:text-sm"
+        />
 
-        <Link
-          href="/forgot-password"
-          className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded transition-colors"
-        >
+        <TextLink href="/forgot-password" className="text-xs sm:text-sm">
           Lupa kata sandi?
-        </Link>
+        </TextLink>
       </div>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="mt-2 h-12 w-full flex items-center justify-center gap-2 rounded-xl bg-[#1E293B] hover:bg-[#2B3B52] active:scale-[0.99] text-white font-semibold shadow-md shadow-slate-900/10 focus:outline-none focus:ring-3 focus:ring-slate-900/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all text-base"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="size-5 animate-spin text-white" />
-            <span>Memproses...</span>
-          </>
-        ) : (
-          <span>Masuk</span>
-        )}
-      </button>
+      {/* Primary Action Button */}
+      <div className="flex flex-col gap-2 sm:gap-2.5 pt-0.5">
+        <Button
+          type="submit"
+          size="lg"
+          variant="primary"
+          isLoading={isPending}
+          disabled={isPending}
+          className="h-11 sm:h-12 w-full rounded-[10px] sm:rounded-[12px] bg-[#1E293B] hover:bg-[#26364B] active:scale-[0.99] text-white font-semibold shadow-[0_6px_18px_rgba(15,23,42,0.14)] text-[14px] sm:text-base"
+        >
+          Masuk
+        </Button>
 
-      {/* Footer hint */}
-      <p className="mt-2 text-center text-xs text-slate-500">
-        Akun pengguna dikelola dan diterbitkan secara resmi oleh sekolah.
-      </p>
+        {/* Supporting Footer Text */}
+        <p className="text-center text-[11px] sm:text-xs text-[#64748B] dark:text-slate-400">
+          Akun dikelola oleh sekolah.
+        </p>
+      </div>
     </form>
   );
 }
