@@ -1,0 +1,149 @@
+{
+  "designSystem": "Academic Glass UI v1.2",
+  "version": "1.2.0",
+  "sourceProject": "Ruang Pintar V2",
+  "materials": {
+    "solid": {
+      "light": "#FFFFFF",
+      "border": "#E2E8F0",
+      "shadow": "0 1px 3px rgba(0,0,0,0.05)",
+      "useCase": "Dense data tables, forms, primary content"
+    },
+    "glassSoft": {
+      "light": "rgba(255, 255, 255, 0.72)",
+      "blur": "12px",
+      "border": "rgba(255, 255, 255, 0.55)",
+      "useCase": "Supporting cards, filter bars, status banners"
+    },
+    "glassElevated": {
+      "light": "rgba(255, 255, 255, 0.86)",
+      "blur": "16px",
+      "shadow": "0 4px 16px rgba(15, 23, 42, 0.08)",
+      "useCase": "Sidebar chrome, active elevated cards"
+    },
+    "glassStrong": {
+      "light": "rgba(255, 255, 255, 0.95)",
+      "blur": "20px",
+      "shadow": "0 8px 24px rgba(15, 23, 42, 0.16)",
+      "useCase": "Modal dialogs, dropdown floating popovers"
+    }
+  },
+  "colors": {
+    "primary": {
+      "cobaltDeep": "#1D4ED8",
+      "cobaltStrong": "#2563EB",
+      "cobaltBase": "#3B82F6",
+      "cobaltSoft": "#60A5FA",
+      "cobaltTint": "#DBEAFE"
+    },
+    "neutral": {
+      "navy900": "#0F172A",
+      "navy800": "#1E293B",
+      "slate700": "#334155",
+      "slate600": "#475569",
+      "slate500": "#64748B",
+      "slate400": "#94A3B8",
+      "slate300": "#CBD5E1",
+      "slate200": "#E2E8F0",
+      "slate100": "#F1F5F9",
+      "slate50": "#F8FAFC",
+      "pureWhite": "#FFFFFF"
+    },
+    "semantic": {
+      "success": { "base": "#22C55E", "soft": "#DCFCE7", "text": "#15803D" },
+      "info": { "base": "#0EA5E9", "soft": "#E0F2FE", "text": "#0369A1" },
+      "warning": { "base": "#F59E0B", "soft": "#FEF3C7", "text": "#B45309" },
+      "danger": { "base": "#EF4444", "soft": "#FEE2E2", "text": "#B91C1C" }
+    }
+  },
+  "typography": {
+    "fontFamilySans": "Plus Jakarta Sans, Segoe UI, system-ui, sans-serif",
+    "fontFamilyMono": "Andale Mono, Cascadia Mono, SFMono-Regular, Consolas, monospace",
+    "scale": {
+      "display": { "size": "48px", "lineHeight": "1.2", "weight": "700" },
+      "h1": { "size": "40px", "lineHeight": "1.2", "weight": "700" },
+      "h2": { "size": "32px", "lineHeight": "1.2", "weight": "700" },
+      "h3": { "size": "24px", "lineHeight": "1.2", "weight": "600-700" },
+      "h4": { "size": "20px", "lineHeight": "1.2", "weight": "600-700" },
+      "h5": { "size": "18px", "lineHeight": "1.2", "weight": "600" },
+      "bodyL": { "size": "16px", "lineHeight": "1.5", "weight": "400-500" },
+      "bodyM": { "size": "14px", "lineHeight": "1.5", "weight": "400-500" },
+      "caption": { "size": "12px", "lineHeight": "1.5", "weight": "450-500" },
+      "monoUI": { "size": "14px", "lineHeight": "1.2", "weight": "500-700" }
+    }
+  },
+  "spacing": {
+    "tight": "4px",
+    "space2": "8px",
+    "compact": "12px",
+    "space4": "16px",
+    "comfortable": "20px",
+    "section": "24px",
+    "space8": "32px",
+    "hero": "48px"
+  },
+  "radius": {
+    "input": "8px - 10px",
+    "button": "12px",
+    "card": "14px - 16px",
+    "modal": "16px - 20px",
+    "drawer": "24px",
+    "badge": "9999px"
+  },
+  "shadow": {
+    "level0": "none",
+    "level1": "0 1px 8px rgba(15, 23, 42, 0.08)",
+    "level2": "0 4px 16px rgba(15, 23, 42, 0.12)",
+    "level3": "0 8px 24px rgba(15, 23, 42, 0.16)",
+    "level4": "0 0 0 3px rgba(59, 130, 246, 0.35)"
+  },
+  "motion": {
+    "fast": "160ms",
+    "normal": "200ms",
+    "shell": "250ms",
+    "easeStandard": "cubic-bezier(0.2, 0, 0, 1)",
+    "easeEmphasized": "cubic-bezier(0.16, 1, 0.3, 1)"
+  },
+  "components": [
+    "Button (7 variants, 3 sizes)",
+    "Input (text, password, search, number)",
+    "Textarea",
+    "Select",
+    "Checkbox",
+    "RadioGroup",
+    "Switch",
+    "Card (Basic, Glass, Elevated, Stat, Class, Schedule)",
+    "Badge (7 semantic status chips)",
+    "Alert",
+    "Sonner Toast",
+    "Accordion",
+    "Breadcrumb",
+    "Tabs",
+    "ResponsiveDataTable",
+    "Pagination",
+    "Dialog",
+    "ConfirmationDialog",
+    "Sidebar & AcademicShell"
+  ],
+  "layoutPatterns": {
+    "desktop": "Sidebar left (240px or 56px), Topbar (64px), Main Content with 24px gap",
+    "tablet": "Mini sidebar or drawer, 2-column reflow",
+    "mobile": "Slide-over drawer from hamburger, single column vertical stack, tabular to card transformer"
+  },
+  "sourceFiles": [
+    "resources/css/app.css",
+    "resources/js/components/ui/button.tsx",
+    "resources/js/components/ui/input.tsx",
+    "resources/js/components/ui/card.tsx",
+    "resources/js/components/ui/badge.tsx",
+    "resources/js/components/ui/alert.tsx",
+    "resources/js/components/ui/dialog.tsx",
+    "resources/js/components/ui/select.tsx",
+    "resources/js/components/ui/sonner.tsx",
+    "resources/js/components/foundation/responsive-data-table.tsx",
+    "resources/js/components/foundation/confirmation-dialog.tsx",
+    "resources/js/components/layout/academic-shell.tsx",
+    "resources/js/pages/ui-kit.tsx",
+    "docs/design/UI-KIT.md"
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "name": "RuangPintarLoginSpecification",
+  "sourceProject": "Ruang Pintar V2",
+  "targetProject": "Ruang Pintar V3",
+  "page": {
+    "title": "Masuk ke Ruang Pintar",
+    "description": "Gunakan akun sekolah Anda untuk mengakses pembelajaran, aktivitas akademik, dan informasi sekolah.",
+    "route": "/login",
+    "method": "POST",
+    "credentialType": "username"
+  },
+  "layout": {
+    "type": "split-screen",
+    "desktopRatio": {
+      "leftHeroArtwork": "58%",
+      "rightFormContainer": "42%"
+    },
+    "mobileRatio": {
+      "topForm": "order-1",
+      "bottomHeroArtwork": "order-2"
+    },
+    "header": {
+      "brandLogo": "/brand/ruang-pintar-mark.png",
+      "brandLogoSize": "48x48px",
+      "title": "Ruang Pintar",
+      "subtitle": "Academic Learning Platform"
+    },
+    "containerMaxWidth": "1440px",
+    "formMaxWidth": "470px"
+  },
+  "components": [
+    {
+      "name": "AuthLoginLayout",
+      "path": "resources/js/layouts/auth/auth-login-layout.tsx",
+      "role": "Shell Layout"
+    },
+    {
+      "name": "Login",
+      "path": "resources/js/pages/auth/login.tsx",
+      "role": "Page Form Component"
+    },
+    {
+      "name": "Input",
+      "path": "resources/js/components/ui/input.tsx",
+      "role": "Username text input (h-12 / 48px)"
+    },
+    {
+      "name": "PasswordInput",
+      "path": "resources/js/components/password-input.tsx",
+      "role": "Password input with visibility toggle"
+    },
+    {
+      "name": "Checkbox",
+      "path": "resources/js/components/ui/checkbox.tsx",
+      "role": "Remember me checkbox"
+    },
+    {
+      "name": "TextLink",
+      "path": "resources/js/components/text-link.tsx",
+      "role": "Forgot password text link"
+    },
+    {
+      "name": "Button",
+      "path": "resources/js/components/ui/button.tsx",
+      "role": "Primary submit button (variant=secondary, bg=#1E293B)"
+    },
+    {
+      "name": "InputError",
+      "path": "resources/js/components/input-error.tsx",
+      "role": "Inline validation feedback"
+    }
+  ],
+  "tokens": {
+    "background": {
+      "light": "#F7F7F8",
+      "dark": "#0B1120"
+    },
+    "ambientGlow": "radial-gradient(circle at 88% 12%, rgba(14,165,233,0.08), transparent 25%)",
+    "typography": {
+      "primary": "Plus Jakarta Sans",
+      "mono": "Andale Mono"
+    },
+    "colors": {
+      "primaryAction": "#1E293B",
+      "primaryActionHover": "#26364B",
+      "textHeading": "#0F172A",
+      "textBody": "#475569",
+      "textLink": "#2563EB",
+      "borderDefault": "#CBD5E1",
+      "focusRing": "0 0 0 3px rgba(59,130,246,0.25)"
+    },
+    "radius": {
+      "input": "10px",
+      "button": "12px",
+      "card": "16px"
+    },
+    "shadow": {
+      "button": "0 8px 22px rgba(15,23,42,0.16)",
+      "logo": "0 6px 14px rgba(15,23,42,0.1)"
+    }
+  },
+  "assets": [
+    {
+      "name": "ruang-pintar-mark.png",
+      "localPath": "assets/brand/ruang-pintar-mark.png",
+      "usage": "Brand Header Logo Mark"
+    },
+    {
+      "name": "login-hero-astronaut.png",
+      "localPath": "assets/auth/login-hero-astronaut.png",
+      "usage": "Left Section Artwork Hero Image"
+    },
+    {
+      "name": "auth-layout-reference.png",
+      "localPath": "assets/auth/auth-layout-reference.png",
+      "usage": "Visual Layout Reference"
+    }
+  ],
+  "breakpoints": {
+    "mobile": "<768px (Target 390x844)",
+    "tabletPortrait": "768px-1023px (Target 768x1024)",
+    "tabletLandscape": "1024px-1279px (Target 1024x768)",
+    "desktop": ">=1280px (Target 1440x900)"
+  },
+  "states": {
+    "default": "Clean form with autofocus on username",
+    "focus": "Border sky-500 with 3px focus ring halo",
+    "loading": "Submit button disabled with Loader2 spinning indicator",
+    "validationError": "Inline text-rose-600 message below field with input status error",
+    "authError": "Validation error message on username or password field",
+    "successStatus": "Emerald-50 banner with emerald-700 text"
+  },
+  "interactions": {
+    "passwordToggle": "Instant type switch text/password via Eye/EyeOff icon",
+    "rememberMe": "Checkbox value 1 for session persistence",
+    "forgotPassword": "Link to password recovery request route",
+    "firstLoginFlow": "Redirects to /password/required when must_change_password is true"
+  },
+  "sourceFiles": [
+    "resources/js/pages/auth/login.tsx",
+    "resources/js/layouts/auth/auth-login-layout.tsx",
+    "resources/js/components/password-input.tsx",
+    "resources/js/components/input-error.tsx",
+    "resources/js/components/text-link.tsx",
+    "resources/js/components/ui/button.tsx",
+    "resources/js/components/ui/input.tsx",
+    "resources/js/components/ui/checkbox.tsx",
+    "resources/js/components/ui/label.tsx",
+    "resources/css/app.css"
+  ],
+  "constraints": {
+    "noHardcodedMockData": true,
+    "highContrastRequired": true,
+    "wcagAccessibility": "AA minimum 4.5:1 ratio",
+    "touchTargetMinHeight": "44px"
+  }
+}
