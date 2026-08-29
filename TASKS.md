@@ -143,7 +143,7 @@ Notes: M02 identity models, bcrypt password hashing, server-authoritative sessio
 
 PHASE 04 — AUTHORIZATION & ACCESS CONTROL
 Status: APPROVED
-Approved Commit: feat: establish authorization and access control
+Approved Commit: 5596da8 (feat: establish authorization and access control)
 Notes: Effective access model (Identity -> Base Role -> Position/Assignment/Relationship -> Permission -> Resource Scope -> Effective Access), 5 base roles, 4 staff capability bundles, position/assignment/guardian contracts, staff capability database persistence (kemampuan_staff), and server-side authorization guards (requirePermission/checkPermission) established.
 ```
 
