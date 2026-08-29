@@ -28,6 +28,7 @@ model Sekolah {
   konfigurasi_sistem KonfigurasiSistem[]
   metadata_berkas    MetadataBerkas[]
   log_audit          LogAudit[]
+  pengguna           Pengguna[]
 
   @@map("sekolah")
 }
@@ -134,7 +135,7 @@ model LogAudit {
   aktor_id          String
   aktor_role        String
   aksi              String   // CREATE | UPDATE | DELETE | PUBLISH | FINALIZE | AUTH_LOGIN | dll
-  tipe_sumber       String   // Nama agregat / modul terkait (e.g. SEKOLAH | PENILAIAN | PRESENSI)
+  tipe_sumber       String   // Nama agregat / modul terkait (e.g. SEKOLAH | PENILAIAN | PRESENSI | PENGGUNA)
   id_sumber         String
   payload_sebelum   String?  // JSON snapshot sebelum perubahan (opsional)
   payload_sesudah   String?  // JSON snapshot setelah perubahan (opsional)
@@ -168,4 +169,63 @@ model OutboxPesan {
 
   @@index([status, percobaan_berikutnya_pada])
   @@map("outbox_pesan")
+}
+
+/// M02 — Identity & Access: Akun pengguna autentikasi
+model Pengguna {
+  id                     String    @id
+  sekolah_id             String?
+  username               String    @unique
+  email                  String?   @unique
+  password_hash          String
+  nama_lengkap           String
+  peran_dasar            String    // SUPER_ADMIN | SCHOOL_STAFF | TEACHER | STUDENT | GUARDIAN
+  status_akun            String    @default("AKTIF") // AKTIF | NONAKTIF | TERKUNCI | DITANGGUHKAN | MENUNGGU_VERIFIKASI
+  harus_ganti_password   Boolean   @default(false)
+  terakhir_login_pada    DateTime?
+  percobaan_login_gagal  Int       @default(0)
+  dikunci_sampai         DateTime?
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  sekolah                Sekolah?              @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+  sesi                   SesiPengguna[]
+
+  @@index([sekolah_id, peran_dasar])
+  @@index([status_akun])
+  @@map("pengguna")
+}
+
+/// M02 — Identity & Access: Sesi aktif server-authoritative
+model SesiPengguna {
+  id                  String    @id
+  pengguna_id         String
+  token_hash          String    @unique
+  ip_address          String?
+  user_agent          String?
+  berlaku_sampai      DateTime
+  terakhir_aktif_pada DateTime  @default(now())
+  dicabut             Boolean   @default(false)
+  alasan_cabut        String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  pengguna            Pengguna  @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+
+  @@index([pengguna_id, dicabut, berlaku_sampai])
+  @@map("sesi_pengguna")
+}
+
+/// M02 — Identity & Access: Pencatatan percobaan login untuk mitigasi brute force
+model LogPercobaanLogin {
+  id              String    @id
+  identifier      String    // username atau IP address
+  ip_address      String
+  sukses          Boolean
+  alasan_gagal    String?
+  dibuat_pada     DateTime  @default(now())
+
+  @@index([identifier, dibuat_pada])
+  @@index([ip_address, dibuat_pada])
+  @@map("log_percobaan_login")
 }

@@ -1,8 +1,8 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 1.2
-**Current Active Phase:** PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION
+**Versi:** 1.3
+**Current Active Phase:** PHASE 03 — AUTHENTICATION & IDENTITY
 **Status:** APPROVED
 
 ---
@@ -10,57 +10,59 @@
 # 1. ACTIVE TASK
 
 ```text
-PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION
+PHASE 03 — AUTHENTICATION & IDENTITY
 ```
 
 Tujuan:
 
-> Mengaktifkan baseline arsitektur data, database SQLite lokal persisten dengan Prisma ORM, standardisasi ULID 26 karakter, model data platform fondasi (M01–M05), transactional outbox, append-only audit logger, abstraksi penyimpanan berkas privat, serta isolasi pengujian otomatis.
+> Mengaktifkan subsistem autentikasi & identitas (M02) meliputi User Account, enkripsi password bcrypt, server-authoritative session store, mitigasi brute-force rate limiting, alur wajib ganti password, audit log keamanan, serta antarmuka login web berbasis Academic Glass UI v1.2.
 
 ---
 
-# 2. Phase 02 Checklist
+# 2. Phase 03 Checklist
 
-## Database & Persistence Setup
+## Identity & Data Model
 
 ```text
-[x] Prisma ORM terkonfigurasi untuk SQLite (prisma/schema.prisma)
-[x] Konfigurasi PRAGMA SQLite (foreign_keys, journal_mode WAL, synchronous FULL, busy_timeout)
-[x] Migrasi awal Prisma Migrate (20260829012117_init_platform_foundation)
-[x] Singleton PrismaClient aman untuk Next.js runtime (src/shared/infrastructure/database/prisma.ts)
+[x] Forward migration skema M02 (pengguna, sesi_pengguna, log_percobaan_login)
+[x] Enkripsi password bcrypt & validasi kebijakan keamanan (src/shared/lib/password.ts)
+[x] Generator token sesi kriptografis & SHA-256 hash (src/shared/lib/session.ts)
+[x] Layanan IdentityService untuk provisi akun & perubahan kata sandi (src/shared/infrastructure/auth/identity-service.ts)
 ```
 
-## Primary Identifier & Shared Utilities
+## Authentication & Session Management
 
 ```text
-[x] ULID 26 karakter generator & validator (src/shared/lib/ulid.ts)
-[x] Monotonic ULID generation support
-[x] Transaction & Unit of Work helper (src/shared/infrastructure/database/transaction.ts)
+[x] Layanan AuthService untuk login kredensial & validasi sesi server-side (src/shared/infrastructure/auth/auth-service.ts)
+[x] Mitigasi brute force rate limiting (src/shared/infrastructure/auth/rate-limiter.ts)
+[x] Sesi server-authoritative dengan HttpOnly secure cookie
+[x] Opsi sesi Remember Me (30 hari vs 24 jam)
+[x] Server Actions untuk login, logout, dan ganti password (src/app/actions/auth-actions.ts)
+[x] Server guard helper getCurrentUser & requireAuth (src/shared/infrastructure/auth/auth-guard.ts)
+[x] Integrasi audit trail keamanan (AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILED, AUTH_LOGOUT, AUTH_PASSWORD_CHANGED)
 ```
 
-## Platform & Foundation Services
+## User Interface & Academic Glass UI
 
 ```text
-[x] Model data platform fondasi M01 (sekolah, unit_organisasi, jabatan, penugasan_jabatan)
-[x] Model data konfigurasi sistem M03 (konfigurasi_sistem & ConfigurationService)
-[x] Database partial unique index untuk konfigurasi global (sekolah_id IS NULL + kunci)
-[x] Model data metadata berkas & storage M04 (metadata_berkas & LocalStorageAdapter)
-[x] Model data log audit M05 (log_audit & Application-Level Append-Oriented AuditLogger)
-[x] Model data transactional outbox (outbox_pesan & OutboxService)
+[x] Visual assets branding & astronaut hero diimpor ke public/images/
+[x] Halaman /login dengan 58/42 desktop split hero & mobile form-first layout (src/app/login/page.tsx)
+[x] Form login interaktif dengan toggle show/hide password, state loading, dan error banner (src/app/login/login-form.tsx)
+[x] Halaman /ganti-password untuk mandatory password change (src/app/ganti-password/page.tsx)
+[x] Halaman /forgot-password untuk panduan pemulihan institusional (src/app/forgot-password/page.tsx)
+[x] Halaman utama / merefleksikan status autentikasi aktif dengan opsi logout (src/app/page.tsx)
+[x] Playwright Browser QA & screenshot evidence (1440x900, 1024x768, 768x1024, 390x844)
 ```
 
 ## Automated Tests & Verification
 
 ```text
-[x] Test ULID generator & format validation (ulid.test.ts)
-[x] Test SQLite pragmas & foreign key enforcement (sqlite-pragmas.test.ts)
-[x] Test Prisma foundation CRUD, constraints, relations, and negative tests (prisma-foundation.test.ts)
-[x] Test Transaction commit & rollback (transaction.test.ts)
-[x] Test Audit Logger append-only contract (audit.test.ts)
-[x] Test Transactional Outbox lifecycle (outbox.test.ts)
-[x] Test Local Storage Adapter save, read, checksum, delete (local-storage.test.ts)
-[x] Test Configuration Service global/school overrides & DB partial unique index (configuration.test.ts)
-[x] Regression smoke test (smoke.test.tsx)
+[x] Test keamanan password & kebijakan minimal 8 karakter (password.test.ts)
+[x] Test token sesi & konfigurasi cookie (session.test.ts)
+[x] Test siklus hidup akun pengguna, keunikan username, dan ganti password (identity.test.ts)
+[x] Test login kredensial, validasi sesi, lockout, penolakan akun nonaktif, logout, dan remember me (auth-service.test.ts)
+[x] Test mitigasi brute force rate limiting (rate-limiter.test.ts)
+[x] Regression test seluruh suite database Phase 02 & smoke views (14 files, 51 tests passed)
 ```
 
 ## Quality Gates
@@ -69,34 +71,33 @@ Tujuan:
 [x] format check PASS (Prettier)
 [x] lint PASS (ESLint - 0 errors, 0 warnings)
 [x] typecheck PASS (TypeScript - 0 errors)
-[x] tests PASS (Vitest - 9 test files, 31 tests passed)
-[x] build PASS (Next.js 16 Turbopack build static routes)
+[x] tests PASS (Vitest - 14 test files, 51 tests passed)
+[x] build PASS (Next.js 16 Turbopack build)
 [x] npm audit PASS (0 vulnerabilities)
 [x] git diff --check PASS
 ```
 
 ---
 
-# 3. Explicit Non-Scope Phase 02
+# 3. Explicit Non-Scope Phase 03
 
-Dilarang melakukan implementasi di luar scope Phase 02:
+Dilarang melakukan implementasi di luar scope Phase 03:
 
 ```text
-[x] TIDAK membuat skema domain bisnis M06–M21 (Siswa, Guru, Penugasan Mengajar, Jadwal, Nilai, dll)
-[x] TIDAK membuat halaman autentikasi / session login UI (Phase 03)
-[x] TIDAK membuat authorization engine / RBAC middleware (Phase 04)
-[x] TIDAK membuat dashboard aplikasi / UI screens (Phase 05)
+[x] TIDAK membangun Dynamic Permission Engine & RBAC Middleware (Phase 04)
+[x] TIDAK membangun Application Shell / Dashboard Navigation / Role-specific Dashboards (Phase 05)
+[x] TIDAK membangun CRUD Domain Bisnis Akademik (M06–M21)
 ```
 
 ---
 
-# 4. Phase 02 Exit Criteria
+# 4. Phase 03 Exit Criteria
 
 ```text
-[x] Fondasi data SQLite, Prisma ORM, ULID, Outbox, Audit, Storage selesai
-[x] Seluruh acceptance criteria AC-01 s/d AC-06 terpenuhi
+[x] Subsistem Autentikasi & Identitas M02 selesai dan teruji
+[x] Seluruh acceptance criteria AC-AUTH-01 s/d AC-AUTH-08 terpenuhi
 [x] Quality gates PASS (100%)
-[x] Deliverable docs/phases/PHASE-02-DATABASE-PERSISTENCE-PLATFORM-FOUNDATION.md tersedia
+[x] Deliverable docs/phases/PHASE-03-AUTHENTICATION-IDENTITY.md tersedia
 [x] Human review APPROVED
 ```
 
@@ -123,8 +124,13 @@ Notes: Canonical product definition, 5 base roles, positions/assignments, M01-M2
 
 PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION
 Status: APPROVED
-Approved Commit: 3135db0 (feat: establish database persistence and platform foundation)
+Approved Commit: 3135db0 (feat: establish database persistence and platform foundation) / Final HEAD cc9249f
 Notes: SQLite database, Prisma ORM, 26-char ULID, platform foundation models (M01-M05), global config uniqueness, append-oriented audit service boundary, outbox, and private storage adapter established.
+
+PHASE 03 — AUTHENTICATION & IDENTITY
+Status: APPROVED
+Approved Commit: feat: implement authentication and identity
+Notes: M02 identity models, bcrypt password hashing, server-authoritative session store, HttpOnly cookie, rate limiting, must_change_password flow, audit integration, Academic Glass UI login screen, and Playwright browser QA established.
 ```
 
 ---
@@ -132,7 +138,7 @@ Notes: SQLite database, Prisma ORM, 26-char ULID, platform foundation models (M0
 # 6. Next Planned Phase (Pending Human Activation)
 
 ```text
-PHASE 03 — AUTHENTICATION & IDENTITY
+PHASE 04 — AUTHORIZATION & ACCESS CONTROL
 ```
 
 Status:
