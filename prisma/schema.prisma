@@ -190,10 +190,25 @@ model Pengguna {
 
   sekolah                Sekolah?              @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
   sesi                   SesiPengguna[]
+  kemampuan_staff        KemampuanStaff[]
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
   @@map("pengguna")
+}
+
+/// M02 — Identity & Access: Penugasan capability bundle untuk SCHOOL_STAFF
+model KemampuanStaff {
+  id              String    @id
+  pengguna_id     String
+  kode_kemampuan  String    // SYSTEM_ADMIN | ACADEMIC_OPERATOR | STUDENT_DATA_OPERATOR | REPORT_OPERATOR
+  created_at      DateTime  @default(now())
+
+  pengguna        Pengguna  @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+
+  @@unique([pengguna_id, kode_kemampuan])
+  @@index([kode_kemampuan])
+  @@map("kemampuan_staff")
 }
 
 /// M02 — Identity & Access: Sesi aktif server-authoritative
