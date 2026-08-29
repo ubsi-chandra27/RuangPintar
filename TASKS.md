@@ -123,7 +123,7 @@ Notes: Canonical product definition, 5 base roles, positions/assignments, M01-M2
 
 PHASE 02 — DATABASE, PERSISTENCE & PLATFORM FOUNDATION
 Status: APPROVED
-Approved Commit: feat: establish database persistence and platform foundation
+Approved Commit: 3135db0 (feat: establish database persistence and platform foundation)
 Notes: SQLite database, Prisma ORM, 26-char ULID, platform foundation models (M01-M05), global config uniqueness, append-oriented audit service boundary, outbox, and private storage adapter established.
 ```
 
