@@ -15,7 +15,8 @@
 /build
 /dist
 
-# SQLite databases & journals
+# Local persistent data & Storage
+/data/
 *.db
 *.db-journal
 *.db-wal

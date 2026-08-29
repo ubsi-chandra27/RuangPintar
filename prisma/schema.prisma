@@ -1,0 +1,171 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// M01 — School & Organization: Konteks organisasi sekolah utama
+model Sekolah {
+  id              String   @id
+  nama            String
+  npsn            String?  @unique
+  jenjang         String   // SD | SMP | SMA | SMK | UMUM
+  alamat          String?
+  telepon         String?
+  email           String?
+  zona_waktu      String   @default("Asia/Jakarta")
+  logo_url        String?
+  status_aktif    Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  unit_organisasi    UnitOrganisasi[]
+  jabatan            Jabatan[]
+  penugasan_jabatan  PenugasanJabatan[]
+  konfigurasi_sistem KonfigurasiSistem[]
+  metadata_berkas    MetadataBerkas[]
+  log_audit          LogAudit[]
+
+  @@map("sekolah")
+}
+
+/// M01 — School & Organization: Bagian atau unit organisasi sekolah
+model UnitOrganisasi {
+  id              String   @id
+  sekolah_id      String
+  nama            String
+  kode            String?
+  induk_unit_id   String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  sekolah         Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  induk_unit      UnitOrganisasi?   @relation("HierarkiUnit", fields: [induk_unit_id], references: [id], onDelete: SetNull)
+  sub_unit        UnitOrganisasi[]  @relation("HierarkiUnit")
+  jabatan         Jabatan[]
+
+  @@unique([sekolah_id, nama])
+  @@map("unit_organisasi")
+}
+
+/// M01 — School & Organization: Jabatan organisasi struktural (Kepala Sekolah, Wakasek, dll)
+model Jabatan {
+  id              String   @id
+  sekolah_id      String
+  unit_id         String?
+  kode_jabatan    String   // HEADMASTER | VICE_PRINCIPAL_CURRICULUM | VICE_PRINCIPAL_STUDENT_AFFAIRS | PROGRAM_HEAD | CUSTOM
+  nama_jabatan    String
+  tingkat_akses   String?  // Scope default (SCHOOL_WIDE | UNIT_WIDE | PROGRAM_WIDE)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  sekolah         Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  unit            UnitOrganisasi?   @relation(fields: [unit_id], references: [id], onDelete: SetNull)
+  penugasan       PenugasanJabatan[]
+
+  @@unique([sekolah_id, kode_jabatan])
+  @@map("jabatan")
+}
+
+/// M01 — School & Organization: Penugasan personil ke jabatan dalam periode tertentu
+model PenugasanJabatan {
+  id              String    @id
+  sekolah_id      String
+  jabatan_id      String
+  personil_id     String    // Mengacu ke User Account / Profil Personil
+  berlaku_mulai   DateTime
+  berlaku_sampai  DateTime?
+  status          String    @default("AKTIF") // AKTIF | SELESAI | DIBATALKAN
+  catatan         String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  sekolah         Sekolah   @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  jabatan         Jabatan   @relation(fields: [jabatan_id], references: [id], onDelete: Restrict)
+
+  @@index([personil_id, status])
+  @@map("penugasan_jabatan")
+}
+
+/// M03 — Platform Configuration: Parameter konfigurasi sistem & sekolah
+model KonfigurasiSistem {
+  id              String   @id
+  sekolah_id      String?
+  kunci           String
+  nilai           String
+  kategori        String   @default("UMUM") // UMUM | AKADEMIK | TAMPILAN | INTEGRASI
+  deskripsi       String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  sekolah         Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+
+  @@unique([sekolah_id, kunci])
+  @@map("konfigurasi_sistem")
+}
+
+/// M04 — File & Document: Metadata berkas privat & attachment
+model MetadataBerkas {
+  id                String   @id
+  sekolah_id        String?
+  nama_file_asli    String
+  storage_provider  String   @default("LOCAL") // LOCAL | S3_COMPATIBLE
+  storage_key       String   @unique
+  mime_type         String
+  ukuran_byte       Int
+  checksum          String?
+  status            String   @default("AKTIF") // DRAFT | AKTIF | TERHAPUS
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sekolah           Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+
+  @@index([storage_provider, status])
+  @@map("metadata_berkas")
+}
+
+/// M05 — Audit & Traceability: Log audit transaksi & mutasi data (Append-only)
+model LogAudit {
+  id                String   @id
+  sekolah_id        String?
+  aktor_id          String
+  aktor_role        String
+  aksi              String   // CREATE | UPDATE | DELETE | PUBLISH | FINALIZE | AUTH_LOGIN | dll
+  tipe_sumber       String   // Nama agregat / modul terkait (e.g. SEKOLAH | PENILAIAN | PRESENSI)
+  id_sumber         String
+  payload_sebelum   String?  // JSON snapshot sebelum perubahan (opsional)
+  payload_sesudah   String?  // JSON snapshot setelah perubahan (opsional)
+  ip_address        String?
+  user_agent        String?
+  dibuat_pada       DateTime @default(now())
+
+  sekolah           Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+
+  @@index([sekolah_id, dibuat_pada])
+  @@index([aktor_id, dibuat_pada])
+  @@index([tipe_sumber, id_sumber])
+  @@map("log_audit")
+}
+
+/// Data Architecture: Transactional Outbox untuk pemrosesan asinkron reliabel
+model OutboxPesan {
+  id                         String    @id
+  tipe_event                 String
+  tipe_agregat               String
+  id_agregat                 String
+  payload                    String    // JSON data spesifik downstream
+  status                     String    @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+  jumlah_percobaan           Int       @default(0)
+  maks_percobaan             Int       @default(5)
+  percobaan_berikutnya_pada  DateTime  @default(now())
+  diproses_pada              DateTime?
+  pesan_error                String?
+  dibuat_pada                DateTime  @default(now())
+  diperbarui_pada            DateTime  @updatedAt
+
+  @@index([status, percobaan_berikutnya_pada])
+  @@map("outbox_pesan")
+}

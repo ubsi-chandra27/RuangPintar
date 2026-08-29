@@ -1,8 +1,8 @@
 # Ruang Pintar — Implementation Phase Tracker
 ## Peta dan Status Fase Proyek Ruang Pintar
 
-**Versi:** 1.0  
-**Baseline Roadmap:** `docs/08-IMPLEMENTATION-ROADMAP.md`  
+**Versi:** 1.1
+**Baseline Roadmap:** `docs/08-IMPLEMENTATION-ROADMAP.md`
 
 ---
 
@@ -11,9 +11,9 @@
 | Phase | Nama Fase | Status | Human Review Gate |
 |---|---|---|---|
 | **PHASE 00** | Project Bootstrap & Environment Baseline | **APPROVED** | Human Approved & Baseline Committed (`0fe8151`) |
-| **PHASE 01** | Product & Requirement Lock | **APPROVED** | Human Approved & Requirements Locked |
-| **PHASE 02** | Database, Persistence & Platform Foundation | **PLANNED / NOT ACTIVE** | Menunggu aktivasi setelah Phase 01 |
-| **PHASE 03** | Authentication & Identity | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
+| **PHASE 01** | Product & Requirement Lock | **APPROVED** | Human Approved & Checkpointed (`daa3ac7`) |
+| **PHASE 02** | Database, Persistence & Platform Foundation | **APPROVED** | Human Approved & Checkpointed |
+| **PHASE 03** | Authentication & Identity | **PLANNED / NOT ACTIVE** | Menunggu aktivasi setelah Phase 02 |
 | **PHASE 04** | Authorization & Access Control | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 05** | Application Shell & Dashboard Framework | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 06** | School & Organization | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
@@ -39,3 +39,4 @@
 ### Dokumen Deliverable Fase
 
 - `docs/phases/PHASE-01-PRODUCT-REQUIREMENT-LOCK.md` — Konsolidasi dan Penguncian Requirement & Domain Product Ruang Pintar
+- `docs/phases/PHASE-02-DATABASE-PERSISTENCE-PLATFORM-FOUNDATION.md` — Fondasi Database SQLite, Prisma ORM, ULID, Outbox, Audit, dan Storage Adapter
