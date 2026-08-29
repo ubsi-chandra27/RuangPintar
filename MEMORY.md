@@ -35,15 +35,16 @@ Current Implementation Phase:
 PHASE 06 — SCHOOL & ORGANIZATION
 
 Current Phase Status:
-APPROVED (Pending Closure Checkpoint)
+APPROVED & CHECKPOINTED
 
 Last Human-Approved Implementation Phase:
 PHASE 06 — SCHOOL & ORGANIZATION
 
-Latest Implementation Git Checkpoint:
-9125a26 (feat: establish application shell and dashboard framework)
-Governance HEAD:
-9ff3223 (docs: record Phase 05 approval checkpoint)
+Phase 06 Official Checkpoint Commit:
+b91a23c (feat(phase-06): implement school and organization domain and presentation)
+
+Login / UI Kit Polish Checkpoint:
+2f99c0f (style(auth): align login screen visual fidelity with canonical ui kit specification)
 ```
 
 ---
