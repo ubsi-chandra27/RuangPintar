@@ -151,7 +151,7 @@ Notes: Effective access model (Identity -> Base Role -> Position/Assignment/Rela
 
 PHASE 05 — APPLICATION SHELL & DASHBOARD FRAMEWORK
 Status: APPROVED
-Approved Commit: feat: establish application shell and dashboard framework
+Approved Commit: 9125a26 (feat: establish application shell and dashboard framework)
 Notes: Academic Glass UI v1.2 responsive application shell (240px expanded sidebar, 56px compact rail, 64px topbar, mobile drawer < 768px, breadcrumb, user menu, notification entry point), role-aware navigation filtering for 5 base roles & 4 staff capability bundles, and role-specific dashboard framework (Teacher, Student, Guardian, Staff, Super Admin) with honest empty states established.
 ```
 

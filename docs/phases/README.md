@@ -15,7 +15,7 @@
 | **PHASE 02** | Database, Persistence & Platform Foundation | **APPROVED** | Human Approved & Checkpointed (`3135db0`) |
 | **PHASE 03** | Authentication & Identity | **APPROVED** | Human Approved & Checkpointed (`1e88e47`) |
 | **PHASE 04** | Authorization & Access Control | **APPROVED** | Human Approved & Checkpointed (`5596da8`) |
-| **PHASE 05** | Application Shell & Dashboard Framework | **APPROVED** | Human Approved & Checkpointed |
+| **PHASE 05** | Application Shell & Dashboard Framework | **APPROVED** | Human Approved & Checkpointed (`9125a26`) |
 | **PHASE 06** | School & Organization | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 07** | Academic Period & Structure | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 08** | Student Academic Lifecycle | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
