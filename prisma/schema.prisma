@@ -35,6 +35,9 @@ model Sekolah {
   tingkat_kelas      TingkatKelas[]
   program_keahlian   ProgramKeahlian[]
   rombel             Rombel[]
+  siswa              Siswa[]
+  keikutsertaan_siswa KeikutsertaanSiswa[]
+  penempatan_rombel  PenempatanRombel[]
 
   @@map("sekolah")
 }
@@ -197,6 +200,7 @@ model Pengguna {
   sekolah                Sekolah?              @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
   sesi                   SesiPengguna[]
   kemampuan_staff        KemampuanStaff[]
+  siswa                  Siswa?
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -253,19 +257,20 @@ model LogPercobaanLogin {
 
 /// M06 — Academic Period & Structure: Tahun Ajaran (Konteks siklus akademik tahunan)
 model TahunAjaran {
-  id              String     @id
+  id              String               @id
   sekolah_id      String
-  nama            String     // e.g. "2026/2027"
-  kode            String?    // e.g. "TA-2026-2027"
+  nama            String               // e.g. "2026/2027"
+  kode            String?              // e.g. "TA-2026-2027"
   tanggal_mulai   DateTime
   tanggal_selesai DateTime
-  status          String     @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  status          String               @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
+  created_at      DateTime             @default(now())
+  updated_at      DateTime             @updatedAt
 
-  sekolah         Sekolah    @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  semester        Semester[]
-  rombel          Rombel[]
+  sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  semester            Semester[]
+  rombel              Rombel[]
+  keikutsertaan_siswa KeikutsertaanSiswa[]
 
   @@unique([sekolah_id, nama])
   @@index([sekolah_id, status])
@@ -316,18 +321,19 @@ model Fase {
 
 /// M06 — Academic Period & Structure: Tingkat / Grade Level (X, XI, XII / 1-12)
 model TingkatKelas {
-  id              String     @id
+  id              String               @id
   sekolah_id      String
   fase_id         String?
-  kode            String     // e.g. "10", "11", "12" atau "X", "XI", "XII"
-  nama            String     // e.g. "Kelas 10", "Kelas X"
-  urutan          Int        @default(1)
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  kode            String               // e.g. "10", "11", "12" atau "X", "XI", "XII"
+  nama            String               // e.g. "Kelas 10", "Kelas X"
+  urutan          Int                  @default(1)
+  created_at      DateTime             @default(now())
+  updated_at      DateTime             @updatedAt
 
-  sekolah         Sekolah    @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  fase            Fase?      @relation(fields: [fase_id], references: [id], onDelete: SetNull)
-  rombel          Rombel[]
+  sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  fase                Fase?                @relation(fields: [fase_id], references: [id], onDelete: SetNull)
+  rombel              Rombel[]
+  keikutsertaan_siswa KeikutsertaanSiswa[]
 
   @@unique([sekolah_id, kode])
   @@map("tingkat_kelas")
@@ -354,29 +360,114 @@ model ProgramKeahlian {
 
 /// M06 — Academic Period & Structure: Rombel / Rombongan Belajar (Kelompok Belajar Periodik)
 model Rombel {
-  id              String           @id
-  sekolah_id      String
-  tahun_ajaran_id String
-  semester_id     String?
-  tingkat_id      String
-  fase_id         String?
-  program_id      String?          // Opsional (null untuk non-kejuruan / SD / SMP / SMA Umum)
-  nama            String           // e.g. "X RPL 1", "XI TO 2", "7A"
-  kode            String?          // e.g. "RBL-X-RPL-1"
-  kapasitas       Int              @default(36)
-  status          String           @default("AKTIF") // AKTIF | NONAKTIF | DIARSIPKAN
-  catatan         String?
-  created_at      DateTime         @default(now())
-  updated_at      DateTime         @updatedAt
+  id                String             @id
+  sekolah_id        String
+  tahun_ajaran_id   String
+  semester_id       String?
+  tingkat_id        String
+  fase_id           String?
+  program_id        String?            // Opsional (null untuk non-kejuruan / SD / SMP / SMA Umum)
+  nama              String             // e.g. "X RPL 1", "XI TO 2", "7A"
+  kode              String?            // e.g. "RBL-X-RPL-1"
+  kapasitas         Int                @default(36)
+  status            String             @default("AKTIF") // AKTIF | NONAKTIF | DIARSIPKAN
+  catatan           String?
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
 
-  sekolah         Sekolah          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  tahun_ajaran    TahunAjaran      @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
-  semester        Semester?        @relation(fields: [semester_id], references: [id], onDelete: SetNull)
-  tingkat         TingkatKelas     @relation(fields: [tingkat_id], references: [id], onDelete: Restrict)
-  fase            Fase?            @relation(fields: [fase_id], references: [id], onDelete: SetNull)
-  program         ProgramKeahlian? @relation(fields: [program_id], references: [id], onDelete: SetNull)
+  sekolah           Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tahun_ajaran      TahunAjaran        @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester          Semester?          @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  tingkat           TingkatKelas       @relation(fields: [tingkat_id], references: [id], onDelete: Restrict)
+  fase              Fase?              @relation(fields: [fase_id], references: [id], onDelete: SetNull)
+  program           ProgramKeahlian?   @relation(fields: [program_id], references: [id], onDelete: SetNull)
+  penempatan_rombel PenempatanRombel[]
 
   @@unique([sekolah_id, tahun_ajaran_id, nama])
   @@index([sekolah_id, tahun_ajaran_id, status])
   @@map("rombel")
+}
+
+/// M07 — Student Academic Lifecycle: Identitas Dasar Siswa (Individu)
+model Siswa {
+  id               String    @id
+  sekolah_id       String
+  pengguna_id      String?   @unique
+  nis              String    // Nomor Induk Siswa lokal sekolah
+  nisn             String?   // Nomor Induk Siswa Nasional (10 digit)
+  nama_lengkap     String
+  jenis_kelamin    String    // L | P
+  tempat_lahir     String?
+  tanggal_lahir    DateTime?
+  agama            String?   // ISLAM | KRISTEN | KATOLIK | HINDU | BUDDHA | KONGHUCU | LAINNYA
+  nik              String?
+  alamat           String?
+  nama_wali        String?
+  telepon_wali     String?
+  email_wali       String?
+  status_akademik  String    @default("AKTIF") // AKTIF | NONAKTIF | LULUS | PINDAH | KELUAR | DROPOUT
+  foto_url         String?   // URL atau data foto profil siswa
+  tanggal_masuk    DateTime  @default(now())
+  tanggal_keluar   DateTime?
+  catatan          String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  sekolah          Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  pengguna         Pengguna?            @relation(fields: [pengguna_id], references: [id], onDelete: SetNull)
+  keikutsertaan    KeikutsertaanSiswa[]
+
+  @@unique([sekolah_id, nis])
+  @@index([sekolah_id, status_akademik])
+  @@index([sekolah_id, nisn])
+  @@map("siswa")
+}
+
+/// M07 — Student Academic Lifecycle: Keikutsertaan Siswa per Periode Akademik (Enrollment)
+model KeikutsertaanSiswa {
+  id              String             @id
+  sekolah_id      String
+  siswa_id        String
+  tahun_ajaran_id String
+  tingkat_id      String?
+  status          String             @default("AKTIF") // AKTIF | LULUS | NAIK_KELAS | TINGGAL_KELAS | PINDAH | NONAKTIF
+  tanggal_mulai   DateTime           @default(now())
+  tanggal_selesai DateTime?
+  catatan         String?
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @updatedAt
+
+  sekolah         Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  siswa           Siswa              @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  tahun_ajaran    TahunAjaran        @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  tingkat         TingkatKelas?      @relation(fields: [tingkat_id], references: [id], onDelete: SetNull)
+  penempatan      PenempatanRombel[]
+
+  @@unique([siswa_id, tahun_ajaran_id])
+  @@index([sekolah_id, tahun_ajaran_id, status])
+  @@map("keikutsertaan_siswa")
+}
+
+/// M07 — Student Academic Lifecycle: Penempatan Siswa ke Rombongan Belajar (Rombel Placement)
+model PenempatanRombel {
+  id               String             @id
+  sekolah_id       String
+  keikutsertaan_id String
+  rombel_id        String
+  tanggal_mulai    DateTime           @default(now())
+  tanggal_selesai  DateTime?
+  status           String             @default("AKTIF") // AKTIF | PINDAH | SELESAI | DIBATALKAN
+  nomor_absen      Int?
+  catatan          String?
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+
+  sekolah          Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  keikutsertaan    KeikutsertaanSiswa @relation(fields: [keikutsertaan_id], references: [id], onDelete: Restrict)
+  rombel           Rombel             @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+
+  @@index([rombel_id, status])
+  @@index([keikutsertaan_id, status])
+  @@index([sekolah_id, status])
+  @@map("penempatan_rombel")
 }

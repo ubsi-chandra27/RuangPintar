@@ -17,8 +17,8 @@
 | **PHASE 04** | Authorization & Access Control | **APPROVED** | Human Approved & Checkpointed (`5596da8`) |
 | **PHASE 05** | Application Shell & Dashboard Framework | **APPROVED** | Human Approved & Checkpointed (`9125a26`) |
 | **PHASE 06** | School & Organization | **APPROVED** | Human Approved & Checkpointed (`5426ebb`) |
-| **PHASE 07** | Academic Period & Structure | **READY FOR HUMAN REVIEW** | Menunggu Human Review |
-| **PHASE 08** | Student Academic Lifecycle | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
+| **PHASE 07** | Academic Period & Structure | **APPROVED** | Human Approved & Checkpointed (`e237553`) |
+| **PHASE 08** | Student Academic Lifecycle | **APPROVED** | Human Approved & Checkpointed |
 | **PHASE 09** | Teacher & Teaching Assignment | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 10** | Academic Calendar, Schedule & Class Session | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 11** | Teacher Workspace & Learning Administration | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
@@ -45,3 +45,5 @@
 - Phase 04: `docs/phases/PHASE-04-AUTHORIZATION-ACCESS-CONTROL.md`
 - Phase 05: `docs/phases/PHASE-05-APPLICATION-SHELL-DASHBOARD-FRAMEWORK.md`
 - Phase 06: `docs/phases/PHASE-06-SCHOOL-ORGANIZATION.md`
+- Phase 07: `docs/phases/PHASE-07-ACADEMIC-PERIOD-STRUCTURE.md`
+- Phase 08: `docs/phases/PHASE-08-STUDENT-ACADEMIC-LIFECYCLE.md`

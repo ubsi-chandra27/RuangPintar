@@ -199,8 +199,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
         requiredPermission: "academic.students.manage",
         requiredCapability: "STUDENT_DATA_OPERATOR",
-        isPhaseDeferred: true,
-        phaseNote: "Tersedia pada Phase 08 (Student Academic Lifecycle)",
+        isPhaseDeferred: false,
       },
       {
         id: "staff-reports",
