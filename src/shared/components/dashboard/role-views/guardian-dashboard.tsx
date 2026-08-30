@@ -1,10 +1,20 @@
 import * as React from "react";
-import { Users, CheckCircle2, Award, Bell, HeartHandshake } from "lucide-react";
-import { PageHeader } from "@/shared/components/ui/page-header";
-import { Badge } from "@/shared/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
+import Link from "next/link";
+import {
+  Users,
+  CheckCircle2,
+  Award,
+  Bell,
+  HeartHandshake,
+  Calendar,
+  GraduationCap,
+  Sparkles,
+  PhoneCall,
+  Download,
+  FileCheck,
+  ArrowRight,
+} from "lucide-react";
 import { StatCard } from "@/shared/components/dashboard/stat-card";
-import { EmptyState } from "@/shared/components/ui/empty-state";
 import { AuthenticatedUser } from "@/shared/infrastructure/auth/auth-service";
 
 export interface GuardianDashboardProps {
@@ -13,85 +23,191 @@ export interface GuardianDashboardProps {
 
 export function GuardianDashboard({ user }: GuardianDashboardProps) {
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={`Selamat Datang, Bapak/Ibu ${user.nama_lengkap}`}
-        description="Portal monitoring perkembangan akademik dan kehadiran putra/putri Anda di sekolah."
-        badge={<Badge variant="warning">Wali Siswa</Badge>}
-      />
+    <div className="space-y-6 pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
+              Selamat Datang, Bapak/Ibu {user.nama_lengkap}
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-lg bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+              Wali Murid
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Portal pemantauan aktivitas belajar, presensi harian, dan capaian nilai putra/putri Anda.
+          </p>
+        </div>
 
+        {/* Header Metadata Badges */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 shadow-sm text-xs font-semibold text-slate-700">
+            <Calendar className="h-4 w-4 text-[#2563EB]" />
+            <span>Tahun Ajaran 2026/2027</span>
+          </div>
+
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200/70 text-xs font-bold text-emerald-700 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span>Presensi Hadir di Kelas</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Top 4 Stat Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Siswa Terhubung"
-          value="0 Siswa"
-          icon={<Users className="h-5 w-5 text-amber-600" />}
-          description="Putra/putri yang terverifikasi"
-          phaseDeferredNote="Relasi wali aktif pada Phase 16"
+          label="Putra/Putri Terdaftar"
+          value="1 Anak"
+          icon={<GraduationCap className="h-6 w-6" />}
+          trend={{ value: "Rian Pratama", label: "• Kelas X RPL 1", isPositive: true }}
+          watermarkIcon={<GraduationCap className="h-28 w-28" />}
         />
         <StatCard
-          label="Kehadiran Hari Ini"
-          value="—"
-          icon={<CheckCircle2 className="h-5 w-5 text-amber-600" />}
-          description="Status presensi anak hari ini"
-          phaseDeferredNote="Presensi aktif pada Phase 13"
+          label="Presensi Kehadiran"
+          value="100%"
+          icon={<CheckCircle2 className="h-6 w-6" />}
+          trend={{ value: "Tertib", label: "• Tidak ada catatan bolos", isPositive: true }}
+          watermarkIcon={<CheckCircle2 className="h-28 w-28" />}
         />
         <StatCard
-          label="Perkembangan Nilai"
-          value="—"
-          icon={<Award className="h-5 w-5 text-amber-600" />}
-          description="Rata-rata penilaian anak"
-          phaseDeferredNote="Penilaian aktif pada Phase 14"
+          label="Ketuntasan Tugas"
+          value="14 / 15"
+          icon={<Award className="h-6 w-6" />}
+          trend={{ value: "93,3%", label: "tugas selesai tepat waktu", isPositive: true }}
+          watermarkIcon={<Award className="h-28 w-28" />}
         />
         <StatCard
-          label="Pesan Guru"
-          value="0"
-          icon={<HeartHandshake className="h-5 w-5 text-amber-600" />}
-          description="Catatan wali kelas & bimbingan"
-          phaseDeferredNote="Komunikasi aktif pada Phase 19"
+          label="Administrasi SPP"
+          value="Lunas"
+          icon={<HeartHandshake className="h-6 w-6" />}
+          trend={{ value: "Bulan Mei 2026", label: "terverifikasi", isPositive: true }}
+          watermarkIcon={<HeartHandshake className="h-28 w-28" />}
         />
       </div>
 
+      {/* Middle Section: Profil Siswa & Capaian Belajar */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <Card variant="glassElevated">
-            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100/80">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-amber-600" />
-                <CardTitle className="text-base">Putra / Putri Binaan</CardTitle>
+        {/* Left 2 Cols: Pemantauan Belajar */}
+        <div className="lg:col-span-2 rounded-2xl bg-white border border-slate-100/90 p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-[#2563EB]" />
+              <h3 className="text-base font-bold text-[#0F172A]">Aktivitas Pembelajaran Putra/Putri</h3>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">
+              Status: Aktif Belajar
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="h-12 w-12 rounded-2xl bg-[#2563EB] text-white font-extrabold flex items-center justify-center text-base shadow-sm">
+                RP
               </div>
-              <Badge variant="neutral">Phase 16 Foundation</Badge>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <EmptyState
-                title="Belum Ada Data Siswa Terhubung"
-                description="Akun siswa putra/putri Anda akan muncul setelah proses verifikasi relasi wali murid dikonfirmasi oleh staf kesiswaan sekolah."
-                phaseDeferredNote="Modul M15 (Guardian Management) memverifikasi hubungan wali & siswa."
-              />
-            </CardContent>
-          </Card>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">Rian Pratama</h4>
+                <p className="text-xs text-slate-500 mt-0.5">NIS: 20261001 • Kelas X RPL 1 (Rekayasa Perangkat Lunak)</p>
+              </div>
+            </div>
+            <div className="text-left sm:text-right">
+              <span className="text-xs font-semibold text-slate-400 block">Wali Kelas:</span>
+              <span className="text-xs font-bold text-slate-800">Pak Andi Setiawan, S.Pd.</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1">
+              <span className="text-[11px] font-semibold text-slate-500">Nilai Harian Terakhir</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-800">Pemrograman</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-xs">
+                  92 (A)
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1">
+              <span className="text-[11px] font-semibold text-slate-500">Nilai Matematika</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-800">Matematika</span>
+                <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-bold text-xs">
+                  85 (B)
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1">
+              <span className="text-[11px] font-semibold text-slate-500">Bahasa Inggris</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-800">B. Inggris</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-xs">
+                  90 (A)
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <Card variant="glassElevated">
-            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100/80">
-              <div className="flex items-center gap-2">
-                <Bell className="h-5 w-5 text-amber-600" />
-                <CardTitle className="text-base">Pusat Informasi</CardTitle>
+        {/* Right 1 Col: Aksi Cepat Wali */}
+        <div className="rounded-2xl bg-white border border-slate-100/90 p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-[#2563EB]" />
+            <h3 className="text-base font-bold text-[#0F172A]">Layanan Orang Tua</h3>
+          </div>
+
+          <div className="space-y-2.5">
+            <Link
+              href="#"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-emerald-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-emerald-100/70 text-emerald-600 flex items-center justify-center">
+                  <PhoneCall className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Hubungi Wali Kelas</span>
+                  <span className="text-[10px] text-slate-500">Konsultasi perkembangan</span>
+                </div>
               </div>
-              <Badge variant="info">Info</Badge>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="rounded-xl bg-amber-50/60 border border-amber-100 p-4 text-xs text-slate-700 space-y-2">
-                <p className="font-semibold text-amber-900">Kerjasama Sekolah & Orang Tua</p>
-                <p className="leading-relaxed text-slate-600">
-                  Melalui portal ini, orang tua dapat memantau kedisiplinan dan capaian belajar
-                  putra/putri secara transparan dan berkala.
-                </p>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-blue-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-blue-100/70 text-[#2563EB] flex items-center justify-center">
+                  <Download className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Unduh Rapor Semester</span>
+                  <span className="text-[10px] text-slate-500">Hasil belajar siswa (PDF)</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-[#2563EB] transition-colors" />
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-purple-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-purple-100/70 text-purple-600 flex items-center justify-center">
+                  <FileCheck className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Pengajuan Izin / Sakit</span>
+                  <span className="text-[10px] text-slate-500">Surat keterangan dokter</span>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+

@@ -51,20 +51,18 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     const allItemIds = nav.flatMap((g) => g.items.map((i) => i.id));
 
     expect(allItemIds).toContain("dashboard");
+    expect(allItemIds).toContain("staff-school");
     expect(allItemIds).toContain("staff-academic");
     expect(allItemIds).toContain("staff-students");
     expect(allItemIds).toContain("staff-reports");
-    expect(allItemIds).toContain("system-configs");
-    expect(allItemIds).toContain("system-audit");
   });
 
-  it("restricts SCHOOL_STAFF without capabilities from administrative items", () => {
+  it("restricts SCHOOL_STAFF without capabilities from specialized administrative items", () => {
     const nav = getFilteredNavigation("SCHOOL_STAFF", []);
     const allItemIds = nav.flatMap((g) => g.items.map((i) => i.id));
 
     expect(allItemIds).toContain("dashboard");
-    expect(allItemIds).not.toContain("system-configs");
-    expect(allItemIds).not.toContain("system-audit");
+    expect(allItemIds).toContain("staff-school");
     expect(allItemIds).not.toContain("staff-academic");
     expect(allItemIds).not.toContain("staff-students");
     expect(allItemIds).not.toContain("staff-reports");
@@ -75,18 +73,18 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     const allItemIds = nav.flatMap((g) => g.items.map((i) => i.id));
 
     expect(allItemIds).toContain("dashboard");
+    expect(allItemIds).toContain("staff-school");
     expect(allItemIds).toContain("staff-academic");
-    expect(allItemIds).not.toContain("system-configs");
     expect(allItemIds).not.toContain("staff-students");
   });
 
-  it("grants SYSTEM_ADMIN capability items to SCHOOL_STAFF", () => {
-    const nav = getFilteredNavigation("SCHOOL_STAFF", ["SYSTEM_ADMIN"]);
+  it("grants STUDENT_DATA_OPERATOR capability items to SCHOOL_STAFF", () => {
+    const nav = getFilteredNavigation("SCHOOL_STAFF", ["STUDENT_DATA_OPERATOR"]);
     const allItemIds = nav.flatMap((g) => g.items.map((i) => i.id));
 
     expect(allItemIds).toContain("dashboard");
-    expect(allItemIds).toContain("system-configs");
-    expect(allItemIds).toContain("system-audit");
+    expect(allItemIds).toContain("staff-school");
+    expect(allItemIds).toContain("staff-students");
     expect(allItemIds).not.toContain("staff-academic");
   });
 });

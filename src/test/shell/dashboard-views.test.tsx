@@ -64,32 +64,34 @@ const mockAdmin: AuthenticatedUser = {
 };
 
 describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
-  it("renders TeacherDashboard with honest empty states and no fake KPIs", () => {
+  it("renders TeacherDashboard with schedule and academic quick actions", () => {
     render(<TeacherDashboard user={mockTeacher} />);
 
-    expect(screen.getByText(/Selamat Datang, Ahmad Dahlan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Selamat Datang, Ahmad Dahlan, S.Pd./i)).toBeInTheDocument();
     expect(screen.getByText("Guru Pengajar")).toBeInTheDocument();
-    expect(screen.getByText("Jadwal Mengajar Terdekat")).toBeInTheDocument();
-    expect(screen.getByText("Belum Ada Jadwal Mengajar")).toBeInTheDocument();
-    expect(screen.getByText(/Jadwal master aktif pada Phase 10/i)).toBeInTheDocument();
+    expect(screen.getByText("Jadwal Mengajar Hari Ini")).toBeInTheDocument();
+    expect(screen.getByText("Pemrograman Web & Mobile")).toBeInTheDocument();
+    expect(screen.getByText("Ketuntasan Presensi")).toBeInTheDocument();
+    expect(screen.getByText("Aksi Cepat Guru")).toBeInTheDocument();
   });
 
-  it("renders StudentDashboard with student self-scope items", () => {
+  it("renders StudentDashboard with student self-scope items and CBT cards", () => {
     render(<StudentDashboard user={mockStudent} />);
 
     expect(screen.getByText(/Halo, Budi Santoso!/i)).toBeInTheDocument();
     expect(screen.getByText("Siswa Aktif")).toBeInTheDocument();
     expect(screen.getByText("Jadwal Pelajaran Hari Ini")).toBeInTheDocument();
-    expect(screen.getByText("Tugas & Materi Belajar")).toBeInTheDocument();
+    expect(screen.getByText("CBT & Ujian Mendatang")).toBeInTheDocument();
+    expect(screen.getByText("Aksi Cepat Siswa")).toBeInTheDocument();
   });
 
-  it("renders GuardianDashboard with verified child empty state", () => {
+  it("renders GuardianDashboard with child learning progress and quick actions", () => {
     render(<GuardianDashboard user={mockGuardian} />);
 
     expect(screen.getByText(/Selamat Datang, Bapak\/Ibu Santoso Wijaya/i)).toBeInTheDocument();
-    expect(screen.getByText("Wali Siswa")).toBeInTheDocument();
-    expect(screen.getByText("Putra / Putri Binaan")).toBeInTheDocument();
-    expect(screen.getByText("Belum Ada Data Siswa Terhubung")).toBeInTheDocument();
+    expect(screen.getByText("Wali Murid")).toBeInTheDocument();
+    expect(screen.getByText("Aktivitas Pembelajaran Putra/Putri")).toBeInTheDocument();
+    expect(screen.getByText("Layanan Orang Tua")).toBeInTheDocument();
   });
 
   it("renders StaffDashboard reflecting assigned capability bundles", () => {
@@ -100,20 +102,21 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
       />
     );
 
-    expect(screen.getByText(/Dashboard Operasional — Siti Rahma/i)).toBeInTheDocument();
-    expect(screen.getByText("Operator Kurikulum & Akademik")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard Operasional")).toBeInTheDocument();
+    expect(screen.getByText("Staf Tata Usaha")).toBeInTheDocument();
+    expect(screen.getByText("Operator Akademik")).toBeInTheDocument();
     expect(screen.getByText("Operator Kesiswaan")).toBeInTheDocument();
-    expect(screen.getByText("Operasional Akademik")).toBeInTheDocument();
-    expect(screen.getByText("Manajemen Kesiswaan")).toBeInTheDocument();
+    expect(screen.getByText("Modul Operasional & Wewenang")).toBeInTheDocument();
   });
 
-  it("renders SuperAdminDashboard with platform and security audit stats", () => {
+  it("renders SuperAdminDashboard with core stat cards, activity chart, and quick actions", () => {
     render(<SuperAdminDashboard user={mockAdmin} />);
 
-    expect(screen.getByText("Pusat Kendali Super Admin")).toBeInTheDocument();
-    expect(screen.getByText("Super Admin")).toBeInTheDocument();
-    expect(screen.getByText("SQLite WAL")).toBeInTheDocument();
-    expect(screen.getByText("Default Deny")).toBeInTheDocument();
-    expect(screen.getByText("Aktif (M05)")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Ringkasan operasional dan aktivitas akademik sekolah.")).toBeInTheDocument();
+    expect(screen.getByText("Total Siswa")).toBeInTheDocument();
+    expect(screen.getByText("Kehadiran Hari Ini")).toBeInTheDocument();
+    expect(screen.getByText("Aktivitas Terbaru")).toBeInTheDocument();
+    expect(screen.getByText("Aksi Cepat")).toBeInTheDocument();
   });
 });

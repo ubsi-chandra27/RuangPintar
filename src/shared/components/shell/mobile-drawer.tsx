@@ -100,11 +100,11 @@ export function MobileDrawer({
       />
 
       {/* Drawer panel */}
-      <div className="relative flex flex-col w-[280px] max-w-[85vw] bg-white h-full shadow-2xl z-10 animate-in slide-in-from-left duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      <div className="relative flex flex-col w-[290px] max-w-[85vw] bg-gradient-to-b from-[#1D4ED8] via-[#2563EB] to-[#1E40AF] text-white h-full shadow-2xl z-10 animate-in slide-in-from-left duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]">
         {/* Header */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100">
+        <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-200 p-1">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm p-1">
               <Image
                 src="/images/brand/ruang-pintar-mark.png"
                 alt="Logo Ruang Pintar"
@@ -113,13 +113,13 @@ export function MobileDrawer({
                 className="h-auto w-auto object-contain"
               />
             </div>
-            <span className="text-sm font-bold text-slate-900">Ruang Pintar</span>
+            <span className="text-sm font-bold text-white">Ruang Pintar</span>
           </div>
 
           <button
             onClick={onClose}
             aria-label="Tutup Menu"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 cursor-pointer min-h-[44px] min-w-[44px]"
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-blue-200 hover:text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 cursor-pointer min-h-[44px] min-w-[44px]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -129,7 +129,7 @@ export function MobileDrawer({
         <div className="flex-1 overflow-y-auto p-3 space-y-4 no-scrollbar">
           {navigationGroups.map((group) => (
             <div key={group.id} className="space-y-1">
-              <h4 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <h4 className="px-3 text-[10px] font-bold text-blue-200/75 uppercase tracking-wider mb-1">
                 {group.title}
               </h4>
               <nav aria-label={group.title} className="space-y-0.5">
@@ -145,19 +145,23 @@ export function MobileDrawer({
                       href={item.href}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors min-h-[44px] ${
                         isActive
-                          ? "bg-blue-50 text-blue-700 font-bold border border-blue-100"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-white text-[#0F172A] font-bold shadow-md"
+                          : "text-blue-100/90 hover:bg-white/10 hover:text-white"
                       }`}
                       aria-current={isActive ? "page" : undefined}
                     >
                       <IconComponent
                         className={`h-4 w-4 flex-shrink-0 ${
-                          isActive ? "text-blue-600" : "text-slate-400"
+                          isActive ? "text-[#2563EB]" : "text-blue-200"
                         }`}
                       />
                       <span className="truncate flex-1">{item.title}</span>
                       {item.badge && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${
+                            isActive ? "bg-blue-100 text-blue-700" : "bg-white/15 text-white"
+                          }`}
+                        >
                           {item.badge}
                         </span>
                       )}

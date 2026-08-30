@@ -41,9 +41,10 @@ export function NotificationEntry() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label="Pemberitahuan Sistem"
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 cursor-pointer min-h-[44px] min-w-[44px]"
+        className="relative flex items-center justify-center text-slate-400 hover:text-[#2563EB] hover:bg-slate-200/60 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
       >
         <Bell className="h-5 w-5" />
+        <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#2563EB] ring-2 ring-[#F8FAFC]" />
       </button>
 
       {isOpen && (

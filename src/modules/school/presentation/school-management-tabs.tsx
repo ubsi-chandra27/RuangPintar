@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from "react";
+import { Building2, Network, Award, UserCheck } from "lucide-react";
 import {
   OrganizationUnitDTO,
   PersonilOptionDTO,
@@ -44,18 +45,19 @@ export function SchoolManagementTabs({
 
   return (
     <div className="space-y-6">
-      {/* TAB NAVIGATION BAR */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 pb-2">
+      {/* Floating Segmented Tabs Capsule (2x2 Grid on Mobile, Flex on Tablet/Desktop) */}
+      <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 p-1.5 bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-slate-100/90">
         <button
           type="button"
           onClick={() => setActiveTab("profil")}
-          className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl text-[11.5px] sm:text-[13px] font-bold transition-all cursor-pointer ${
             activeTab === "profil"
-              ? "bg-blue-50/90 text-blue-700 shadow-sm border border-blue-100"
+              ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
           }`}
         >
-          🏛️ Profil Sekolah
+          <Building2 className="h-4 w-4 flex-shrink-0" />
+          <span className="truncate">Profil Sekolah</span>
         </button>
 
         {canViewStructure && (
@@ -63,37 +65,63 @@ export function SchoolManagementTabs({
             <button
               type="button"
               onClick={() => setActiveTab("unit")}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl text-[11.5px] sm:text-[13px] font-bold transition-all cursor-pointer ${
                 activeTab === "unit"
-                  ? "bg-blue-50/90 text-blue-700 shadow-sm border border-blue-100"
+                  ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              🏢 Unit Organisasi ({units.length})
+              <Network className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Unit Organisasi</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold flex-shrink-0 ${
+                  activeTab === "unit" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {units.length}
+              </span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("jabatan")}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl text-[11.5px] sm:text-[13px] font-bold transition-all cursor-pointer ${
                 activeTab === "jabatan"
-                  ? "bg-blue-50/90 text-blue-700 shadow-sm border border-blue-100"
+                  ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              🎖️ Master Jabatan ({positions.length})
+              <Award className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Master Jabatan</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold flex-shrink-0 ${
+                  activeTab === "jabatan" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {positions.length}
+              </span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("penugasan")}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 rounded-xl text-[11.5px] sm:text-[13px] font-bold transition-all cursor-pointer ${
                 activeTab === "penugasan"
-                  ? "bg-blue-50/90 text-blue-700 shadow-sm border border-blue-100"
+                  ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              👥 Penugasan Personil ({assignments.length})
+              <UserCheck className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">
+                Penugasan<span className="hidden sm:inline"> Personil</span>
+              </span>
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold flex-shrink-0 ${
+                  activeTab === "penugasan" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {assignments.length}
+              </span>
             </button>
           </>
         )}

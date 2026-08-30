@@ -29,6 +29,18 @@ export function AcademicShell({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = React.useState(false);
 
+  // Global Keyboard Shortcut: Cmd+B / Ctrl+B to toggle sidebar
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setIsSidebarCollapsed((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC]">
       {/* Desktop Sidebar / Rail */}
@@ -54,10 +66,12 @@ export function AcademicShell({
           user={user}
           breadcrumbItems={breadcrumbItems}
           onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
 
         {/* Scrollable Page Body */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>

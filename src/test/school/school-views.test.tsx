@@ -138,18 +138,18 @@ describe("School & Organization (Phase 06) — Presentation Views & Tabs", () =>
     // Click tab: Unit Organisasi
     fireEvent.click(screen.getByText(/Unit Organisasi/i));
     expect(screen.getByText("Unit & Bagian Organisasi")).toBeInTheDocument();
-    expect(screen.getByText("Bidang Kurikulum")).toBeInTheDocument();
-    expect(screen.getByText("Tata Usaha")).toBeInTheDocument();
+    expect(screen.getAllByText("Bidang Kurikulum")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Tata Usaha")[0]).toBeInTheDocument();
 
     // Click tab: Master Jabatan
     fireEvent.click(screen.getByText(/Master Jabatan/i));
     expect(screen.getByText("Master Jabatan Struktural")).toBeInTheDocument();
-    expect(screen.getByText("Wakil Kepala Sekolah Kurikulum")).toBeInTheDocument();
+    expect(screen.getAllByText("Wakil Kepala Sekolah Kurikulum")[0]).toBeInTheDocument();
 
-    // Click tab: Penugasan Personil
-    fireEvent.click(screen.getByText(/Penugasan Personil/i));
+    // Click tab: Penugasan
+    fireEvent.click(screen.getByRole("button", { name: /Penugasan/i }));
     expect(screen.getByText("Penugasan Jabatan Struktural")).toBeInTheDocument();
-    expect(screen.getByText("Ahmad Dahlan, S.Pd.")).toBeInTheDocument();
+    expect(screen.getAllByText("Ahmad Dahlan, S.Pd.")[0]).toBeInTheDocument();
   });
 
   it("hides structure tabs entirely when actor lacks canViewStructure (Data Isolation)", () => {
@@ -184,19 +184,19 @@ describe("School & Organization (Phase 06) — Presentation Views & Tabs", () =>
   it("renders OrganizationUnitsView without create/edit/delete buttons when canManage is false", () => {
     render(<OrganizationUnitsView initialUnits={mockUnits} canManage={false} />);
 
-    expect(screen.queryByText("+ Tambah Unit")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tambah Unit/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Edit")).not.toBeInTheDocument();
     expect(screen.queryByText("Hapus")).not.toBeInTheDocument();
-    expect(screen.getByText("Bidang Kurikulum")).toBeInTheDocument();
+    expect(screen.getAllByText("Bidang Kurikulum")[0]).toBeInTheDocument();
   });
 
   it("renders PositionsView without create/edit/delete buttons when canManage is false", () => {
     render(<PositionsView initialPositions={mockPositions} units={mockUnits} canManage={false} />);
 
-    expect(screen.queryByText("+ Tambah Jabatan")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tambah Jabatan/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Edit")).not.toBeInTheDocument();
     expect(screen.queryByText("Hapus")).not.toBeInTheDocument();
-    expect(screen.getByText("Wakil Kepala Sekolah Kurikulum")).toBeInTheDocument();
+    expect(screen.getAllByText("Wakil Kepala Sekolah Kurikulum")[0]).toBeInTheDocument();
   });
 
   it("renders PositionAssignmentsView without assign/end/cancel actions when canManage is false", () => {
@@ -209,16 +209,16 @@ describe("School & Organization (Phase 06) — Presentation Views & Tabs", () =>
       />
     );
 
-    expect(screen.queryByText("+ Tugaskan Personil")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tugaskan Personil/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Akhiri")).not.toBeInTheDocument();
     expect(screen.queryByText("Batalkan")).not.toBeInTheDocument();
-    expect(screen.getByText("Ahmad Dahlan, S.Pd.")).toBeInTheDocument();
+    expect(screen.getAllByText("Ahmad Dahlan, S.Pd.")[0]).toBeInTheDocument();
   });
 
   it("opens modal on '+ Tambah Unit' click in OrganizationUnitsView", () => {
     render(<OrganizationUnitsView initialUnits={mockUnits} canManage={true} />);
 
-    fireEvent.click(screen.getByText("+ Tambah Unit"));
+    fireEvent.click(screen.getByText(/Tambah Unit/i));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Tambah Unit Organisasi")).toBeInTheDocument();
   });
@@ -226,7 +226,7 @@ describe("School & Organization (Phase 06) — Presentation Views & Tabs", () =>
   it("opens modal on '+ Tambah Jabatan' click in PositionsView", () => {
     render(<PositionsView initialPositions={mockPositions} units={mockUnits} canManage={true} />);
 
-    fireEvent.click(screen.getByText("+ Tambah Jabatan"));
+    fireEvent.click(screen.getByText(/Tambah Jabatan/i));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Tambah Jabatan Struktural")).toBeInTheDocument();
   });
@@ -241,7 +241,7 @@ describe("School & Organization (Phase 06) — Presentation Views & Tabs", () =>
       />
     );
 
-    fireEvent.click(screen.getByText("+ Tugaskan Personil"));
+    fireEvent.click(screen.getByText(/Tugaskan Personil/i));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Tugaskan Personil ke Jabatan")).toBeInTheDocument();
   });

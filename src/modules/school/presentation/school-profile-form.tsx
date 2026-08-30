@@ -7,15 +7,8 @@
 import React, { useState } from "react";
 import { SchoolProfileDTO } from "../domain/school-types";
 import { updateSchoolProfileAction } from "@/app/actions/school-actions";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
+import { Toast } from "@/shared/components/ui/toast";
 
 interface SchoolProfileFormProps {
   initialProfile: SchoolProfileDTO;
@@ -58,42 +51,38 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
   }
 
   return (
-    <Card variant="glassElevated" className="max-w-4xl">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-bold text-slate-900">
-              Identitas & Profil Sekolah
-            </CardTitle>
-            <CardDescription className="text-slate-600 mt-1">
-              Data resmi entitas institusi pendidikan untuk konteks operasional platform.
-            </CardDescription>
-          </div>
-          <Badge variant="academic" className="text-xs">
-            Jenjang: {profile.jenjang}
-          </Badge>
-        </div>
-      </CardHeader>
+    <div className="rounded-3xl bg-white border border-slate-100/90 p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.03)] w-full">
+      {/* Floating Toast Notification */}
+      {toastMessage && (
+        <Toast
+          type={toastMessage.type}
+          message={toastMessage.text}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
 
-      <CardContent>
-        {toastMessage && (
-          <div
-            role="alert"
-            className={`mb-6 p-4 rounded-xl text-sm font-medium border transition-all ${
-              toastMessage.type === "success"
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                : "bg-rose-50 text-rose-800 border-rose-200"
-            }`}
-          >
-            {toastMessage.text}
-          </div>
-        )}
+      {/* Header Form */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-100">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Identitas & Profil Sekolah
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Data resmi entitas institusi pendidikan untuk konteks operasional platform.
+          </p>
+        </div>
+        <span className="self-start sm:self-auto px-3 py-1 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs border border-blue-200/80">
+          Jenjang: {profile.jenjang}
+        </span>
+      </div>
+
+      <div className="pt-6">
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nama Sekolah */}
             <div className="md:col-span-2">
-              <label htmlFor="nama" className="block text-sm font-semibold text-slate-800 mb-1.5">
+              <label htmlFor="nama" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
                 Nama Resmi Sekolah <span className="text-rose-500">*</span>
               </label>
               <input
@@ -103,7 +92,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 required
                 disabled={!canManage || loading}
                 defaultValue={profile.nama}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all text-sm disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               />
               {fieldErrors.nama && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.nama[0]}</p>
@@ -112,7 +101,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* NPSN */}
             <div>
-              <label htmlFor="npsn" className="block text-sm font-semibold text-slate-800 mb-1.5">
+              <label htmlFor="npsn" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
                 NPSN (Nomor Pokok Sekolah Nasional)
               </label>
               <input
@@ -123,7 +112,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 disabled={!canManage || loading}
                 defaultValue={profile.npsn ?? ""}
                 placeholder="Contoh: 20101234"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 font-mono text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               />
               {fieldErrors.npsn && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.npsn[0]}</p>
@@ -134,7 +123,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
             <div>
               <label
                 htmlFor="jenjang"
-                className="block text-sm font-semibold text-slate-800 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
               >
                 Jenjang Pendidikan <span className="text-rose-500">*</span>
               </label>
@@ -144,7 +133,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 required
                 disabled={!canManage || loading}
                 defaultValue={profile.jenjang}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               >
                 <option value="SD">SD (Sekolah Dasar)</option>
                 <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
@@ -161,7 +150,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
             <div>
               <label
                 htmlFor="telepon"
-                className="block text-sm font-semibold text-slate-800 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
               >
                 Nomor Telepon
               </label>
@@ -172,7 +161,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 disabled={!canManage || loading}
                 defaultValue={profile.telepon ?? ""}
                 placeholder="Contoh: (021) 7891234"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               />
               {fieldErrors.telepon && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.telepon[0]}</p>
@@ -181,7 +170,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* Email Sekolah */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-800 mb-1.5">
+              <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
                 Alamat Email Resmi
               </label>
               <input
@@ -191,7 +180,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 disabled={!canManage || loading}
                 defaultValue={profile.email ?? ""}
                 placeholder="Contoh: info@sekolah.sch.id"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               />
               {fieldErrors.email && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.email[0]}</p>
@@ -202,7 +191,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
             <div>
               <label
                 htmlFor="zona_waktu"
-                className="block text-sm font-semibold text-slate-800 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
               >
                 Zona Waktu <span className="text-rose-500">*</span>
               </label>
@@ -212,7 +201,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 required
                 disabled={!canManage || loading}
                 defaultValue={profile.zona_waktu}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               >
                 <option value="Asia/Jakarta">WIB — Asia/Jakarta (UTC+7)</option>
                 <option value="Asia/Makassar">WITA — Asia/Makassar (UTC+8)</option>
@@ -224,7 +213,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
             <div>
               <label
                 htmlFor="logo_url"
-                className="block text-sm font-semibold text-slate-800 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
               >
                 URL / Path Logo Sekolah
               </label>
@@ -235,7 +224,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 disabled={!canManage || loading}
                 defaultValue={profile.logo_url ?? ""}
                 placeholder="Contoh: /images/brand/logo.png"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100"
               />
               {fieldErrors.logo_url && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.logo_url[0]}</p>
@@ -244,7 +233,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* Alamat Lengkap */}
             <div className="md:col-span-2">
-              <label htmlFor="alamat" className="block text-sm font-semibold text-slate-800 mb-1.5">
+              <label htmlFor="alamat" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
                 Alamat Lengkap Institusi
               </label>
               <textarea
@@ -254,7 +243,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
                 disabled={!canManage || loading}
                 defaultValue={profile.alamat ?? ""}
                 placeholder="Alamat jalan, nomor, RT/RW, kelurahan, kecamatan, kota/kabupaten, provinsi..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition-all disabled:opacity-60 disabled:bg-slate-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all disabled:opacity-60 disabled:bg-slate-100 resize-y"
               />
               {fieldErrors.alamat && (
                 <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.alamat[0]}</p>
@@ -263,14 +252,14 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
           </div>
 
           {canManage && (
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
-              <Button type="submit" variant="cobalt" disabled={loading} className="min-w-[140px]">
+            <div className="pt-6 border-t border-slate-100 flex items-center justify-end">
+              <Button type="submit" variant="cobalt" disabled={loading} className="min-w-[160px] cursor-pointer">
                 {loading ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </div>
           )}
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

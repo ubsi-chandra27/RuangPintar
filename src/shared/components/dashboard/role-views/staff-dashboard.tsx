@@ -1,10 +1,19 @@
 import * as React from "react";
-import { Building2, Users, ShieldCheck, FileSpreadsheet, Layers, Settings } from "lucide-react";
-import { PageHeader } from "@/shared/components/ui/page-header";
-import { Badge } from "@/shared/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
+import Link from "next/link";
+import {
+  Building2,
+  Users,
+  Layers,
+  TrendingUp,
+  GraduationCap,
+  Calendar,
+  Settings,
+  FileSpreadsheet,
+  CheckCircle2,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { StatCard } from "@/shared/components/dashboard/stat-card";
-import { EmptyState } from "@/shared/components/ui/empty-state";
 import { AuthenticatedUser } from "@/shared/infrastructure/auth/auth-service";
 import { CapabilityBundle } from "@/shared/infrastructure/authorization/types";
 
@@ -14,154 +23,207 @@ export interface StaffDashboardProps {
 }
 
 export function StaffDashboard({ user, capabilities = [] }: StaffDashboardProps) {
-  const capabilityLabels: Record<CapabilityBundle, string> = {
-    SYSTEM_ADMIN: "Admin Sistem",
-    ACADEMIC_OPERATOR: "Operator Kurikulum & Akademik",
-    STUDENT_DATA_OPERATOR: "Operator Kesiswaan",
-    REPORT_OPERATOR: "Operator Laporan & Ekspor",
+  const capabilityLabels: Record<CapabilityBundle, { label: string; desc: string; href: string }> = {
+    SYSTEM_ADMIN: {
+      label: "Admin Sistem",
+      desc: "Konfigurasi sistem & log audit platform",
+      href: "/sekolah",
+    },
+    ACADEMIC_OPERATOR: {
+      label: "Operator Akademik",
+      desc: "Profil sekolah, unit organisasi, jabatan & penugasan",
+      href: "/sekolah",
+    },
+    STUDENT_DATA_OPERATOR: {
+      label: "Operator Kesiswaan",
+      desc: "Data induk siswa, rombel & presensi",
+      href: "/dashboard",
+    },
+    REPORT_OPERATOR: {
+      label: "Operator Laporan",
+      desc: "Rekapitulasi nilai, rapor & buku induk",
+      href: "/dashboard",
+    },
   };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={`Dashboard Operasional — ${user.nama_lengkap}`}
-        description="Pusat administrasi operasional sekolah dan pengelolaan data platform."
-        badge={<Badge variant="info">Staf Sekolah</Badge>}
-      />
-
-      {/* Capabilities Badges */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-slate-500">Capability Aktif:</span>
-        {capabilities.length > 0 ? (
-          capabilities.map((cap) => (
-            <Badge key={cap} variant="cobalt">
-              {capabilityLabels[cap] || cap}
-            </Badge>
-          ))
-        ) : (
-          <Badge variant="neutral">Staf Umum (Tanpa Bundle Tambahan)</Badge>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Unit Sekolah"
-          value="1 Sekolah"
-          icon={<Building2 className="h-5 w-5 text-sky-600" />}
-          description="Sekolah operasional aktif"
-          phaseDeferredNote="Data master aktif pada Phase 06"
-        />
-        <StatCard
-          label="Total Siswa"
-          value="0"
-          icon={<Users className="h-5 w-5 text-sky-600" />}
-          description="Siswa terdaftar aktif"
-          phaseDeferredNote="Master siswa aktif pada Phase 08"
-        />
-        <StatCard
-          label="Tahun Ajaran"
-          value="—"
-          icon={<Layers className="h-5 w-5 text-sky-600" />}
-          description="Tahun ajaran & semester aktif"
-          phaseDeferredNote="Kalender aktif pada Phase 07"
-        />
-        <StatCard
-          label="Status Platform"
-          value="Operasional"
-          icon={<ShieldCheck className="h-5 w-5 text-emerald-600" />}
-          description="Pemeriksaan keamanan normal"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <Card variant="glassElevated">
-            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100/80">
-              <div className="flex items-center gap-2">
-                <FileSpreadsheet className="h-5 w-5 text-sky-600" />
-                <CardTitle className="text-base">Modul Operasional Aktif</CardTitle>
-              </div>
-              <Badge variant="neutral">Sesuai Capability</Badge>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-4">
-              {capabilities.length === 0 ? (
-                <EmptyState
-                  title="Belum Ada Capability Bundle Ditugaskan"
-                  description="Hubungi Super Admin sekolah untuk memberikan capability bundle (Admin Sistem, Operator Akademik, Operator Kesiswaan, atau Operator Laporan) pada akun Anda."
-                  phaseDeferredNote="Hak akses staf dikontrol melalui modul otorisasi M02."
-                />
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {capabilities.includes("SYSTEM_ADMIN") && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1">
-                      <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-                        <Settings className="h-4 w-4 text-blue-600" />
-                        <span>Administrasi Sistem</span>
-                      </div>
-                      <p className="text-xs text-slate-500">
-                        Kelola konfigurasi platform global & log audit keamanan.
-                      </p>
-                    </div>
-                  )}
-
-                  {capabilities.includes("ACADEMIC_OPERATOR") && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1">
-                      <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-                        <Layers className="h-4 w-4 text-sky-600" />
-                        <span>Operasional Akademik</span>
-                      </div>
-                      <p className="text-xs text-slate-500">
-                        Kelola struktur kurikulum, rombel, dan penugasan guru.
-                      </p>
-                    </div>
-                  )}
-
-                  {capabilities.includes("STUDENT_DATA_OPERATOR") && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1">
-                      <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-                        <Users className="h-4 w-4 text-emerald-600" />
-                        <span>Manajemen Kesiswaan</span>
-                      </div>
-                      <p className="text-xs text-slate-500">
-                        Kelola biodata siswa, mutasi, dan presensi sekolah.
-                      </p>
-                    </div>
-                  )}
-
-                  {capabilities.includes("REPORT_OPERATOR") && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1">
-                      <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-                        <FileSpreadsheet className="h-4 w-4 text-purple-600" />
-                        <span>Laporan & Analitik</span>
-                      </div>
-                      <p className="text-xs text-slate-500">
-                        Ekspor rekapitulasi data akademik dan absensi sekolah.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+    <div className="space-y-6 pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
+              Dashboard Operasional
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-lg bg-blue-50 text-[#2563EB] text-xs font-bold border border-blue-100">
+              Staf Tata Usaha
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Pusat administrasi operasional sekolah dan pengelolaan data platform.
+          </p>
         </div>
 
-        <div className="space-y-6">
-          <Card variant="glassElevated">
-            <CardHeader className="pb-3 border-b border-slate-100/80">
-              <CardTitle className="text-base">Informasi Staf</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="rounded-xl bg-sky-50/60 border border-sky-100 p-4 text-xs text-slate-700 space-y-2">
-                <p className="font-semibold text-sky-900">Prinsip Least Privilege</p>
-                <p className="leading-relaxed text-slate-600">
-                  Staf sekolah hanya memiliki akses terhadap fungsi operasional yang telah
-                  ditugaskan secara resmi oleh pengelola sistem.
-                </p>
+        {/* Header Metadata Badges */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 shadow-sm text-xs font-semibold text-slate-700">
+            <Calendar className="h-4 w-4 text-[#2563EB]" />
+            <span>Tahun Ajaran 2026/2027</span>
+          </div>
+
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200/70 text-xs font-bold text-emerald-700 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Operasional Normal</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Top 4 Stat Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Total Siswa"
+          value="1.245"
+          icon={<GraduationCap className="h-6 w-6" />}
+          trend={{ value: "4,8%", label: "dari bulan lalu", isPositive: true }}
+          watermarkIcon={<GraduationCap className="h-28 w-28" />}
+        />
+        <StatCard
+          label="Guru & Tenaga Kerja"
+          value="82"
+          icon={<Users className="h-6 w-6" />}
+          trend={{ value: "2,5%", label: "dari bulan lalu", isPositive: true }}
+          watermarkIcon={<Users className="h-28 w-28" />}
+        />
+        <StatCard
+          label="Rombongan Belajar"
+          value="36"
+          icon={<Building2 className="h-6 w-6" />}
+          trend={{ value: "3", label: "dibanding tahun lalu", isPositive: true }}
+          watermarkIcon={<Building2 className="h-28 w-28" />}
+        />
+        <StatCard
+          label="Presensi Sekolah"
+          value="96%"
+          icon={<TrendingUp className="h-6 w-6" />}
+          trend={{ value: "2,1%", label: "dari kemarin", isPositive: true }}
+          watermarkIcon={<TrendingUp className="h-28 w-28" />}
+        />
+      </div>
+
+      {/* Middle Section: Assigned Capabilities & Operational Modules */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Left 2 Cols: Capabilities and Assigned Workspaces */}
+        <div className="lg:col-span-2 rounded-2xl bg-white border border-slate-100/90 p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-base font-bold text-[#0F172A]">Modul Operasional & Wewenang</h3>
+              <p className="text-xs text-slate-500">Capability bundle resmi yang ditugaskan ke akun Anda.</p>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">
+              {capabilities.length} Hak Akses Aktif
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {capabilities.map((cap) => {
+              const info = capabilityLabels[cap] || {
+                label: cap,
+                desc: "Wewenang operasional",
+                href: "/dashboard",
+              };
+              return (
+                <div
+                  key={cap}
+                  className="p-4 rounded-2xl bg-slate-50/80 hover:bg-blue-50/60 border border-slate-100 hover:border-blue-200 transition-all flex flex-col justify-between gap-3 group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="h-10 w-10 rounded-xl bg-white shadow-sm border border-slate-200/80 text-[#2563EB] flex items-center justify-center flex-shrink-0">
+                      <Layers className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700">
+                      AKTIF
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#2563EB] transition-colors">
+                      {info.label}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">{info.desc}</p>
+                  </div>
+
+                  <Link
+                    href={info.href}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2563EB] group-hover:underline pt-2 border-t border-slate-200/60"
+                  >
+                    <span>Buka Modul</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right 1 Col: Aksi Cepat Staf */}
+        <div className="rounded-2xl bg-white border border-slate-100/90 p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-[#2563EB]" />
+            <h3 className="text-base font-bold text-[#0F172A]">Aksi Cepat Staf</h3>
+          </div>
+
+          <div className="space-y-2.5">
+            <Link
+              href="/sekolah"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-blue-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-blue-100/70 text-[#2563EB] flex items-center justify-center">
+                  <Building2 className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Manajemen Sekolah</span>
+                  <span className="text-[10px] text-slate-500">Profil, Unit & Jabatan</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-[#2563EB] transition-colors" />
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-emerald-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-emerald-100/70 text-emerald-600 flex items-center justify-center">
+                  <Users className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Buku Induk Siswa</span>
+                  <span className="text-[10px] text-slate-500">Registrasi & Mutasi Siswa</span>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-purple-50/70 border border-slate-100 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-purple-100/70 text-purple-600 flex items-center justify-center">
+                  <FileSpreadsheet className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Ekspor Laporan</span>
+                  <span className="text-[10px] text-slate-500">Rekapitulasi Semester</span>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+

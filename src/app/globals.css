@@ -24,3 +24,54 @@ body {
   );
   min-height: 100vh;
 }
+
+/* Curved Notch Inverted Radius for Active Sidebar Item */
+.sidebar-active-tab {
+  position: relative;
+  background-color: var(--background, #f8fafc);
+  color: #0f172a;
+  font-weight: 700;
+  border-top-left-radius: 1.25rem;
+  border-bottom-left-radius: 1.25rem;
+  margin-left: 0.75rem;
+  margin-right: 0;
+  padding-left: 1rem;
+  padding-right: 1.25rem;
+  z-index: 10;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-active-tab::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border-bottom-right-radius: 20px;
+  box-shadow: 10px 10px 0 0 var(--background, #f8fafc);
+  pointer-events: none;
+}
+
+.sidebar-active-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border-top-right-radius: 20px;
+  box-shadow: 10px -10px 0 0 var(--background, #f8fafc);
+  pointer-events: none;
+}
+
+/* Hide scrollbars cleanly */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

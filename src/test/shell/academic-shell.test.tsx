@@ -36,12 +36,12 @@ describe("AcademicShell Component (Phase 05)", () => {
       </AcademicShell>
     );
 
-    const toggleButton = screen.getByLabelText(/Ciutkan Sidebar ke Rail/i);
+    const toggleButton = screen.getByLabelText(/Ciutkan Sidebar/i);
     expect(toggleButton).toBeInTheDocument();
 
     fireEvent.click(toggleButton);
 
-    const expandButton = screen.getByLabelText(/Buka Sidebar Lengkap/i);
+    const expandButton = screen.getByLabelText(/Perluas Sidebar/i);
     expect(expandButton).toBeInTheDocument();
   });
 
@@ -58,5 +58,30 @@ describe("AcademicShell Component (Phase 05)", () => {
     expect(screen.getByText("Akun Aktif")).toBeInTheDocument();
     expect(screen.getByText("Ganti Kata Sandi")).toBeInTheDocument();
     expect(screen.getByText("Keluar dari Akun")).toBeInTheDocument();
+  });
+
+  it("opens logout confirmation modal when clicking logout and cancels on Batal", () => {
+    render(
+      <AcademicShell user={mockUser}>
+        <div>Konten</div>
+      </AcademicShell>
+    );
+
+    // Open User Menu
+    fireEvent.click(screen.getByLabelText("Menu Pengguna"));
+
+    // Click "Keluar dari Akun"
+    fireEvent.click(screen.getByText("Keluar dari Akun"));
+
+    // Modal opens
+    expect(screen.getByText("Konfirmasi Keluar")).toBeInTheDocument();
+    expect(screen.getByText("Ya, Keluar")).toBeInTheDocument();
+    expect(screen.getByText("Batal")).toBeInTheDocument();
+
+    // Click "Batal"
+    fireEvent.click(screen.getByText("Batal"));
+
+    // Modal closes
+    expect(screen.queryByText("Konfirmasi Keluar")).not.toBeInTheDocument();
   });
 });
