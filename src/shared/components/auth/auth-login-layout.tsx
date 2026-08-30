@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 export function AuthLoginLayout({
   children,
   title = "Masuk ke Ruang Pintar",
-  description = "Gunakan akun sekolah Anda untuk mengakses pembelajaran, aktivitas akademik, dan informasi sekolah."
+  description = "Gunakan akun sekolah Anda untuk mengakses pembelajaran, aktivitas akademik, dan informasi sekolah.",
 }: {
   children: React.ReactNode;
   title?: string;

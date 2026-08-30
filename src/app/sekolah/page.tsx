@@ -99,7 +99,8 @@ export default async function SchoolManagementPage() {
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Pusat tata kelola profil resmi institusi, struktur unit kerja, master jabatan struktural, dan penugasan personil aktif sekolah.
+                  Pusat tata kelola profil resmi institusi, struktur unit kerja, master jabatan
+                  struktural, dan penugasan personil aktif sekolah.
                 </p>
               </div>
 

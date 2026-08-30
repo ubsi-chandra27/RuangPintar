@@ -37,7 +37,11 @@ interface OrganizationUnitsViewProps {
 const emptySubscribe = () => () => {};
 
 export function OrganizationUnitsView({ initialUnits, canManage }: OrganizationUnitsViewProps) {
-  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [units, setUnits] = useState<OrganizationUnitDTO[]>(initialUnits);
   const [modalMode, setModalMode] = useState<"create" | "edit" | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<OrganizationUnitDTO | null>(null);
@@ -178,13 +182,11 @@ export function OrganizationUnitsView({ initialUnits, canManage }: OrganizationU
               <div className="p-2 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-100/80">
                 <Network className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">
-                Unit & Bagian Organisasi
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900">Unit & Bagian Organisasi</h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-              Kelola bagian struktural sekolah seperti Kurikulum, Kesiswaan, Tata Usaha, dan
-              Program Keahlian.
+              Kelola bagian struktural sekolah seperti Kurikulum, Kesiswaan, Tata Usaha, dan Program
+              Keahlian.
             </p>
           </div>
 
@@ -322,9 +324,16 @@ export function OrganizationUnitsView({ initialUnits, canManage }: OrganizationU
                             </h4>
                             <p className="text-[11px] text-slate-500 mt-0.5">
                               {unit.induk_unit_nama ? (
-                                <span>Induk: <strong className="text-blue-700 font-semibold">{unit.induk_unit_nama}</strong></span>
+                                <span>
+                                  Induk:{" "}
+                                  <strong className="text-blue-700 font-semibold">
+                                    {unit.induk_unit_nama}
+                                  </strong>
+                                </span>
                               ) : (
-                                <span className="italic text-slate-400">Unit Utama (Tingkat Teratas)</span>
+                                <span className="italic text-slate-400">
+                                  Unit Utama (Tingkat Teratas)
+                                </span>
                               )}
                             </p>
                           </div>

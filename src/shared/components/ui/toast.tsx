@@ -16,14 +16,12 @@ export interface ToastProps {
 
 const emptySubscribe = () => () => {};
 
-export function Toast({
-  type,
-  message,
-  description,
-  onClose,
-  duration = 4000,
-}: ToastProps) {
-  const isMounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+export function Toast({ type, message, description, onClose, duration = 4000 }: ToastProps) {
+  const isMounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   React.useEffect(() => {
     if (duration <= 0) return;
@@ -72,13 +70,9 @@ export function Toast({
         </div>
 
         <div className="flex-1 pt-0.5">
-          <p className={`text-xs sm:text-[13px] font-bold ${config.titleColor}`}>
-            {message}
-          </p>
+          <p className={`text-xs sm:text-[13px] font-bold ${config.titleColor}`}>{message}</p>
           {description && (
-            <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-              {description}
-            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{description}</p>
           )}
         </div>
 

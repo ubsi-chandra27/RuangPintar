@@ -7,14 +7,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    {
-      className = "",
-      type = "text",
-      inputSize = "lg",
-      isError = false,
-      disabled,
-      ...props
-    },
+    { className = "", type = "text", inputSize = "lg", isError = false, disabled, ...props },
     ref
   ) => {
     const sizeStyles = {

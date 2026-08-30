@@ -38,7 +38,11 @@ interface PositionsViewProps {
 const emptySubscribe = () => () => {};
 
 export function PositionsView({ initialPositions, units, canManage }: PositionsViewProps) {
-  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [positions, setPositions] = useState<PositionDTO[]>(initialPositions);
   const [modalMode, setModalMode] = useState<"create" | "edit" | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<PositionDTO | null>(null);
@@ -173,9 +177,7 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
               <div className="p-2 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-100/80">
                 <Award className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">
-                Master Jabatan Struktural
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900">Master Jabatan Struktural</h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
               Katalog posisi jabatan organisasi sekolah (Kepala Sekolah, Wakasek, Kepala Program,
@@ -326,9 +328,16 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
                               )}
                               <span className="text-[11px] text-slate-500">
                                 {pos.unit_nama ? (
-                                  <span>Unit: <strong className="text-slate-800 font-semibold">{pos.unit_nama}</strong></span>
+                                  <span>
+                                    Unit:{" "}
+                                    <strong className="text-slate-800 font-semibold">
+                                      {pos.unit_nama}
+                                    </strong>
+                                  </span>
                                 ) : (
-                                  <span className="italic text-slate-400">Lintas Unit / Sekolah</span>
+                                  <span className="italic text-slate-400">
+                                    Lintas Unit / Sekolah
+                                  </span>
                                 )}
                               </span>
                             </div>
@@ -403,7 +412,9 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
                           <td className="py-3.5 px-4">
                             <div className="font-bold text-slate-900">{pos.nama_jabatan}</div>
                             {pos.is_canonical && (
-                              <span className="text-[11px] text-blue-600 font-semibold">Kanonikal Inti</span>
+                              <span className="text-[11px] text-blue-600 font-semibold">
+                                Kanonikal Inti
+                              </span>
                             )}
                           </td>
                           <td className="py-3.5 px-4 font-mono text-xs text-slate-700">
@@ -544,7 +555,9 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
                     <Award className="h-4 w-4" />
                   </div>
                   <h3 id="position-modal-title" className="text-lg font-bold text-slate-900">
-                    {modalMode === "create" ? "Tambah Jabatan Struktural" : "Edit Jabatan Struktural"}
+                    {modalMode === "create"
+                      ? "Tambah Jabatan Struktural"
+                      : "Edit Jabatan Struktural"}
                   </h3>
                 </div>
                 <button
@@ -630,7 +643,9 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
                     ))}
                   </select>
                   {fieldErrors.unit_id && (
-                    <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.unit_id[0]}</p>
+                    <p className="text-xs text-rose-600 mt-1 font-medium">
+                      {fieldErrors.unit_id[0]}
+                    </p>
                   )}
                 </div>
 
@@ -710,13 +725,15 @@ export function PositionsView({ initialPositions, units, canManage }: PositionsV
 
               <p className="text-sm text-slate-600 leading-relaxed">
                 Apakah Anda yakin ingin menghapus master jabatan{" "}
-                <strong className="text-slate-900 font-semibold">{deleteTarget.nama_jabatan}</strong>{" "}
+                <strong className="text-slate-900 font-semibold">
+                  {deleteTarget.nama_jabatan}
+                </strong>{" "}
                 ({deleteTarget.kode_jabatan})?
               </p>
 
               <div className="p-3.5 bg-amber-50/80 rounded-2xl border border-amber-200/80 text-xs text-amber-900 font-medium leading-relaxed">
-                Sistem menerapkan aturan <em>History-Preserving</em>: jabatan tidak dapat dihapus jika
-                pernah memiliki rekam penugasan personil (aktif maupun historis).
+                Sistem menerapkan aturan <em>History-Preserving</em>: jabatan tidak dapat dihapus
+                jika pernah memiliki rekam penugasan personil (aktif maupun historis).
               </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">

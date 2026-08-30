@@ -20,7 +20,11 @@ export interface UserMenuProps {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const isMounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isMounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement>(null);
@@ -183,7 +187,8 @@ export function UserMenu({ user }: UserMenuProps) {
                 Konfirmasi Keluar
               </h3>
               <p className="text-xs sm:text-[13px] text-slate-500 leading-relaxed mb-4 max-w-xs">
-                Apakah Anda yakin ingin keluar dari sesi akun Ruang Pintar? Pastikan seluruh pekerjaan Anda telah tersimpan.
+                Apakah Anda yakin ingin keluar dari sesi akun Ruang Pintar? Pastikan seluruh
+                pekerjaan Anda telah tersimpan.
               </p>
 
               {/* User Session Identity Card */}

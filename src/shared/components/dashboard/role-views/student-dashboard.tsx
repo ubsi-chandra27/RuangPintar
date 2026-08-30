@@ -124,7 +124,9 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">Matematika Diskrit</h4>
-                  <p className="text-xs text-slate-600 mt-0.5">Ibu Siti Nurhaliza • Ruang Teori 102</p>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Ibu Siti Nurhaliza • Ruang Teori 102
+                  </p>
                 </div>
               </div>
               <button
@@ -213,4 +215,3 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
     </div>
   );
 }
-

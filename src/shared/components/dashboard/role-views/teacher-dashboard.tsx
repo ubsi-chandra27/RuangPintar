@@ -115,7 +115,9 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
                       SELESAI
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5">Kelas X RPL 1 • Lab Rekayasa Perangkat Lunak</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Kelas X RPL 1 • Lab Rekayasa Perangkat Lunak
+                  </p>
                 </div>
               </div>
               <button
@@ -243,4 +245,3 @@ export function TeacherDashboard({ user }: TeacherDashboardProps) {
     </div>
   );
 }
-

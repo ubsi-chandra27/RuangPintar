@@ -36,7 +36,8 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Portal pemantauan aktivitas belajar, presensi harian, dan capaian nilai putra/putri Anda.
+            Portal pemantauan aktivitas belajar, presensi harian, dan capaian nilai putra/putri
+            Anda.
           </p>
         </div>
 
@@ -93,7 +94,9 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-[#2563EB]" />
-              <h3 className="text-base font-bold text-[#0F172A]">Aktivitas Pembelajaran Putra/Putri</h3>
+              <h3 className="text-base font-bold text-[#0F172A]">
+                Aktivitas Pembelajaran Putra/Putri
+              </h3>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">
               Status: Aktif Belajar
@@ -107,7 +110,9 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900">Rian Pratama</h4>
-                <p className="text-xs text-slate-500 mt-0.5">NIS: 20261001 • Kelas X RPL 1 (Rekayasa Perangkat Lunak)</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  NIS: 20261001 • Kelas X RPL 1 (Rekayasa Perangkat Lunak)
+                </p>
               </div>
             </div>
             <div className="text-left sm:text-right">
@@ -118,7 +123,9 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-1">
-              <span className="text-[11px] font-semibold text-slate-500">Nilai Harian Terakhir</span>
+              <span className="text-[11px] font-semibold text-slate-500">
+                Nilai Harian Terakhir
+              </span>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-800">Pemrograman</span>
                 <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-xs">
@@ -182,7 +189,9 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
                   <Download className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-slate-800 block">Unduh Rapor Semester</span>
+                  <span className="text-xs font-bold text-slate-800 block">
+                    Unduh Rapor Semester
+                  </span>
                   <span className="text-[10px] text-slate-500">Hasil belajar siswa (PDF)</span>
                 </div>
               </div>
@@ -198,7 +207,9 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
                   <FileCheck className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-slate-800 block">Pengajuan Izin / Sakit</span>
+                  <span className="text-xs font-bold text-slate-800 block">
+                    Pengajuan Izin / Sakit
+                  </span>
                   <span className="text-[10px] text-slate-500">Surat keterangan dokter</span>
                 </div>
               </div>
@@ -210,4 +221,3 @@ export function GuardianDashboard({ user }: GuardianDashboardProps) {
     </div>
   );
 }
-

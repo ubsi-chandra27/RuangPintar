@@ -159,7 +159,10 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
                 {/* Bars & Line */}
                 <div className="h-56 w-full flex items-end justify-between gap-2 sm:gap-4 px-2 relative z-10">
                   {days.map((item, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                    <div
+                      key={index}
+                      className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group"
+                    >
                       <span className="text-[10px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded shadow-xs border border-slate-100">
                         {item.attendance}%
                       </span>
@@ -206,11 +209,17 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-rose-500 flex-shrink-0" />
-                    <h4 className="text-xs font-bold text-slate-800">Ujian Akhir Semester Genap 2026</h4>
+                    <h4 className="text-xs font-bold text-slate-800">
+                      Ujian Akhir Semester Genap 2026
+                    </h4>
                   </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-1">Ujian akan dilaksanakan 20-30 Mei 2026</p>
+                  <p className="text-[11px] text-slate-500 line-clamp-1">
+                    Ujian akan dilaksanakan 20-30 Mei 2026
+                  </p>
                 </div>
-                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">12 Mei 2026</span>
+                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                  12 Mei 2026
+                </span>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50/80 hover:bg-slate-50 border border-slate-100 transition-colors flex items-start justify-between gap-3">
@@ -219,9 +228,13 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
                     <span className="h-2 w-2 rounded-full bg-amber-500 flex-shrink-0" />
                     <h4 className="text-xs font-bold text-slate-800">Libur Kenaikan Kelas</h4>
                   </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-1">Sekolah libur pada 1–3 Juni 2026</p>
+                  <p className="text-[11px] text-slate-500 line-clamp-1">
+                    Sekolah libur pada 1–3 Juni 2026
+                  </p>
                 </div>
-                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">10 Mei 2026</span>
+                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                  10 Mei 2026
+                </span>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50/80 hover:bg-slate-50 border border-slate-100 transition-colors flex items-start justify-between gap-3">
@@ -230,9 +243,13 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
                     <span className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0" />
                     <h4 className="text-xs font-bold text-slate-800">Pengumpulan Laporan Akhir</h4>
                   </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-1">Batas akhir pengumpulan 15 Juni 2026</p>
+                  <p className="text-[11px] text-slate-500 line-clamp-1">
+                    Batas akhir pengumpulan 15 Juni 2026
+                  </p>
                 </div>
-                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">8 Mei 2026</span>
+                <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                  8 Mei 2026
+                </span>
               </div>
             </div>
           </div>
@@ -473,4 +490,3 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
     </div>
   );
 }
-

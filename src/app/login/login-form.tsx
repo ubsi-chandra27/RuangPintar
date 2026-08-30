@@ -40,7 +40,11 @@ export function LoginForm({ status }: { status?: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-5 w-full" noValidate={false}>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 sm:gap-5 w-full"
+      noValidate={false}
+    >
       {/* Optional Success Status Banner */}
       {status && (
         <div

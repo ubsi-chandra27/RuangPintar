@@ -113,7 +113,9 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     render(<SuperAdminDashboard user={mockAdmin} />);
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Ringkasan operasional dan aktivitas akademik sekolah.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ringkasan operasional dan aktivitas akademik sekolah.")
+    ).toBeInTheDocument();
     expect(screen.getByText("Total Siswa")).toBeInTheDocument();
     expect(screen.getByText("Kehadiran Hari Ini")).toBeInTheDocument();
     expect(screen.getByText("Aktivitas Terbaru")).toBeInTheDocument();

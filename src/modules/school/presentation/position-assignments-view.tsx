@@ -45,12 +45,15 @@ export function PositionAssignmentsView({
   personnel,
   canManage,
 }: PositionAssignmentsViewProps) {
-  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [assignments, setAssignments] = useState<PositionAssignmentDTO[]>(initialAssignments);
   const [filterStatus, setFilterStatus] = useState<"ALL" | "AKTIF" | "SELESAI">("ALL");
   const [modalMode, setModalMode] = useState<"assign" | "end" | "cancel" | null>(null);
-  const [selectedAssignment, setSelectedAssignment] =
-    useState<PositionAssignmentDTO | null>(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<PositionAssignmentDTO | null>(null);
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<{
     type: "success" | "error";
@@ -231,9 +234,7 @@ export function PositionAssignmentsView({
               <div className="p-2 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-100/80">
                 <UserCheck className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">
-                Penugasan Jabatan Struktural
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900">Penugasan Jabatan Struktural</h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
               Alokasi personil sekolah ke jabatan struktural beserta riwayat masa berlaku efektif.
@@ -561,7 +562,9 @@ export function PositionAssignmentsView({
                                   </button>
                                 </div>
                               ) : (
-                                <span className="text-xs text-slate-400 italic">Arsip Historis</span>
+                                <span className="text-xs text-slate-400 italic">
+                                  Arsip Historis
+                                </span>
                               )}
                             </td>
                           )}
@@ -582,9 +585,7 @@ export function PositionAssignmentsView({
                     {startIndex + 1} - {Math.min(startIndex + pageSize, filteredAssignments.length)}
                   </strong>{" "}
                   dari{" "}
-                  <strong className="text-slate-800 font-bold">
-                    {filteredAssignments.length}
-                  </strong>{" "}
+                  <strong className="text-slate-800 font-bold">{filteredAssignments.length}</strong>{" "}
                   penugasan
                 </p>
 
@@ -776,7 +777,9 @@ export function PositionAssignmentsView({
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all"
                   />
                   {fieldErrors.catatan && (
-                    <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.catatan[0]}</p>
+                    <p className="text-xs text-rose-600 mt-1 font-medium">
+                      {fieldErrors.catatan[0]}
+                    </p>
                   )}
                 </div>
 
@@ -954,7 +957,9 @@ export function PositionAssignmentsView({
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#2563EB] transition-all"
                   />
                   {fieldErrors.catatan && (
-                    <p className="text-xs text-rose-600 mt-1 font-medium">{fieldErrors.catatan[0]}</p>
+                    <p className="text-xs text-rose-600 mt-1 font-medium">
+                      {fieldErrors.catatan[0]}
+                    </p>
                   )}
                 </div>
 

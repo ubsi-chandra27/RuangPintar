@@ -117,7 +117,9 @@ export function SchoolManagementTabs({
               </span>
               <span
                 className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold flex-shrink-0 ${
-                  activeTab === "penugasan" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                  activeTab === "penugasan"
+                    ? "bg-white/20 text-white"
+                    : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {assignments.length}

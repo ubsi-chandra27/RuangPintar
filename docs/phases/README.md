@@ -16,8 +16,8 @@
 | **PHASE 03** | Authentication & Identity | **APPROVED** | Human Approved & Checkpointed (`1e88e47`) |
 | **PHASE 04** | Authorization & Access Control | **APPROVED** | Human Approved & Checkpointed (`5596da8`) |
 | **PHASE 05** | Application Shell & Dashboard Framework | **APPROVED** | Human Approved & Checkpointed (`9125a26`) |
-| **PHASE 06** | School & Organization | **APPROVED** | Human Approved — Ready for Closure & Checkpoint |
-| **PHASE 07** | Academic Period & Structure | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
+| **PHASE 06** | School & Organization | **APPROVED** | Human Approved & Checkpointed (`5426ebb`) |
+| **PHASE 07** | Academic Period & Structure | **READY FOR HUMAN REVIEW** | Menunggu Human Review |
 | **PHASE 08** | Student Academic Lifecycle | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 09** | Teacher & Teaching Assignment | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |
 | **PHASE 10** | Academic Calendar, Schedule & Class Session | **PLANNED / NOT ACTIVE** | Menunggu aktivasi |

@@ -64,9 +64,7 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
       {/* Header Form */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-100">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Identitas & Profil Sekolah
-          </h2>
+          <h2 className="text-xl font-bold text-slate-900">Identitas & Profil Sekolah</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Data resmi entitas institusi pendidikan untuk konteks operasional platform.
           </p>
@@ -77,12 +75,14 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
       </div>
 
       <div className="pt-6">
-
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nama Sekolah */}
             <div className="md:col-span-2">
-              <label htmlFor="nama" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+              <label
+                htmlFor="nama"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
+              >
                 Nama Resmi Sekolah <span className="text-rose-500">*</span>
               </label>
               <input
@@ -101,7 +101,10 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* NPSN */}
             <div>
-              <label htmlFor="npsn" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+              <label
+                htmlFor="npsn"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
+              >
                 NPSN (Nomor Pokok Sekolah Nasional)
               </label>
               <input
@@ -170,7 +173,10 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* Email Sekolah */}
             <div>
-              <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
+              >
                 Alamat Email Resmi
               </label>
               <input
@@ -233,7 +239,10 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
             {/* Alamat Lengkap */}
             <div className="md:col-span-2">
-              <label htmlFor="alamat" className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+              <label
+                htmlFor="alamat"
+                className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5"
+              >
                 Alamat Lengkap Institusi
               </label>
               <textarea
@@ -253,7 +262,12 @@ export function SchoolProfileForm({ initialProfile, canManage }: SchoolProfileFo
 
           {canManage && (
             <div className="pt-6 border-t border-slate-100 flex items-center justify-end">
-              <Button type="submit" variant="cobalt" disabled={loading} className="min-w-[160px] cursor-pointer">
+              <Button
+                type="submit"
+                variant="cobalt"
+                disabled={loading}
+                className="min-w-[160px] cursor-pointer"
+              >
                 {loading ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </div>

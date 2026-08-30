@@ -73,15 +73,19 @@ export function Sidebar({
       } ${className}`}
     >
       {/* Brand Header */}
-      <div className={`flex h-20 items-center gap-3.5 flex-shrink-0 ${isCollapsed ? "justify-center px-0" : "justify-center xl:justify-start px-0 xl:px-5"}`}>
+      <div
+        className={`flex h-20 items-center gap-3.5 flex-shrink-0 ${isCollapsed ? "justify-center px-0" : "justify-center xl:justify-start px-0 xl:px-5"}`}
+      >
         <Link
           href="/dashboard"
           className="flex items-center gap-3 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-xl"
           aria-label="Beranda Ruang Pintar"
         >
-          <div className={`flex items-center justify-center bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] p-1.5 flex-shrink-0 ${
-            isCollapsed ? "h-11 w-11 rounded-full" : "h-10 w-10 rounded-full xl:rounded-xl"
-          }`}>
+          <div
+            className={`flex items-center justify-center bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] p-1.5 flex-shrink-0 ${
+              isCollapsed ? "h-11 w-11 rounded-full" : "h-10 w-10 rounded-full xl:rounded-xl"
+            }`}
+          >
             <Image
               src="/images/brand/ruang-pintar-mark.png"
               alt="Logo Ruang Pintar"
@@ -154,13 +158,15 @@ export function Sidebar({
                           isActive ? "text-[#2563EB]" : "text-blue-200/90 group-hover:text-white"
                         }`}
                       />
-                      {!isCollapsed && <span className="hidden xl:inline truncate flex-1 text-xs sm:text-[13px]">{item.title}</span>}
+                      {!isCollapsed && (
+                        <span className="hidden xl:inline truncate flex-1 text-xs sm:text-[13px]">
+                          {item.title}
+                        </span>
+                      )}
                       {!isCollapsed && item.badge && (
                         <span
                           className={`hidden xl:inline text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${
-                            isActive
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-white/15 text-white"
+                            isActive ? "bg-blue-100 text-blue-700" : "bg-white/15 text-white"
                           }`}
                         >
                           {item.badge}
@@ -171,9 +177,7 @@ export function Sidebar({
                     {/* Accessible Hover Tooltip for Compact Rail */}
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-medium whitespace-nowrap shadow-xl z-50 animate-in fade-in-0 zoom-in-95 duration-160 pointer-events-none">
                       <span>{item.title}</span>
-                      {item.badge && (
-                        <span className="text-[10px] opacity-75">({item.badge})</span>
-                      )}
+                      {item.badge && <span className="text-[10px] opacity-75">({item.badge})</span>}
                     </div>
                   </div>
                 );
@@ -216,7 +220,9 @@ export function Sidebar({
           aria-label="Pusat Bantuan"
           title="Pusat Bantuan"
           className={`flex items-center gap-3 rounded-xl text-xs font-medium text-blue-100/85 hover:bg-white/10 hover:text-white transition-colors min-h-[40px] ${
-            isCollapsed ? "justify-center p-2" : "justify-center xl:justify-start p-2 xl:px-3 xl:py-2.5"
+            isCollapsed
+              ? "justify-center p-2"
+              : "justify-center xl:justify-start p-2 xl:px-3 xl:py-2.5"
           }`}
         >
           <HelpCircle className="h-4 w-4 text-blue-200/90 flex-shrink-0" />
@@ -226,4 +232,3 @@ export function Sidebar({
     </aside>
   );
 }
-

@@ -23,28 +23,29 @@ export interface StaffDashboardProps {
 }
 
 export function StaffDashboard({ user, capabilities = [] }: StaffDashboardProps) {
-  const capabilityLabels: Record<CapabilityBundle, { label: string; desc: string; href: string }> = {
-    SYSTEM_ADMIN: {
-      label: "Admin Sistem",
-      desc: "Konfigurasi sistem & log audit platform",
-      href: "/sekolah",
-    },
-    ACADEMIC_OPERATOR: {
-      label: "Operator Akademik",
-      desc: "Profil sekolah, unit organisasi, jabatan & penugasan",
-      href: "/sekolah",
-    },
-    STUDENT_DATA_OPERATOR: {
-      label: "Operator Kesiswaan",
-      desc: "Data induk siswa, rombel & presensi",
-      href: "/dashboard",
-    },
-    REPORT_OPERATOR: {
-      label: "Operator Laporan",
-      desc: "Rekapitulasi nilai, rapor & buku induk",
-      href: "/dashboard",
-    },
-  };
+  const capabilityLabels: Record<CapabilityBundle, { label: string; desc: string; href: string }> =
+    {
+      SYSTEM_ADMIN: {
+        label: "Admin Sistem",
+        desc: "Konfigurasi sistem & log audit platform",
+        href: "/sekolah",
+      },
+      ACADEMIC_OPERATOR: {
+        label: "Operator Akademik",
+        desc: "Profil sekolah, unit organisasi, jabatan & penugasan",
+        href: "/sekolah",
+      },
+      STUDENT_DATA_OPERATOR: {
+        label: "Operator Kesiswaan",
+        desc: "Data induk siswa, rombel & presensi",
+        href: "/dashboard",
+      },
+      REPORT_OPERATOR: {
+        label: "Operator Laporan",
+        desc: "Rekapitulasi nilai, rapor & buku induk",
+        href: "/dashboard",
+      },
+    };
 
   return (
     <div className="space-y-6 pb-12">
@@ -117,7 +118,9 @@ export function StaffDashboard({ user, capabilities = [] }: StaffDashboardProps)
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h3 className="text-base font-bold text-[#0F172A]">Modul Operasional & Wewenang</h3>
-              <p className="text-xs text-slate-500">Capability bundle resmi yang ditugaskan ke akun Anda.</p>
+              <p className="text-xs text-slate-500">
+                Capability bundle resmi yang ditugaskan ke akun Anda.
+              </p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">
               {capabilities.length} Hak Akses Aktif
@@ -226,4 +229,3 @@ export function StaffDashboard({ user, capabilities = [] }: StaffDashboardProps)
     </div>
   );
 }
-
