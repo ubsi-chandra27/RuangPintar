@@ -184,3 +184,7 @@ export const POSITION_PERMISSIONS: Record<PositionCode, ReadonlyArray<Permission
     "communication.announcement.view",
   ],
 };
+
+export function hasPermission(role: BaseRole, permission: PermissionString): boolean {
+  return BASE_ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
+}

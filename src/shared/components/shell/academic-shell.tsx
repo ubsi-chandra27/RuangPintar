@@ -4,6 +4,7 @@ import * as React from "react";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import { MobileDrawer } from "./mobile-drawer";
+import { MobileBottomNav } from "./mobile-bottom-nav";
 import { BreadcrumbItem } from "./breadcrumb";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
 
@@ -14,6 +15,7 @@ export interface AcademicShellProps {
     nama_lengkap: string;
     peran_dasar: string;
     sekolah_id?: string | null;
+    foto_url?: string | null;
   };
   userCapabilities?: CapabilityBundle[];
   breadcrumbItems?: BreadcrumbItem[];
@@ -70,11 +72,18 @@ export function AcademicShell({
           onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
 
-        {/* Scrollable Page Body */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-12 pt-2">
+        {/* Scrollable Page Body with bottom clearance on mobile (< md) for MobileBottomNav */}
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-24 md:pb-12 pt-2">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (< md) */}
+      <MobileBottomNav
+        userRole={user.peran_dasar as BaseRole}
+        userCapabilities={userCapabilities}
+        onOpenMenu={() => setIsMobileDrawerOpen(true)}
+      />
     </div>
   );
 }

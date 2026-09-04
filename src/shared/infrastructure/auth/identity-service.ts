@@ -169,6 +169,61 @@ export class IdentityService {
 
     return user;
   }
+
+  /**
+   * Reset user password by Admin/Authorized Staff.
+   * Clears locked status, sets must_change_password flag, resets failed attempts,
+   * and records an audit event.
+   */
+  async adminResetPassword(
+    userId: string,
+    newPassword?: string,
+    actorId: string = "SYSTEM",
+    actorRole: string = "SYSTEM",
+    ipAddress?: string,
+    userAgent?: string
+  ): Promise<{ success: boolean; error?: string; temporaryPassword?: string }> {
+    const user = await prisma.pengguna.findUnique({ where: { id: userId } });
+    if (!user) {
+      return { success: false, error: "Akun pengguna tidak ditemukan." };
+    }
+
+    const effectivePassword = newPassword?.trim() || "Password123#";
+    const policy = validatePasswordPolicy(effectivePassword);
+    if (!policy.valid) {
+      return { success: false, error: policy.message };
+    }
+
+    const newHash = await hashPassword(effectivePassword);
+
+    await prisma.pengguna.update({
+      where: { id: userId },
+      data: {
+        password_hash: newHash,
+        harus_ganti_password: true,
+        percobaan_login_gagal: 0,
+        dikunci_sampai: null,
+        status_akun: user.status_akun === "TERKUNCI" ? "AKTIF" : user.status_akun,
+      },
+    });
+
+    await recordAuditEvent({
+      sekolah_id: user.sekolah_id,
+      aktor_id: actorId,
+      aktor_role: actorRole,
+      aksi: "AUTH_PASSWORD_CHANGED",
+      tipe_sumber: "PENGGUNA",
+      id_sumber: user.id,
+      payload_sesudah: {
+        reset_by_admin: true,
+        harus_ganti_password: true,
+      },
+      ip_address: ipAddress ?? null,
+      user_agent: userAgent ?? null,
+    });
+
+    return { success: true, temporaryPassword: effectivePassword };
+  }
 }
 
 export const identityService = new IdentityService();

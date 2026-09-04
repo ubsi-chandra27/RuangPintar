@@ -117,10 +117,10 @@ export default async function AcademicStructurePage() {
               </div>
             </div>
 
-            {/* Right Side: 3D Pop-Out School Illustration */}
+            {/* Right Side: 3D Pop-Out Academic Structure Illustration */}
             <div className="hidden md:block absolute -top-8 -right-2 lg:-right-4 w-72 lg:w-80 h-52 lg:h-60 pointer-events-none z-20">
               <Image
-                src="/images/illustrations/school-hero-3d.png"
+                src="/images/illustrations/academic-structure-3d.png"
                 alt="Ilustrasi Struktur Akademik 3D"
                 width={360}
                 height={270}

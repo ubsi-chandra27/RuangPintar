@@ -15,6 +15,7 @@ export interface TopbarProps {
     nama_lengkap: string;
     peran_dasar: string;
     sekolah_id?: string | null;
+    foto_url?: string | null;
   };
   breadcrumbItems?: BreadcrumbItem[];
   onOpenMobileDrawer: () => void;

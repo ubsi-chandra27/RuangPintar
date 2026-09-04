@@ -5,7 +5,8 @@
  * Ruang Pintar — M07 Student Academic Lifecycle: Student Directory View
  */
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search,
   Plus,
@@ -25,12 +26,22 @@ import {
   ArrowUpDown,
   Camera,
   Upload,
+  ChevronDown,
+  Check,
+  RotateCcw,
+  KeyRound,
+  Copy,
+  CheckCheck,
+  Archive,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import {
+  bulkDeleteStudentsAction,
+  bulkStudentLifecycleAction,
   createStudentAction,
   deleteStudentAction,
   graduateStudentAction,
+  resetStudentPasswordAction,
   transferOutStudentAction,
   updateStudentAction,
 } from "@/app/actions/student-actions";
@@ -53,13 +64,33 @@ export function StudentDirectoryView({
   rombels,
   canManage,
 }: StudentDirectoryViewProps) {
-  const [students] = useState<StudentIdentityDTO[]>(initialStudents);
+  const router = useRouter();
+  const students = initialStudents;
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [rombelFilter, setRombelFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("name_asc");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Popover toggle states
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Photo states for forms
   const [createPhoto, setCreatePhoto] = useState<string | null>(null);
@@ -72,6 +103,21 @@ export function StudentDirectoryView({
   const [graduatingStudent, setGraduatingStudent] = useState<StudentIdentityDTO | null>(null);
   const [transferringStudent, setTransferringStudent] = useState<StudentIdentityDTO | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<StudentIdentityDTO | null>(null);
+
+  // Checkbox multi-select state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const selectAllRef = useRef<HTMLInputElement>(null);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
+
+  // Password Reset modal states
+  const [resettingStudent, setResettingStudent] = useState<StudentIdentityDTO | null>(null);
+  const [resetCustomPassword, setResetCustomPassword] = useState("");
+  const [resetResultData, setResetResultData] = useState<{
+    studentName: string;
+    username: string;
+    tempPass: string;
+  } | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -113,6 +159,103 @@ export function StudentDirectoryView({
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+  // Synchronize select-all checkbox (indeterminate state)
+  const isAllSelected =
+    paginatedStudents.length > 0 && paginatedStudents.every((s) => selectedIds.has(s.id));
+  const isSomeSelected = paginatedStudents.some((s) => selectedIds.has(s.id)) && !isAllSelected;
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = isSomeSelected;
+    }
+  }, [isSomeSelected]);
+
+  const handleToggleSelectAll = () => {
+    const next = new Set(selectedIds);
+    if (isAllSelected) {
+      paginatedStudents.forEach((s) => next.delete(s.id));
+    } else {
+      paginatedStudents.forEach((s) => next.add(s.id));
+    }
+    setSelectedIds(next);
+  };
+
+  const handleToggleRow = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelectedIds(next);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkDeactivate = () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    startTransition(async () => {
+      const res = await bulkStudentLifecycleAction(ids, "NONAKTIF");
+      if (res.success) {
+        setToast({ message: res.message, type: "success" });
+        handleClearSelection();
+        router.refresh();
+      } else {
+        setToast({ message: res.message, type: "error" });
+      }
+    });
+  };
+
+  const handleBulkDeleteSubmit = () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    startTransition(async () => {
+      const res = await bulkDeleteStudentsAction(ids);
+      if (res.success) {
+        setToast({ message: res.message, type: "success" });
+        handleClearSelection();
+        setIsBulkDeleteOpen(false);
+        router.refresh();
+      } else {
+        setToast({ message: res.message, type: "error" });
+      }
+    });
+  };
+
+  const handleResetPasswordSubmit = () => {
+    if (!resettingStudent) return;
+    startTransition(async () => {
+      const res = await resetStudentPasswordAction(
+        resettingStudent.id,
+        resetCustomPassword.trim() || undefined
+      );
+      if (res.success && res.data) {
+        const data = res.data as { username: string; temporaryPassword: string };
+        setResetResultData({
+          studentName: resettingStudent.nama_lengkap,
+          username: data.username,
+          tempPass: data.temporaryPassword,
+        });
+        setResettingStudent(null);
+        setResetCustomPassword("");
+        setToast({ message: res.message, type: "success" });
+      } else {
+        setToast({ message: res.message, type: "error" });
+      }
+    });
+  };
+
+  const handleCopyCredentials = () => {
+    if (!resetResultData) return;
+    const text = `Kredensial Akun Siswa Ruang Pintar\nNama: ${resetResultData.studentName}\nUsername: ${resetResultData.username}\nKata Sandi Sementara: ${resetResultData.tempPass}\n\nSilakan login di halaman web dan buat kata sandi baru Anda.`;
+    navigator.clipboard.writeText(text);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2500);
+  };
 
   const handlePhotoUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -238,6 +381,8 @@ export function StudentDirectoryView({
       if (res.success) {
         setToast({ message: res.message, type: "success" });
         setIsCreateOpen(false);
+        setCreatePhoto(null);
+        router.refresh();
       } else {
         setToast({ message: res.message, type: "error" });
       }
@@ -252,6 +397,8 @@ export function StudentDirectoryView({
       if (res.success) {
         setToast({ message: res.message, type: "success" });
         setEditingStudent(null);
+        setEditPhoto(null);
+        router.refresh();
       } else {
         setToast({ message: res.message, type: "error" });
       }
@@ -266,6 +413,7 @@ export function StudentDirectoryView({
       if (res.success) {
         setToast({ message: res.message, type: "success" });
         setGraduatingStudent(null);
+        router.refresh();
       } else {
         setToast({ message: res.message, type: "error" });
       }
@@ -280,6 +428,7 @@ export function StudentDirectoryView({
       if (res.success) {
         setToast({ message: res.message, type: "success" });
         setTransferringStudent(null);
+        router.refresh();
       } else {
         setToast({ message: res.message, type: "error" });
       }
@@ -293,6 +442,7 @@ export function StudentDirectoryView({
       if (res.success) {
         setToast({ message: res.message, type: "success" });
         setDeletingStudent(null);
+        router.refresh();
       } else {
         setToast({ message: res.message, type: "error" });
       }
@@ -311,36 +461,11 @@ export function StudentDirectoryView({
         />
       )}
 
-      {/* Directory Header & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-sm">
-        <div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <Users className="h-5 w-5 text-[#2563EB]" />
-            Buku Induk & Direktori Siswa
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Kelola data identitas individu siswa serta status akademik institusi.
-          </p>
-        </div>
-        {canManage && (
-          <button
-            onClick={() => {
-              setCreatePhoto(null);
-              setIsCreateOpen(true);
-            }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah Siswa
-          </button>
-        )}
-      </div>
-
-      {/* Filter, Sort & Export Toolbar */}
-      <div className="p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          {/* Search Input */}
-          <div className="sm:col-span-4 relative">
+      {/* Table Toolbar (UI Kit Standard: Search + Filter + Sort + Export + Primary Button) */}
+      <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+          {/* Search Input with Leading & Trailing Icon */}
+          <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
@@ -349,80 +474,241 @@ export function StudentDirectoryView({
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Cari nama siswa, NIS, atau NISN..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all"
+              placeholder="Search siswa, NIS, kelas..."
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all shadow-2xs"
             />
-          </div>
-
-          {/* Status Filter */}
-          <div className="col-span-6 sm:col-span-2">
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-            >
-              <option value="ALL">Semua Status</option>
-              <option value="AKTIF">Aktif</option>
-              <option value="LULUS">Lulus</option>
-              <option value="PINDAH">Pindah</option>
-              <option value="NONAKTIF">Nonaktif / Keluar</option>
-            </select>
-          </div>
-
-          {/* Rombel Filter */}
-          <div className="col-span-6 sm:col-span-2">
-            <select
-              value={rombelFilter}
-              onChange={(e) => {
-                setRombelFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-            >
-              <option value="ALL">Semua Rombel</option>
-              {rombels.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="col-span-6 sm:col-span-2">
-            <div className="relative">
-              <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Hapus pencarian"
               >
-                <option value="name_asc">Nama (A - Z)</option>
-                <option value="name_desc">Nama (Z - A)</option>
-                <option value="nis_asc">NIS (Terkecil)</option>
-                <option value="nis_desc">NIS (Terbesar)</option>
-                <option value="date_desc">Tgl Masuk (Terbaru)</option>
-                <option value="date_asc">Tgl Masuk (Terlama)</option>
-              </select>
-            </div>
+                <X className="h-4 w-4" />
+              </button>
+            ) : (
+              <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none hidden sm:block" />
+            )}
           </div>
 
-          {/* Export CSV Button */}
-          <div className="col-span-6 sm:col-span-2 flex justify-end">
+          {/* Action Toolbar Buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
+            {/* Filter Dropdown Button */}
+            <div className="relative" ref={filterRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                  setIsSortOpen(false);
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0 ${
+                  statusFilter !== "ALL" || rombelFilter !== "ALL"
+                    ? "border-blue-300 bg-blue-50/70 text-[#2563EB]"
+                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                }`}
+              >
+                <Filter
+                  className={`h-4 w-4 ${
+                    statusFilter !== "ALL" || rombelFilter !== "ALL"
+                      ? "text-[#2563EB]"
+                      : "text-slate-600"
+                  }`}
+                />
+                <span>Filter</span>
+                {(statusFilter !== "ALL" || rombelFilter !== "ALL") && (
+                  <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
+                )}
+              </button>
+
+              {/* Filter Popover Menu */}
+              {isFilterOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 p-4 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-3 animate-in fade-in zoom-in-95">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Filter className="h-3.5 w-3.5 text-[#2563EB]" />
+                      Filter Data Siswa
+                    </span>
+                    {(statusFilter !== "ALL" || rombelFilter !== "ALL") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStatusFilter("ALL");
+                          setRombelFilter("ALL");
+                          setCurrentPage(1);
+                        }}
+                        className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        Reset
+                      </button>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Status Akademik
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                    >
+                      <option value="ALL">Semua Status</option>
+                      <option value="AKTIF">Aktif</option>
+                      <option value="LULUS">Lulus</option>
+                      <option value="PINDAH">Pindah</option>
+                      <option value="NONAKTIF">Nonaktif / Keluar</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Rombongan Belajar (Rombel)
+                    </label>
+                    <select
+                      value={rombelFilter}
+                      onChange={(e) => {
+                        setRombelFilter(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                    >
+                      <option value="ALL">Semua Rombel</option>
+                      {rombels.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sort Dropdown Button */}
+            <div className="relative" ref={sortRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsFilterOpen(false);
+                }}
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              >
+                <ArrowUpDown className="h-4 w-4 text-slate-600" />
+                <span>Sort</span>
+              </button>
+
+              {/* Sort Popover Menu */}
+              {isSortOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 p-2 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-1 animate-in fade-in zoom-in-95">
+                  {[
+                    { id: "name_asc", label: "Nama (A - Z)" },
+                    { id: "name_desc", label: "Nama (Z - A)" },
+                    { id: "nis_asc", label: "NIS (Terkecil)" },
+                    { id: "nis_desc", label: "NIS (Terbesar)" },
+                    { id: "created_desc", label: "Terbaru Ditambahkan" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                        sortBy === opt.id
+                          ? "bg-blue-50 text-[#2563EB] font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-[#2563EB]" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Export Dropdown / Button */}
             <button
+              type="button"
               onClick={handleExportCSV}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
               title="Ekspor daftar siswa ke file CSV"
             >
-              <Download className="h-4 w-4 text-[#2563EB]" />
-              Ekspor CSV
+              <Download className="h-4 w-4 text-slate-600" />
+              <span>Export</span>
+              <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
             </button>
+
+            {/* + Tambah Siswa Primary Button */}
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCreatePhoto(null);
+                  setIsCreateOpen(true);
+                }}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah Siswa</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Bulk Action Toolbar */}
+      {selectedIds.size > 0 && (
+        <div
+          data-testid="bulk-toolbar"
+          className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:px-5 rounded-2xl bg-slate-900/90 backdrop-blur-md text-white border border-slate-700/80 shadow-xl animate-in fade-in slide-in-from-top-2"
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="text-xs sm:text-sm font-bold">{selectedIds.size} siswa dipilih</span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {canManage && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleBulkDeactivate}
+                  disabled={isPending}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-600/90 hover:bg-amber-600 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  title="Nonaktifkan siswa terpilih"
+                >
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <span>Nonaktifkan</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBulkDeleteOpen(true)}
+                  disabled={isPending}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-600/90 hover:bg-rose-600 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  title="Hapus permanen siswa terpilih"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Hapus Permanen</span>
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={handleClearSelection}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Content: Mobile Cards (< 640px) */}
       <div className="block sm:hidden space-y-3">
@@ -438,14 +724,24 @@ export function StudentDirectoryView({
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3">
+                  {/* Checkbox */}
+                  <input
+                    type="checkbox"
+                    aria-label={`Pilih siswa ${student.nama_lengkap}`}
+                    checked={selectedIds.has(student.id)}
+                    onChange={() => handleToggleRow(student.id)}
+                    className="w-4 h-4 rounded text-[#2563EB] border-slate-300 focus:ring-blue-500 cursor-pointer shrink-0 mt-0.5"
+                  />
+
+                  {/* Foto Siswa: 44px rounded-full object-cover shrink-0 aspect-square */}
                   {student.foto_url ? (
                     <img
                       src={student.foto_url}
                       alt={student.nama_lengkap}
-                      className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-xs"
+                      className="w-11 h-11 rounded-full object-cover shrink-0 aspect-square border border-slate-200 shadow-2xs"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2563EB] to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#2563EB] to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 aspect-square shadow-2xs">
                       {student.nama_lengkap.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -497,6 +793,16 @@ export function StudentDirectoryView({
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
+                    <button
+                      onClick={() => {
+                        setResetCustomPassword("");
+                        setResettingStudent(student);
+                      }}
+                      className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
+                      title="Reset Kata Sandi Akun"
+                    >
+                      <KeyRound className="h-4 w-4" />
+                    </button>
                     {student.status_akademik === "AKTIF" && (
                       <>
                         <button
@@ -536,7 +842,18 @@ export function StudentDirectoryView({
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-slate-50/90 text-slate-500 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200/80">
               <tr>
-                <th className="px-5 py-3.5">Identitas Siswa</th>
+                {/* Checkbox Select All */}
+                <th className="w-12 px-4 py-3.5 text-center">
+                  <input
+                    type="checkbox"
+                    ref={selectAllRef}
+                    aria-label="Pilih semua siswa"
+                    checked={isAllSelected}
+                    onChange={handleToggleSelectAll}
+                    className="w-4 h-4 rounded text-[#2563EB] border-slate-300 focus:ring-blue-500 cursor-pointer"
+                  />
+                </th>
+                <th className="px-4 py-3.5">Identitas Siswa</th>
                 <th className="px-4 py-3.5">L/P</th>
                 <th className="px-4 py-3.5">Status</th>
                 <th className="px-4 py-3.5">Rombel & Tingkat</th>
@@ -548,128 +865,160 @@ export function StudentDirectoryView({
               {paginatedStudents.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-6 py-12 text-center text-slate-400 text-xs sm:text-sm"
                   >
                     Tidak ada data siswa yang cocok dengan filter pencarian.
                   </td>
                 </tr>
               ) : (
-                paginatedStudents.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        {s.foto_url ? (
-                          <img
-                            src={s.foto_url}
-                            alt={s.nama_lengkap}
-                            className="w-8 h-8 rounded-xl object-cover border border-slate-200 shadow-xs"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#2563EB] to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
-                            {s.nama_lengkap.charAt(0).toUpperCase()}
+                paginatedStudents.map((s) => {
+                  const isSelected = selectedIds.has(s.id);
+                  return (
+                    <tr
+                      key={s.id}
+                      className={`hover:bg-slate-50/80 transition-colors ${
+                        isSelected ? "bg-blue-50/40" : ""
+                      }`}
+                    >
+                      {/* [CHECKBOX] */}
+                      <td className="w-12 px-4 py-3.5 text-center">
+                        <input
+                          type="checkbox"
+                          aria-label={`Pilih siswa ${s.nama_lengkap}`}
+                          checked={isSelected}
+                          onChange={() => handleToggleRow(s.id)}
+                          className="w-4 h-4 rounded text-[#2563EB] border-slate-300 focus:ring-blue-500 cursor-pointer"
+                        />
+                      </td>
+
+                      {/* [FOTO] [IDENTITAS] */}
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-3.5">
+                          {s.foto_url ? (
+                            <img
+                              src={s.foto_url}
+                              alt={s.nama_lengkap}
+                              className="w-11 h-11 rounded-full object-cover shrink-0 aspect-square border border-slate-200/80 shadow-2xs"
+                            />
+                          ) : (
+                            <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#2563EB] to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 aspect-square shadow-2xs">
+                              {s.nama_lengkap.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <span
+                              className="font-bold text-slate-800 block hover:text-[#2563EB] cursor-pointer"
+                              onClick={() => setDetailStudent(s)}
+                            >
+                              {s.nama_lengkap}
+                            </span>
+                            <span className="text-[11px] text-slate-400 font-mono">
+                              NIS: {s.nis} {s.nisn ? `• NISN: ${s.nisn}` : ""}
+                            </span>
                           </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 font-semibold text-slate-600">
+                        {s.jenis_kelamin}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span
+                          className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${getStatusBadge(
+                            s.status_akademik
+                          )}`}
+                        >
+                          {s.status_akademik}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        {s.active_rombel_nama ? (
+                          <div>
+                            <span className="font-semibold text-slate-800 block">
+                              {s.active_rombel_nama}
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              {s.active_tingkat_nama ?? ""}
+                              {s.active_nomor_absen ? ` • Absen #${s.active_nomor_absen}` : ""}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-xs">Belum Ditempatkan</span>
                         )}
+                      </td>
+                      <td className="px-4 py-3.5">
                         <div>
-                          <span
-                            className="font-bold text-slate-800 block hover:text-[#2563EB] cursor-pointer"
-                            onClick={() => setDetailStudent(s)}
-                          >
-                            {s.nama_lengkap}
+                          <span className="font-medium text-slate-700 block">
+                            {s.nama_wali || "-"}
                           </span>
                           <span className="text-[11px] text-slate-400 font-mono">
-                            NIS: {s.nis} {s.nisn ? `• NISN: ${s.nisn}` : ""}
+                            {s.telepon_wali || s.email_wali || "-"}
                           </span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 font-semibold text-slate-600">{s.jenis_kelamin}</td>
-                    <td className="px-4 py-3.5">
-                      <span
-                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${getStatusBadge(
-                          s.status_akademik
-                        )}`}
-                      >
-                        {s.status_akademik}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      {s.active_rombel_nama ? (
-                        <div>
-                          <span className="font-semibold text-slate-800 block">
-                            {s.active_rombel_nama}
-                          </span>
-                          <span className="text-[11px] text-slate-400">
-                            {s.active_tingkat_nama ?? ""}
-                            {s.active_nomor_absen ? ` • Absen #${s.active_nomor_absen}` : ""}
-                          </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setDetailStudent(s)}
+                            className="p-1.5 rounded-lg text-[#2563EB] hover:bg-blue-50 transition-colors"
+                            title="Lihat Detail & Riwayat"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          {canManage && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setEditPhoto(s.foto_url || null);
+                                  setEditingStudent(s);
+                                }}
+                                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+                                title="Edit Profil"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setResetCustomPassword("");
+                                  setResettingStudent(s);
+                                }}
+                                className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
+                                title="Reset Kata Sandi Akun"
+                              >
+                                <KeyRound className="h-4 w-4" />
+                              </button>
+                              {s.status_akademik === "AKTIF" && (
+                                <>
+                                  <button
+                                    onClick={() => setTransferringStudent(s)}
+                                    className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
+                                    title="Mutasi Keluar"
+                                  >
+                                    <ArrowRightLeft className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => setGraduatingStudent(s)}
+                                    className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                    title="Kelulusan"
+                                  >
+                                    <GraduationCap className="h-4 w-4" />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                onClick={() => setDeletingStudent(s)}
+                                className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors"
+                                title="Hapus"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-slate-400 italic text-xs">Belum Ditempatkan</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <div>
-                        <span className="font-medium text-slate-700 block">
-                          {s.nama_wali || "-"}
-                        </span>
-                        <span className="text-[11px] text-slate-400 font-mono">
-                          {s.telepon_wali || s.email_wali || "-"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setDetailStudent(s)}
-                          className="p-1.5 rounded-lg text-[#2563EB] hover:bg-blue-50 transition-colors"
-                          title="Lihat Detail & Riwayat"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        {canManage && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setEditPhoto(s.foto_url || null);
-                                setEditingStudent(s);
-                              }}
-                              className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
-                              title="Edit Profil"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </button>
-                            {s.status_akademik === "AKTIF" && (
-                              <>
-                                <button
-                                  onClick={() => setTransferringStudent(s)}
-                                  className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
-                                  title="Mutasi Keluar"
-                                >
-                                  <ArrowRightLeft className="h-4 w-4" />
-                                </button>
-                                <button
-                                  onClick={() => setGraduatingStudent(s)}
-                                  className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                  title="Kelulusan"
-                                >
-                                  <GraduationCap className="h-4 w-4" />
-                                </button>
-                              </>
-                            )}
-                            <button
-                              onClick={() => setDeletingStudent(s)}
-                              className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors"
-                              title="Hapus"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -1277,6 +1626,187 @@ export function StudentDirectoryView({
                   className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs disabled:opacity-50"
                 >
                   {isPending ? "Menghapus..." : "Hapus Siswa"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* Modal: Hapus Massal Siswa */}
+      {isBulkDeleteOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
+            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center gap-3 text-rose-600">
+                <AlertTriangle className="h-6 w-6" />
+                <h3 className="font-bold text-slate-800 text-base">Hapus Massal Siswa</h3>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Anda akan menghapus atau menonaktifkan <strong>{selectedIds.size} siswa</strong>{" "}
+                yang dipilih sekaligus.
+              </p>
+
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+                <p className="font-semibold">Perlindungan Histori Akademik Aktif:</p>
+                <p className="leading-relaxed">
+                  Siswa yang belum memiliki riwayat akademik/nilai akan dihapus permanen. Siswa yang
+                  telah memiliki histori akademik akan otomatis dialihkan ke status{" "}
+                  <strong>Nonaktif</strong> demi menjaga integritas rapor dan arsip sekolah.
+                </p>
+              </div>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsBulkDeleteOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleBulkDeleteSubmit}
+                  disabled={isPending}
+                  className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs disabled:opacity-50"
+                >
+                  {isPending ? "Memproses..." : "Lanjutkan Hapus & Nonaktifkan"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* Modal: Reset Password Siswa */}
+      {resettingStudent &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
+            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                  <KeyRound className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-base">Reset Kata Sandi Siswa</h3>
+                  <p className="text-xs text-slate-500">
+                    {resettingStudent.nama_lengkap} (NIS: {resettingStudent.nis})
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Akun siswa akan di-reset (atau otomatis dibuatkan jika belum memiliki akun) dan
+                  diwajibkan membuat kata sandi baru pada saat login berikutnya. Status akun yang
+                  terkunci akan otomatis dipulihkan.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Kata Sandi Baru (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    value={resetCustomPassword}
+                    onChange={(e) => setResetCustomPassword(e.target.value)}
+                    placeholder="Biarkan kosong untuk default: Password123#"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                  />
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    Minimal 8 karakter kombinasi huruf dan angka.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResettingStudent(null);
+                    setResetCustomPassword("");
+                  }}
+                  disabled={isPending}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetPasswordSubmit}
+                  disabled={isPending}
+                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-md shadow-amber-500/20 disabled:opacity-50"
+                >
+                  {isPending ? "Memproses..." : "Reset Kata Sandi"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* Modal: Hasil Reset Password (Dialog Salin Kredensial Siswa) */}
+      {resetResultData &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
+            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+                  <CheckCheck className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-base">
+                    Kata Sandi Berhasil Di-reset!
+                  </h3>
+                  <p className="text-xs text-slate-500">{resetResultData.studentName}</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
+                <div className="flex justify-between items-center pb-2 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium">Username / Login ID:</span>
+                  <span className="font-bold font-mono text-slate-800">
+                    {resetResultData.username}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Kata Sandi Sementara:</span>
+                  <span className="font-bold font-mono text-blue-600 text-sm">
+                    {resetResultData.tempPass}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Salin kredensial di atas dan sampaikan secara privat kepada siswa atau orang
+                tua/wali siswa yang bersangkutan. Siswa akan diminta membuat kata sandi baru saat
+                pertama kali login.
+              </p>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCopyCredentials}
+                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
+                >
+                  {isCopied ? (
+                    <>
+                      <CheckCheck className="h-4 w-4 text-emerald-600" />
+                      <span className="text-emerald-700 font-bold">Kredensial Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 text-slate-500" />
+                      <span>Salin Kredensial</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResetResultData(null)}
+                  className="px-5 py-2.5 rounded-xl bg-[#1E293B] hover:bg-[#2B3B52] text-white font-semibold text-xs shadow-md"
+                >
+                  Selesai
                 </button>
               </div>
             </div>

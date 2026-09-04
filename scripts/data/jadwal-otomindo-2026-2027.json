@@ -1,0 +1,5423 @@
+{
+  "metadata": {
+    "sekolah": "SMK OTOMINDO",
+    "tahun_ajaran": "2026/2027",
+    "tanggal_dokumen": "2026-08-19",
+    "nama_sumber": "JADWAL PELAJARAN YES 2026.2027 (19 AGUSTUS 2026).pdf",
+    "catatan_kualitas": "Nama, gelar, kode guru, wali kelas, dan jadwal bersumber dari PDF. Jenis kelamin diperlukan oleh schema aplikasi tetapi tidak tercantum pada PDF dan harus diverifikasi kembali oleh operator sekolah."
+  },
+  "guru": [
+    {
+      "kode": 1,
+      "nama_lengkap": "Natalia Butarbutar",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 2,
+      "nama_lengkap": "Rekson Pangaribuan",
+      "gelar_depan": "Drs.",
+      "gelar_belakang": null,
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 3,
+      "nama_lengkap": "Wayan Budi Ismawati",
+      "gelar_depan": null,
+      "gelar_belakang": "M.Pd",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 4,
+      "nama_lengkap": "Suryani",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Ds",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 5,
+      "nama_lengkap": "Shafara Salsabila",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 6,
+      "nama_lengkap": "Ruben D Sihombing",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 7,
+      "nama_lengkap": "Donatus Soeti P",
+      "gelar_depan": null,
+      "gelar_belakang": "ST",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 8,
+      "nama_lengkap": "Parlindungan Siadari",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 9,
+      "nama_lengkap": "Slamet Riyadi",
+      "gelar_depan": null,
+      "gelar_belakang": "MT",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 10,
+      "nama_lengkap": "Sri Siswati",
+      "gelar_depan": null,
+      "gelar_belakang": "M.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 11,
+      "nama_lengkap": "Nevada Hasibuan",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 12,
+      "nama_lengkap": "Rajayani Sianturi",
+      "gelar_depan": null,
+      "gelar_belakang": "A.Md",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 13,
+      "nama_lengkap": "Novita Ardiyanti",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 14,
+      "nama_lengkap": "Anggita Pratiwi F",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 15,
+      "nama_lengkap": "Meta Pradi Wijayanti",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 16,
+      "nama_lengkap": "Ramses Sitorus",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 17,
+      "nama_lengkap": "Agung Septian",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom, M.Pd",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 18,
+      "nama_lengkap": "Syarif Ahmad Maulana",
+      "gelar_depan": null,
+      "gelar_belakang": "ST",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 19,
+      "nama_lengkap": "Nur Azizah Ayunda",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 20,
+      "nama_lengkap": "Muhammad Sopyan",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 21,
+      "nama_lengkap": "Eri Chandra A",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Kom",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 22,
+      "nama_lengkap": "Aprilla Hayati",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 23,
+      "nama_lengkap": "Arnah Fajarwati",
+      "gelar_depan": null,
+      "gelar_belakang": "SE",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 24,
+      "nama_lengkap": "Elanda Widyastuti",
+      "gelar_depan": null,
+      "gelar_belakang": "M.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 25,
+      "nama_lengkap": "Fransina Tresia A",
+      "gelar_depan": null,
+      "gelar_belakang": "SP, MM",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 26,
+      "nama_lengkap": "Marhanih",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Sos.I",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 27,
+      "nama_lengkap": "Rita Yusnita",
+      "gelar_depan": null,
+      "gelar_belakang": "SE, M.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 28,
+      "nama_lengkap": "Nurhayati",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 29,
+      "nama_lengkap": "Sri Isnawati",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd.I",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 30,
+      "nama_lengkap": "Nengsih",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 31,
+      "nama_lengkap": "Shabrina A Mubiina AL-H",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 32,
+      "nama_lengkap": "Febriana Buana Supa",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 33,
+      "nama_lengkap": "Andina Try Nurcahyani",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 34,
+      "nama_lengkap": "Einary Mahsa",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 35,
+      "nama_lengkap": "Doni Pratama",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "L"
+    },
+    {
+      "kode": 36,
+      "nama_lengkap": "Ireen Oktaviyani",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 37,
+      "nama_lengkap": "Sri Ayu Ratnaningsih",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "P"
+    },
+    {
+      "kode": 38,
+      "nama_lengkap": "Gifta Septiaman Waruwu",
+      "gelar_depan": null,
+      "gelar_belakang": "S.Pd",
+      "jenis_kelamin": "L"
+    }
+  ],
+  "rombel": [
+    {
+      "nama": "X TO 1",
+      "kode_guru_wali": 32
+    },
+    {
+      "nama": "X TO 2",
+      "kode_guru_wali": 13
+    },
+    {
+      "nama": "X TO 3",
+      "kode_guru_wali": 26
+    },
+    {
+      "nama": "X TO 4",
+      "kode_guru_wali": 30
+    },
+    {
+      "nama": "X TO 5",
+      "kode_guru_wali": 11
+    },
+    {
+      "nama": "X TJKT 1",
+      "kode_guru_wali": 24
+    },
+    {
+      "nama": "X TJKT 2",
+      "kode_guru_wali": 17
+    },
+    {
+      "nama": "X DKV 1",
+      "kode_guru_wali": 33
+    },
+    {
+      "nama": "X DKV 2",
+      "kode_guru_wali": 27
+    },
+    {
+      "nama": "X RPL",
+      "kode_guru_wali": 8
+    },
+    {
+      "nama": "XI TO 1",
+      "kode_guru_wali": 5
+    },
+    {
+      "nama": "XI TO 2",
+      "kode_guru_wali": 31
+    },
+    {
+      "nama": "XI TO 3",
+      "kode_guru_wali": 28
+    },
+    {
+      "nama": "XI TJKT",
+      "kode_guru_wali": 22
+    },
+    {
+      "nama": "XI DKV",
+      "kode_guru_wali": 3
+    },
+    {
+      "nama": "XI RPL",
+      "kode_guru_wali": 25
+    },
+    {
+      "nama": "XII TKRO 1",
+      "kode_guru_wali": 2
+    },
+    {
+      "nama": "XII TKRO 2",
+      "kode_guru_wali": 23
+    },
+    {
+      "nama": "XII TKJ 1",
+      "kode_guru_wali": 15
+    },
+    {
+      "nama": "XII DKV 1",
+      "kode_guru_wali": 4
+    },
+    {
+      "nama": "XII RPL",
+      "kode_guru_wali": 10
+    }
+  ],
+  "hari": {
+    "SENIN": {
+      "entries": [
+        {
+          "rombel": "X TO 1",
+          "slot": 1,
+          "mapel": "DDTO",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 2,
+          "mapel": "DDTO",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 3,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 4,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 5,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 6,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 5,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 6,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 8,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 10,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 5,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 7,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 8,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 9,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 10,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 1,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 2,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 4,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 5,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 6,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 9,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 10,
+          "mapel": "DDTO",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 1,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 2,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 3,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 4,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 9,
+          "mapel": "DDTO",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 10,
+          "mapel": "DDTO",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 1,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 2,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 7,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 8,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 4,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 7,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 8,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 9,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 10,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 1,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 2,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 5,
+          "mapel": "DDKV",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 6,
+          "mapel": "DDKV",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 7,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 8,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 9,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 1,
+          "mapel": "DDKV",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 2,
+          "mapel": "DDKV",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 3,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 4,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 5,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 6,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 1,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 2,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 3,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 4,
+          "mapel": "DDRPL",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 5,
+          "mapel": "DDRPL",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 6,
+          "mapel": "DDRPL",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 7,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 8,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 3,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 4,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 5,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 6,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 7,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 8,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 1,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 2,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 9,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 10,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 1,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 2,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 5,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 8,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 9,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 10,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 3,
+          "mapel": "FOTVIE",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 4,
+          "mapel": "FOTVIE",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 9,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 3,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 5,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 6,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 9,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 10,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 3,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 4,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 5,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 6,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 7,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 8,
+          "mapel": "WALAS",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 9,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 10,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 5,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 6,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 7,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 8,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 4,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 8,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 9,
+          "mapel": "ANIMASI",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 10,
+          "mapel": "ANIMASI",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 1,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 2,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        }
+      ],
+      "praktik": [
+        {
+          "rombel": "XI TO 1",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL SIANG, Syarif Ahmad Maulana, ST"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL PAGI, Syarif Ahmad Maulana, ST"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot_mulai": 3,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK LAB PAGI, Eri Chandra, S.Kom"
+        }
+      ]
+    },
+    "SELASA": {
+      "entries": [
+        {
+          "rombel": "X TO 3",
+          "slot": 1,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 2,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 5,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 6,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 9,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 10,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 7,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 8,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 1,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 2,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 5,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 6,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 7,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 8,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 9,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 5,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 9,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 10,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 4,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 5,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 6,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 1,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 2,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 3,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 4,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 9,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 10,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 5,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 6,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 9,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 4,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 5,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 9,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 10,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 3,
+          "mapel": "PKN",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 4,
+          "mapel": "PKN",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 7,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 8,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 9,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 10,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 1,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 2,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 3,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 8,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 9,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 10,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 3,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 7,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 8,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 1,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 2,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 8,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 10,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 1,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 2,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 3,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 4,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 5,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 1,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 2,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 3,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 4,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 5,
+          "mapel": "BK",
+          "kode_guru": "15"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 6,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 9,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 10,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 5,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 6,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 8,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 9,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 10,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 1,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 2,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 3,
+          "mapel": "ANIMASI",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 4,
+          "mapel": "ANIMASI",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 5,
+          "mapel": "UI/UX",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 6,
+          "mapel": "UI/UX",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 7,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 8,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 9,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 1,
+          "mapel": "PBO",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 2,
+          "mapel": "PBO",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 5,
+          "mapel": "S.DATA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 6,
+          "mapel": "S.DATA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 7,
+          "mapel": "PPB",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 8,
+          "mapel": "PPB",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 9,
+          "mapel": "PPB",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 10,
+          "mapel": "PPB",
+          "kode_guru": "21"
+        }
+      ],
+      "praktik": [
+        {
+          "rombel": "X TO 1",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL PAGI, Drs. Rekson Pangaribuan"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL SIANG, Donatus Soeti P, ST"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot_mulai": 1,
+          "slot_selesai": 8,
+          "deskripsi": "PRAKTIK LAB SIANG, Muhammad Sopyan, S.Kom"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK LAB PAGI, Suryani, S.Ds"
+        }
+      ]
+    },
+    "RABU": {
+      "entries": [
+        {
+          "rombel": "X TO 1",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 3,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 4,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 5,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 6,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 10,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 11,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 5,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 6,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 9,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 10,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 11,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 1,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 2,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 3,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 4,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 5,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 6,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 10,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 11,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 8,
+          "mapel": "BK",
+          "kode_guru": "14"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 11,
+          "mapel": "WALAS",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 1,
+          "mapel": "DDTJKT",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 2,
+          "mapel": "DDTJKT",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 3,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 4,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 5,
+          "mapel": "DDTJKT",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 6,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 8,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 9,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 10,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 11,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 1,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 2,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 3,
+          "mapel": "DDTJKT",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 4,
+          "mapel": "DDTJKT",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 7,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 8,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 9,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 11,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 9,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 10,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 11,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 8,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 10,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 11,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 1,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 2,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 9,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 10,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 11,
+          "mapel": "BK",
+          "kode_guru": "14"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 9,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 10,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 11,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 1,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 2,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 3,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 4,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 7,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 8,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 9,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 10,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 11,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 1,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 2,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 3,
+          "mapel": "BK",
+          "kode_guru": "5"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 4,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 7,
+          "mapel": "KJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 8,
+          "mapel": "KJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 9,
+          "mapel": "KJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 11,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 7,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 8,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 9,
+          "mapel": "DP",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 10,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 11,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 4,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 8,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 11,
+          "mapel": "BK",
+          "kode_guru": "15"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 1,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 2,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 8,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 9,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 10,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 11,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 1,
+          "mapel": "PKPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 2,
+          "mapel": "PKPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 5,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 6,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 9,
+          "mapel": "BK",
+          "kode_guru": "15"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 10,
+          "mapel": "TPAV",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 11,
+          "mapel": "TPAV",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 1,
+          "mapel": "S.DATA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 2,
+          "mapel": "S.DATA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 3,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 4,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 5,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 8,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 10,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 11,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        }
+      ],
+      "praktik": [
+        {
+          "rombel": "X TO 3",
+          "slot_mulai": 1,
+          "slot_selesai": 11,
+          "deskripsi": "PRAKTIK BENGKEL SIANG, Donatus Soeti P, ST"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot_mulai": 1,
+          "slot_selesai": 8,
+          "deskripsi": "PRAKTIK LAB PAGI, Muhammad Sopyan, S.Kom"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot_mulai": 1,
+          "slot_selesai": 11,
+          "deskripsi": "PRAKTIK BENGKEL PAGI, Rajayani Sianturi"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot_mulai": 1,
+          "slot_selesai": 11,
+          "deskripsi": "PRAKTIK LAB SIANG, Nur Azizah Ayunda, S.Kom"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot_mulai": 4,
+          "slot_selesai": 11,
+          "deskripsi": "PRAKTIK LAB PAGI, Ramses Sitorus, S.Kom"
+        }
+      ]
+    },
+    "KAMIS": {
+      "entries": [
+        {
+          "rombel": "X TO 1",
+          "slot": 1,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 2,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 3,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 4,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 8,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 10,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 1,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 2,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 3,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 4,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 5,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 6,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 8,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 1,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 2,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 9,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 10,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 3,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 4,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 5,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 6,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 7,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 8,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 5",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 1,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 2,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 5,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 6,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 7,
+          "mapel": "BK",
+          "kode_guru": "14"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 8,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 9,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot": 10,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 1,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 2,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 9,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 10,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 3,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 4,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 5,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 6,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 7,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 8,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 9,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 10,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "26/13"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 4,
+          "mapel": "INFO",
+          "kode_guru": "8"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 5,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 6,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 9,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X RPL",
+          "slot": 10,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 4,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 5,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 6,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 7,
+          "mapel": "PKN",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 8,
+          "mapel": "PKN",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 9,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 10,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "29"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 5,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "37"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 8,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 9,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 10,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 1,
+          "mapel": "GRAFIS",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 2,
+          "mapel": "GRAFIS",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 3,
+          "mapel": "FOTVIE",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 4,
+          "mapel": "FOTVIE",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 5,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 6,
+          "mapel": "PENJAS",
+          "kode_guru": "35"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 7,
+          "mapel": "GRAFIS",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 8,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 9,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 10,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 1,
+          "mapel": "PBO",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 2,
+          "mapel": "PBO",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 3,
+          "mapel": "PBO",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 4,
+          "mapel": "PEMWEB",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 5,
+          "mapel": "PEMWEB",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 6,
+          "mapel": "PEMWEB",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 7,
+          "mapel": "B.DATA",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 8,
+          "mapel": "B.DATA",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 9,
+          "mapel": "B.DATA",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 10,
+          "mapel": "B.DATA",
+          "kode_guru": "19"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 3,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 4,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 5,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 6,
+          "mapel": "PSPT",
+          "kode_guru": "7"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 7,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 8,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 9,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 10,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 4,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 8,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 9,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot": 10,
+          "mapel": "PKKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 4,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 5,
+          "mapel": "PKPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 6,
+          "mapel": "PKPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 7,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 8,
+          "mapel": "ASJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 9,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 10,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 9,
+          "mapel": "UI/UX",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 10,
+          "mapel": "UI/UX",
+          "kode_guru": "20"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 1,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 2,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "34"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 7,
+          "mapel": "BIND",
+          "kode_guru": "31"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 8,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 9,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 10,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        }
+      ],
+      "praktik": [
+        {
+          "rombel": "X TO 4",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL SIANG, Donatus Soeti P, ST"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK LAB PAGI, Ramses Sitorus, S.Kom"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK BENGKEL PAGI, Rajayani Sianturi"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot_mulai": 1,
+          "slot_selesai": 10,
+          "deskripsi": "PRAKTIK LAB SIANG, Ramses Sitorus, S.Kom"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot_mulai": 1,
+          "slot_selesai": 8,
+          "deskripsi": "PRAKTIK LAB PAGI, Suryani, S.Ds"
+        }
+      ]
+    },
+    "JUMAT": {
+      "entries": [
+        {
+          "rombel": "X TO 1",
+          "slot": 1,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 2,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 5,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 6,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 1",
+          "slot": 7,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 3,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 4,
+          "mapel": "IPAS",
+          "kode_guru": "22"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 5,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 6,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X TO 2",
+          "slot": 7,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 4,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TO 3",
+          "slot": 7,
+          "mapel": "INFO",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 3,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 4,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TO 4",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "26"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 1,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 2,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "33"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 5,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X TJKT 2",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "24"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 1,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 2,
+          "mapel": "KKA",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 3,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 4,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 5,
+          "mapel": "BK",
+          "kode_guru": "14"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 6,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 1",
+          "slot": 7,
+          "mapel": "IPAS",
+          "kode_guru": "3"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 1,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 2,
+          "mapel": "BIND",
+          "kode_guru": "28"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 3,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 4,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 5,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 6,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "X DKV 2",
+          "slot": 7,
+          "mapel": "BK",
+          "kode_guru": "14"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 1,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 2,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 3,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 4,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 5,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 6,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TO 1",
+          "slot": 7,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 1,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 2,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 5,
+          "mapel": "PSPT",
+          "kode_guru": "12"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 2",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 1,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 2,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 3,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 4,
+          "mapel": "PKKR",
+          "kode_guru": "2"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 5,
+          "mapel": "PMKR",
+          "kode_guru": "9"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 6,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TO 3",
+          "slot": 7,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 1,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 2,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 3,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 4,
+          "mapel": "SEJARAH",
+          "kode_guru": "27"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 5,
+          "mapel": "PPJ",
+          "kode_guru": "17"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI TJKT",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 3,
+          "mapel": "DP",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 4,
+          "mapel": "DP",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 5,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 6,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI DKV",
+          "slot": 7,
+          "mapel": "AGAMA",
+          "kode_guru": "29/13"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 1,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 2,
+          "mapel": "MTK",
+          "kode_guru": "25"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 3,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "6"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XI RPL",
+          "slot": 7,
+          "mapel": "BING",
+          "kode_guru": "38"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 1,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 2,
+          "mapel": "SENI",
+          "kode_guru": "36"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 3,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 4,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 6,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKRO 1",
+          "slot": 7,
+          "mapel": "KIK",
+          "kode_guru": "11"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 1,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 2,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 3,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 4,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 5,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 6,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII TKJ 1",
+          "slot": 7,
+          "mapel": "BK",
+          "kode_guru": "15"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 1,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 2,
+          "mapel": "JEPANG",
+          "kode_guru": "30"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 3,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 4,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 5,
+          "mapel": "KIK",
+          "kode_guru": "23"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 6,
+          "mapel": "TPAV",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XII DKV 1",
+          "slot": 7,
+          "mapel": "TPAV",
+          "kode_guru": "4"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 1,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 2,
+          "mapel": "BING",
+          "kode_guru": "10"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 3,
+          "mapel": "PBO",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 4,
+          "mapel": "PBO",
+          "kode_guru": "21"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 5,
+          "mapel": "BK",
+          "kode_guru": "15"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 6,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        },
+        {
+          "rombel": "XII RPL",
+          "slot": 7,
+          "mapel": "PKN",
+          "kode_guru": "32"
+        }
+      ],
+      "praktik": [
+        {
+          "rombel": "X TO 5",
+          "slot_mulai": 1,
+          "slot_selesai": 7,
+          "deskripsi": "PRAKTIK BENGKEL SIANG, Drs. Rekson Pangaribuan"
+        },
+        {
+          "rombel": "X TJKT 1",
+          "slot_mulai": 1,
+          "slot_selesai": 7,
+          "deskripsi": "PRAKTIK LAB SIANG, Ramses Sitorus, S.Kom"
+        },
+        {
+          "rombel": "X RPL",
+          "slot_mulai": 1,
+          "slot_selesai": 7,
+          "deskripsi": "PRAKTIK LAB PAGI, Parlidungan Siadari, S.Kom"
+        },
+        {
+          "rombel": "XII TKRO 2",
+          "slot_mulai": 1,
+          "slot_selesai": 7,
+          "deskripsi": "PRAKTIK BENGKEL PAGI, Syarif Ahmad Maulana, ST"
+        }
+      ]
+    }
+  }
+}

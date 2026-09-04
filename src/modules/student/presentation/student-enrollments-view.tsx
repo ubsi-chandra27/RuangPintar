@@ -4,7 +4,8 @@
  * Ruang Pintar — M07 Student Academic Lifecycle: Student Enrollments View
  */
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
   Search,
@@ -18,6 +19,12 @@ import {
   Layers,
   X,
   AlertTriangle,
+  Filter,
+  ChevronDown,
+  Check,
+  RotateCcw,
+  Download,
+  ArrowUpDown,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import {
@@ -48,14 +55,35 @@ export function StudentEnrollmentsView({
   rombels,
   canManage,
 }: StudentEnrollmentsViewProps) {
-  const [enrollments] = useState<StudentEnrollmentDTO[]>(initialEnrollments);
+  const router = useRouter();
+  const enrollments = initialEnrollments;
   const [selectedYearId, setSelectedYearId] = useState(
     activeYear?.id || (academicYears[0]?.id ?? "ALL")
   );
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("name_asc");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Popover toggle states
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Modals
   const [isEnrollOpen, setIsEnrollOpen] = useState(false);
@@ -76,8 +104,26 @@ export function StudentEnrollmentsView({
     return matchesYear && matchesStatus && matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredEnrollments.length / rowsPerPage) || 1;
-  const paginatedEnrollments = filteredEnrollments.slice(
+  const sortedEnrollments = [...filteredEnrollments].sort((a, b) => {
+    switch (sortBy) {
+      case "name_asc":
+        return (a.siswa_nama || "").localeCompare(b.siswa_nama || "", "id");
+      case "name_desc":
+        return (b.siswa_nama || "").localeCompare(a.siswa_nama || "", "id");
+      case "nis_asc":
+        return (a.siswa_nis || "").localeCompare(b.siswa_nis || "", "id");
+      case "date_desc":
+        return (
+          (b.tanggal_mulai ? new Date(b.tanggal_mulai).getTime() : 0) -
+          (a.tanggal_mulai ? new Date(a.tanggal_mulai).getTime() : 0)
+        );
+      default:
+        return (a.siswa_nama || "").localeCompare(b.siswa_nama || "", "id");
+    }
+  });
+
+  const totalPages = Math.ceil(sortedEnrollments.length / rowsPerPage) || 1;
+  const paginatedEnrollments = sortedEnrollments.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -154,6 +200,59 @@ export function StudentEnrollmentsView({
     });
   };
 
+  const handleExportCSV = () => {
+    if (sortedEnrollments.length === 0) {
+      setToast({ message: "Tidak ada data keikutsertaan untuk diekspor.", type: "error" });
+      return;
+    }
+
+    const headers = [
+      "No",
+      "NIS",
+      "Nama Siswa",
+      "Tahun Ajaran",
+      "Tingkat",
+      "Status Keikutsertaan",
+      "Tanggal Pendaftaran",
+    ];
+    const escapeCsv = (val: unknown) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = sortedEnrollments.map((e, idx) => [
+      idx + 1,
+      escapeCsv(e.siswa_nis),
+      escapeCsv(e.siswa_nama),
+      escapeCsv(e.tahun_ajaran_nama),
+      escapeCsv(e.tingkat_nama || "-"),
+      escapeCsv(e.status),
+      escapeCsv(e.tanggal_mulai ? new Date(e.tanggal_mulai).toLocaleDateString("id-ID") : "-"),
+    ]);
+
+    const delimiter = ";";
+    const csvContent =
+      "\uFEFF" + [headers.join(delimiter), ...rows.map((r) => r.join(delimiter))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `keikutsertaan_siswa_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToast({
+      message: `Berhasil mengekspor ${sortedEnrollments.length} data keikutsertaan ke CSV.`,
+      type: "success",
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -166,78 +265,202 @@ export function StudentEnrollmentsView({
         />
       )}
 
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-sm">
-        <div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[#2563EB]" />
-            Keikutsertaan Akademik Siswa
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Kelola pendaftaran siswa pada Tahun Ajaran operasional dan transisi kenaikan tingkat.
-          </p>
-        </div>
-        {canManage && (
-          <button
-            onClick={() => setIsEnrollOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            Daftarkan ke Periode
-          </button>
-        )}
-      </div>
+      {/* Table Toolbar (UI Kit Standard: Search + Filter + Sort + Export + Primary Button) */}
+      <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+          {/* Search Input with Leading & Trailing Icon */}
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search nama atau NIS siswa..."
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all shadow-2xs"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Hapus pencarian"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : (
+              <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none hidden sm:block" />
+            )}
+          </div>
 
-      {/* Filter Toolbar */}
-      <div className="p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 grid grid-cols-1 sm:grid-cols-12 gap-3">
-        <div className="sm:col-span-4 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Cari nama atau NIS siswa..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-          />
-        </div>
+          {/* Action Toolbar Buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
+            {/* Filter Dropdown Button */}
+            <div className="relative" ref={filterRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                  setIsSortOpen(false);
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0 ${
+                  selectedYearId !== "ALL" || statusFilter !== "ALL"
+                    ? "border-blue-300 bg-blue-50/70 text-[#2563EB]"
+                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                }`}
+              >
+                <Filter
+                  className={`h-4 w-4 ${
+                    selectedYearId !== "ALL" || statusFilter !== "ALL"
+                      ? "text-[#2563EB]"
+                      : "text-slate-600"
+                  }`}
+                />
+                <span>Filter</span>
+                {(selectedYearId !== "ALL" || statusFilter !== "ALL") && (
+                  <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
+                )}
+              </button>
 
-        <div className="sm:col-span-4">
-          <select
-            value={selectedYearId}
-            onChange={(e) => {
-              setSelectedYearId(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-700 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-          >
-            <option value="ALL">Semua Tahun Ajaran</option>
-            {academicYears.map((y) => (
-              <option key={y.id} value={y.id}>
-                {y.nama} {y.status === "AKTIF" ? "(Aktif)" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
+              {/* Filter Popover Menu */}
+              {isFilterOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 p-4 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-3 animate-in fade-in zoom-in-95">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Filter className="h-3.5 w-3.5 text-[#2563EB]" />
+                      Filter Keikutsertaan
+                    </span>
+                    {(selectedYearId !== "ALL" || statusFilter !== "ALL") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedYearId("ALL");
+                          setStatusFilter("ALL");
+                          setCurrentPage(1);
+                        }}
+                        className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        Reset
+                      </button>
+                    )}
+                  </div>
 
-        <div className="sm:col-span-4">
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-700 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-          >
-            <option value="ALL">Semua Status Keikutsertaan</option>
-            <option value="AKTIF">Aktif</option>
-            <option value="NAIK_KELAS">Naik Kelas</option>
-            <option value="TINGGAL_KELAS">Tinggal Kelas</option>
-            <option value="LULUS">Lulus</option>
-            <option value="PINDAH">Pindah</option>
-          </select>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Tahun Ajaran
+                    </label>
+                    <select
+                      value={selectedYearId}
+                      onChange={(e) => {
+                        setSelectedYearId(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                    >
+                      <option value="ALL">Semua Tahun Ajaran</option>
+                      {academicYears.map((y) => (
+                        <option key={y.id} value={y.id}>
+                          {y.nama} {y.status === "AKTIF" ? "(Aktif)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Status Keikutsertaan
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                    >
+                      <option value="ALL">Semua Status Keikutsertaan</option>
+                      <option value="AKTIF">Aktif</option>
+                      <option value="NAIK_KELAS">Naik Kelas</option>
+                      <option value="TINGGAL_KELAS">Tinggal Kelas</option>
+                      <option value="LULUS">Lulus</option>
+                      <option value="PINDAH">Pindah</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sort Dropdown Button */}
+            <div className="relative" ref={sortRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsFilterOpen(false);
+                }}
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              >
+                <ArrowUpDown className="h-4 w-4 text-slate-600" />
+                <span>Sort</span>
+              </button>
+
+              {/* Sort Popover Menu */}
+              {isSortOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 p-2 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-1 animate-in fade-in zoom-in-95">
+                  {[
+                    { id: "name_asc", label: "Nama Siswa (A - Z)" },
+                    { id: "name_desc", label: "Nama Siswa (Z - A)" },
+                    { id: "nis_asc", label: "NIS (Terkecil)" },
+                    { id: "date_desc", label: "Terbaru Didaftarkan" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                        sortBy === opt.id
+                          ? "bg-blue-50 text-[#2563EB] font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-[#2563EB]" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Export Dropdown / Button */}
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              title="Ekspor daftar keikutsertaan ke file CSV"
+            >
+              <Download className="h-4 w-4 text-slate-600" />
+              <span>Export</span>
+              <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+            </button>
+
+            {/* + Daftarkan ke Periode Primary Button */}
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => setIsEnrollOpen(true)}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Daftarkan ke Periode</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

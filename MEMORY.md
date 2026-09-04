@@ -32,16 +32,16 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 08 — STUDENT ACADEMIC LIFECYCLE
+PHASE 13 — ASSESSMENT, TP & GRADEBOOK (M13)
 
 Current Phase Status:
-APPROVED & CHECKPOINTED
+READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
-PHASE 08 — STUDENT ACADEMIC LIFECYCLE
+PHASE 12 — CLASS SESSION ATTENDANCE (MILESTONE D)
 
-Phase 08 Official Checkpoint Commit:
-7293667 (feat(student): establish student academic lifecycle (phase 08))
+Phase 12 Official Human Approval:
+APPROVED BY HUMAN (4 September 2026)
 ```
 
 ---
@@ -439,26 +439,16 @@ Implementasikan hanya pada phase yang membutuhkan.
 # 18. Current Active Work
 
 ```text
-PHASE 00
-Project Bootstrap & Environment Baseline
+PHASE 09 & 10
+Teacher Assignment & Academic Scheduling (Milestone C)
 ```
 
-Jangan implementasikan:
+Status:
 
 ```text
-Login final
-Authentication
-Authorization
-Domain database
-Dashboard
-Student
-Teacher
-Attendance
-Gradebook
-CBT
+READY FOR FINAL APPROVAL
+Jangan mulai Phase 11 sebelum keputusan Human.
 ```
-
-pada Phase 00.
 
 ---
 
@@ -491,3 +481,168 @@ Human menetapkan:
 APPROVED
 LOCKED
 ```
+
+---
+
+# 21. Data Riil Jadwal 2026/2027
+
+Sumber operasional terbaru:
+
+```text
+JADWAL PELAJARAN YES 2026.2027 (19 AGUSTUS 2026).pdf
+Sekolah: SMK OTOMINDO
+Tahun Ajaran: 2026/2027
+```
+
+Keadaan database utama setelah sinkronisasi:
+
+```text
+38 guru aktif
+41 mata pelajaran aktif
+21 rombel aktif
+303 penugasan mengajar aktif
+21 penugasan wali kelas aktif
+33 slot waktu aktif
+1.008 alokasi jadwal pada versi PUBLISHED
+```
+
+Keputusan implementasi:
+
+```text
+Versi lama dipertahankan sebagai ARSIP.
+Data dummy aktif dinonaktifkan atau dipetakan ulang tanpa merusak relasi historis.
+41 konflik guru yang memang terdapat pada dokumen sumber dicatat pada catatan versi.
+Pasangan kode guru agama disimpan sebagai guru utama + co-teacher pada catatan alokasi.
+Jenis kelamin guru wajib diverifikasi operator karena tidak tersedia pada PDF.
+Ruangan tetap kosong karena dokumen sumber tidak memuat data ruangan.
+```
+
+# 22. Revisi Papan Jadwal dan Slot Waktu
+
+Catatan revisi 31 Agustus 2026: Papan Jadwal mingguan, perspektif rombel/guru, mode Daftar, perbaikan UI Slot Waktu, dan fitur Quick Fill / Direct Slot Booking pada kartu slot kosong (baik perspektif Rombel maupun Guru dengan auto-prefill modal) telah diimplementasikan atas permintaan Human. Urutan internal 201/301 tidak lagi ditampilkan sebagai nomor JP. Pola hari dan konflik interval divalidasi server. Data riil tetap 33 slot aktif / 1.008 alokasi. Detail quality gate dan keterbatasan: `docs/phases/PHASE-10-SCHEDULE-BOARD-UI-REVIEW.md`. Status: READY FOR FINAL APPROVAL.
+
+---
+
+# 23. Hasil Human Review & Koreksi Interaktif Phase 09–10 (2 September 2026)
+
+Koreksi menyeluruh yang diselesaikan atas instruksi Human Review:
+1. **Root Cause P2003 & Proteksi Histori Akademik:** Mengeliminasi bug `PrismaClientKnownRequestError P2003` saat menghapus guru nonaktif. Menerapkan audit dependensi 8-titik (penugasan, wali kelas, jadwal, sesi kelas aktual, pengganti, materi, tugas, administrasi). Jika entitas memiliki histori, hard-delete ditolak di application/domain level dan tombol digantikan dengan *Arsipkan*. Pesan error ramah domain tanpa membocorkan stack trace.
+2. **Migrasi Status Lifecycle Database:** Migrasi `20260902090000_add_teacher_subject_lifecycle_status` menambahkan kolom `status_lifecycle` (`AKTIF`, `NONAKTIF`, `ARSIP`) pada tabel `guru` dan `mata_pelajaran` dengan indeks pendukung.
+3. **Checkbox Multi-Select & Bulk Action Toolbar:** Checkbox baris di posisi `[CHECKBOX] [FOTO] [IDENTITAS]` dengan dukungan header `checked`, `unchecked`, `indeterminate`. Floating toolbar (`X data dipilih`) dengan aksi Arsipkan, Nonaktifkan/Selesaikan, Hapus Permanen (smart fallback ke arsip jika ada item berhistori), dan Batal Pilih.
+4. **Avatar Guru Standar:** 44px (`w-11 h-11`), proporsional, lingkaran sempurna (`rounded-full`), `object-cover shrink-0 aspect-square border border-slate-200/80 shadow-2xs`, tidak terdistorsi.
+5. **Filter Status Default:** Default filter disetel ke `Aktif` di Data Guru, Mata Pelajaran, dan Penugasan Mengajar.
+6. **Consecutive Slot Merging & Tampilan Mobile Jadwal Saya:**
+   - Jam pelajaran berurutan (misal 2 JP, 3 JP, 4 JP) digabung otomatis menjadi 1 Card Sesi Terpadu (`06:30 - 07:50 • 2 JP (Jam ke-1 – 2)`).
+   - Tombol "Buka Kelas" diperjelas: untuk hari ini aktif dengan highlight dan badge "Sesi Hari Ini (Aktif)", sedangkan untuk hari lain tampil sebagai info "Terjadwal hari [Hari]".
+   - Filter hari dan tombol CSV disatukan menjadi 1 baris terpadu tanpa baris kedua kosong.
+   - Metrik atas mobile diubah menjadi 1 baris 3 kolom ringkas (`grid-cols-3`).
+7. **Suite Pengujian Wajib:** Penambahan `teacher-lifecycle-and-selection.test.tsx` (15 tests) dan test penggabungan slot di `schedule-views.test.tsx`. Total test suite meningkat menjadi 57 file, 294 tests (100% PASS).
+
+---
+
+# 24. Implementasi Phase 11 — Teacher Workspace & Learning Administration (M11)
+
+Catatan implementasi Phase 11 (2 September 2026):
+1. **Daftar Kelas Saya (`/kelas-saya`):** Menyajikan direktori kartu kelas rombel & mapel yang diampu guru, metrik jumlah JP mingguan, total siswa binaan, jumlah BAB, materi, tugas, dan jurnal KBM. Dilengkapi pencarian responsif dan status jadwal hari ini.
+2. **Workspace Kelas Terpadu (`/kelas-saya/[id]`):** Implementasi penuh `WORKSPACE-KELAS` sesuai anatomi roadmap:
+   - **Tab Ringkasan:** KPI kelas, alokasi jadwal KBM, dan tombol aksi cepat (*Quick Actions*).
+   - **Tab Jadwal:** Daftar alokasi jadwal mingguan resmi rombel dan mata pelajaran ini.
+   - **Tab Lingkup Materi (BAB) & TP:** Pengelolaan hierarki BAB materi pembelajaran dan Tujuan Pembelajaran (TP) per BAB dengan modal tambah, urutan otomatis, dan kontrol hapus aman.
+   - **Tab Materi Pembelajaran:** Penerbitan modul format dokumen, teks bacaan langsung, atau tautan daring (web/video) yang langsung terpublikasi ke kelas.
+   - **Tab Jurnal KBM (Administrasi Guru):** Pencatatan agenda KBM per pertemuan (nomor pertemuan, tanggal, materi yang disampaikan, kegiatan pembelajaran, catatan refleksi & kendala, status realisasi, serta keterkaitan multi-pilih ke Tujuan Pembelajaran).
+   - **Tab Tugas Pembelajaran:** Penerbitan penugasan siswa dengan kriteria pengumpulan berkas/teks, batas waktu (*deadline*), dan opsi toleransi keterlambatan.
+   - **Tab Presensi:** Tautan cepat terintegrasi ke Sesi Pembelajaran Aktual & Presensi KBM.
+   - **Tab Penilaian & CBT:** State terkendali (*controlled placeholders*) yang secara transparan menginformasikan kesiapan fitur pada Phase 13 (Assessment & Gradebook) dan Phase 14 (CBT Engine).
+3. **Otorisasi & Server Guard:** Dilindungi melalui `requirePermission("learning.material.view")` dan `requirePermission("learning.material.manage")`. Akses workspace kelas hanya dapat dibuka oleh guru pengampu penugasan tersebut atau Super Admin (default deny).
+4. **Quality Gates:** Seluruh quality gates (format, lint, typecheck, tests, build) lulus 100% dengan total 59 file pengujian dan 311 test case passing.
+
+---
+
+# 25. Keputusan Resmi Human Approval Phase 11 (3 September 2026)
+
+Human Reviewer secara resmi memberikan persetujuan (*approval*) pada 3 September 2026:
+- Seluruh 8 langkah pengujian otomatis end-to-end terverifikasi lolos 100% (autentikasi guru, daftar kelas saya, tambah & edit BAB, tambah & edit TP, terbitkan materi & unggah berkas dokumen via dropzone, catat jurnal KBM, terbitkan tugas kelas, dan pembaruan profil mandiri).
+- Fitur unduh dokumen materi terbukti melayani unduhan secara aman dan terproteksi dari `/api/berkas/[id]`.
+- Phase 11 dinyatakan **APPROVED & LOCKED**.
+
+---
+
+# 26. Inisiasi PHASE 12 — CLASS SESSION ATTENDANCE (M12)
+
+Tujuan: Membangun sistem presensi sesi kelas aktual terpadu untuk Teacher Academic MVP.
+
+1. **Prinsip & Invariant Wajib:**
+   ```text
+   School Attendance ≠ Class Session Attendance
+   ```
+   Kehadiran siswa di gerbang sekolah tidak sama dengan kehadiran di sesi kelas tertentu. Keduanya adalah fakta terpisah.
+
+2. **Domain Rules (FR-ATT-001 s/d FR-ATT-007):**
+   - Presensi hanya dapat dibuka pada `SesiKelasAktual` yang sah.
+   - Daftar siswa otomatis diambil dari `PenempatanRombel` berstatus `AKTIF` untuk rombel sesi tersebut.
+   - Status baseline: `HADIR`, `IZIN`, `SAKIT`, `ALPHA`, `DISPENSASI`, `TERLAMBAT`.
+   - Guru pengampu penugasan mengajar berhak mencatat dan menyimpan presensi. Guru tidak dapat memanipulasi presensi kelas di luar penugasannya.
+   - Koreksi presensi harus diaudit dengan jelas (`AuditLogger`).
+   - UI Presensi harus cepat (*one-click mark all present / tandai semua hadir*) dan tidak membutuhkan klik berlebihan.
+
+---
+
+# 27. Implementasi Phase 12 — Class Session Attendance (M12)
+
+Catatan penyelesaian Phase 12 (3 September 2026):
+1. **Model Data & Migrasi:** Menambahkan model `PresensiSesiKelas` dengan relasi ke `Sekolah`, `SesiKelasAktual`, `Siswa`, dan `PenempatanRombel`. Constraint unik `@@unique([sesi_kelas_id, siswa_id])` mencegah duplikasi data presensi per siswa per sesi. Migrasi `20260903180000_add_class_session_attendance` diterapkan forward secara aman.
+2. **Domain & Application Layer:**
+   - DTO & validasi skema Zod pada `src/modules/attendance/domain/`.
+   - `AttendanceRepository` menangani pengambilan roster siswa aktif, transactional upsert data presensi rombel, agregasi statistik kehadiran, dan riwayat presensi penugasan mengajar.
+   - `AttendanceService` menerapkan default-deny teacher scoping (hanya guru pengampu penugasan atau Super Admin yang dapat menyimpan presensi), otomatisasi transisi status sesi kelas menjadi `DIMULAI`, dan pencatatan audit log `recordAuditEvent`.
+3. **Server Actions & Permissions:**
+   - `getSessionAttendanceAction`, `saveSessionAttendanceAction`, `getAssignmentAttendanceHistoryAction` dilindungi `requireAuth()` dan pengecekan permission `attendance.session.view` serta `attendance.session.record`.
+4. **Academic Glass UI v1.2 Presentation:**
+   - `SessionAttendanceModal`: Modal dialog dan mobile sheet berkecepatan tinggi dengan fitur "Tandai Semua Hadir" (1-click), toggle status segmen berwarna semantik, input catatan otomatis untuk status non-hadir, kalkulasi persentase dan rincian KPI live, serta pencatatan audit alasan koreksi.
+   - `ClassAttendanceTabView`: Terintegrasi pada Tab "Presensi" di `/kelas-saya/[id]` menyajikan 4 kartu metrik KPI kehadiran rombel, status sesi, badge breakdown kehadiran (Hadir, Izin, Sakit, Alpha), serta tombol aksi "Buka / Koreksi Presensi".
+   - Integrasi tombol aksi "Presensi" langsung pada baris tabel `/sesi-pembelajaran`.
+5. **Verifikasi Quality Gates:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors, 0 warnings.
+   - Prettier: 100% compliant.
+   - Vitest: 61 test files, 323 tests passing (100% PASS).
+   - Next.js Production Build: 100% PASS (15.6s).
+   - Playwright End-to-End Walkthrough: 10 skenario visual berhasil 100% tersimpan di `docs/phases/screenshots/phase-12-walkthrough/`.
+   - Status: **APPROVED BY HUMAN (4 September 2026)**.
+
+---
+
+# 28. Implementasi Phase 13 — Assessment, TP & Gradebook (M13)
+
+Catatan implementasi Phase 13 (4 September 2026):
+1. **Puncak Teacher Academic MVP (Milestone D):** Menuntaskan siklus pengajaran guru dengan sistem penilaian berbasis Kurikulum Merdeka (Tujuan Pembelajaran / TP & Lingkup Materi / BAB) serta Matriks Buku Nilai Terpadu (*Gradebook Matrix*).
+2. **Penegakan Invariant Domain Fundamental:**
+   - **$\text{Assessment Definition} \neq \text{Grade} \neq \text{Grade Publication}$**: Pemisahan tegas antara kontrak asesmen (judul, kategori formatif/sumatif, bobot, teknik, KKTP, TP), lembar penilaian autentik siswa (`NilaiSiswa`), dan pelepasan resmi ke audiens sasaran (`PublikasiNilaiAsesmen`: Siswa, Wali Murid, atau Semua).
+   - **$\text{Missing Grade} \neq \text{Zero Grade}$**: Siswa yang belum dinilai bernilai `null` (tampil `-`) dan BUKAN `0`. Angka `0` adalah nilai absolut, sedangkan `null` menandakan proses asesmen belum terjadi. Perhitungan rerata kelas dan ketuntasan KKTP hanya membagi siswa yang telah dinilai (*assessed count*).
+   - **Dilarang Kolom Permanen Statis**: Tidak ada kolom `nilai_tp1` atau `nilai_tp2`. Matriks nilai digabungkan secara dinamis dari entri first-class `DefinisiAsesmen`.
+3. **Model Database & Migrasi (M13):**
+   - Migrasi forward: `20260904101500_add_assessment_and_gradebook`.
+   - Tabel: `definisi_asesmen` (`DefinisiAsesmen`), `nilai_siswa` (`NilaiSiswa` dengan `nilai_angka Float?`), dan `publikasi_nilai_asesmen` (`PublikasiNilaiAsesmen`).
+   - Indeks dan constraint: `@@unique([asesmen_id, siswa_id])` dan `@@index([asesmen_id, status])`.
+4. **Arsitektur & Server Actions:**
+   - Domain Layer: `assessment-types.ts`, `assessment-errors.ts`, `assessment-validation.ts` (Zod schemas).
+   - Infrastructure Layer: `assessment-repository.ts` (Atomic Prisma transactions, upsert nilai siswa, kalkulasi statistik kelas, matriks buku nilai).
+   - Application Layer: `assessment-service.ts` (Teacher scope security guard, default-deny, audit logging via `recordAuditEvent`).
+   - Server Actions: `createAssessmentAction`, `updateAssessmentAction`, `deleteAssessmentAction`, `getAssessmentGradesAction`, `saveAssessmentGradesAction`, `publishAssessmentAction`, `getClassGradebookAction` pada `src/app/actions/assessment-actions.ts`.
+5. **Academic Glass UI v1.2 Presentation:**
+   - `CreateAssessmentModal`: Modal pembuatan asesmen baru berbasis TP & Lingkup Materi.
+   - `InputGradesModal`: Lembar input nilai interaktif cepat dengan auto-populasi rombel aktif, quick fill KKTP, validasi 0–100, dan draft vs publish.
+   - `PublishAssessmentModal`: Dialog pelepasan publikasi resmi ke siswa dan orang tua/wali.
+   - `ClassAssessmentTabView`: Tab 8 Workspace Kelas (`/kelas-saya/[id]`) yang menyajikan sub-tab Daftar Asesmen & Matriks Buku Nilai Dinamis dengan metrik rerata kelas dan persentase KKTP.
+   - `TeacherGradebookOverviewView`: Halaman terpusat Buku Nilai Guru (`/penilaian`) yang merangkum seluruh kelas penugasan mengajar.
+6. **Verifikasi Quality Gates:**
+   - Typecheck (`tsc --noEmit`): 0 errors.
+   - ESLint: 0 errors, 0 warnings.
+   - Formatter (`prettier`): 100% compliant.
+   - Unit & Integration Tests (`vitest`): 65 test files, 340 tests passing (100% PASS).
+   - Production Build: 100% PASS.
+   - Automated Walkthrough: 11 skenario visual berhasil 100% tersimpan di `docs/phases/screenshots/phase-13-walkthrough/`.
+   - Status: **READY FOR HUMAN REVIEW**.
+
+
+

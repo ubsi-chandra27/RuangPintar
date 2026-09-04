@@ -1,0 +1,23 @@
+[
+  {
+    "mainOverflow": false,
+    "pageOverflow": false,
+    "viewport": "390x844"
+  },
+  {
+    "mainOverflow": false,
+    "pageOverflow": false,
+    "viewport": "768x1024"
+  },
+  {
+    "mainOverflow": false,
+    "pageOverflow": false,
+    "tableOverflow": false,
+    "viewport": "1024x768"
+  },
+  {
+    "mainOverflow": false,
+    "pageOverflow": false,
+    "viewport": "1440x900"
+  }
+]

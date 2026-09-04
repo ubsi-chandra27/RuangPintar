@@ -9,53 +9,74 @@ generator client {
 
 /// M01 — School & Organization: Konteks organisasi sekolah utama
 model Sekolah {
-  id              String   @id
-  nama            String
-  npsn            String?  @unique
-  jenjang         String   // SD | SMP | SMA | SMK | UMUM
-  alamat          String?
-  telepon         String?
-  email           String?
-  zona_waktu      String   @default("Asia/Jakarta")
-  logo_url        String?
-  status_aktif    Boolean  @default(true)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id           String   @id
+  nama         String
+  npsn         String?  @unique
+  jenjang      String // SD | SMP | SMA | SMK | UMUM
+  alamat       String?
+  telepon      String?
+  email        String?
+  zona_waktu   String   @default("Asia/Jakarta")
+  logo_url     String?
+  status_aktif Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
-  unit_organisasi    UnitOrganisasi[]
-  jabatan            Jabatan[]
-  penugasan_jabatan  PenugasanJabatan[]
-  konfigurasi_sistem KonfigurasiSistem[]
-  metadata_berkas    MetadataBerkas[]
-  log_audit          LogAudit[]
-  pengguna           Pengguna[]
-  tahun_ajaran       TahunAjaran[]
-  semester           Semester[]
-  fase               Fase[]
-  tingkat_kelas      TingkatKelas[]
-  program_keahlian   ProgramKeahlian[]
-  rombel             Rombel[]
-  siswa              Siswa[]
+  unit_organisasi     UnitOrganisasi[]
+  jabatan             Jabatan[]
+  penugasan_jabatan   PenugasanJabatan[]
+  konfigurasi_sistem  KonfigurasiSistem[]
+  metadata_berkas     MetadataBerkas[]
+  log_audit           LogAudit[]
+  pengguna            Pengguna[]
+  tahun_ajaran        TahunAjaran[]
+  semester            Semester[]
+  fase                Fase[]
+  tingkat_kelas       TingkatKelas[]
+  program_keahlian    ProgramKeahlian[]
+  rombel              Rombel[]
+  siswa               Siswa[]
   keikutsertaan_siswa KeikutsertaanSiswa[]
-  penempatan_rombel  PenempatanRombel[]
+  penempatan_rombel   PenempatanRombel[]
+  guru                Guru[]
+  mata_pelajaran      MataPelajaran[]
+  penugasan_mengajar  PenugasanMengajar[]
+  penugasan_wali      PenugasanWaliKelas[]
+  kalender_akademik   KalenderAkademik[]
+  slot_waktu          SlotWaktu[]
+  versi_jadwal        VersiJadwal[]
+  jadwal_pelajaran          JadwalPelajaran[]
+  sesi_kelas_aktual         SesiKelasAktual[]
+  lingkup_materi            LingkupMateri[]
+  tujuan_pembelajaran       TujuanPembelajaran[]
+  materi_pembelajaran       MateriPembelajaran[]
+  publikasi_materi          PublikasiMateri[]
+  definisi_tugas            DefinisiTugas[]
+  publikasi_tugas           PublikasiTugas[]
+  pengumpulan_tugas         PengumpulanTugas[]
+  administrasi_pembelajaran AdministrasiPembelajaran[]
+  presensi_sesi_kelas       PresensiSesiKelas[]
+  definisi_asesmen          DefinisiAsesmen[]
+  nilai_siswa               NilaiSiswa[]
+  publikasi_nilai_asesmen   PublikasiNilaiAsesmen[]
 
   @@map("sekolah")
 }
 
 /// M01 — School & Organization: Bagian atau unit organisasi sekolah
 model UnitOrganisasi {
-  id              String   @id
-  sekolah_id      String
-  nama            String
-  kode            String?
-  induk_unit_id   String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id            String   @id
+  sekolah_id    String
+  nama          String
+  kode          String?
+  induk_unit_id String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  sekolah         Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  induk_unit      UnitOrganisasi?   @relation("HierarkiUnit", fields: [induk_unit_id], references: [id], onDelete: SetNull)
-  sub_unit        UnitOrganisasi[]  @relation("HierarkiUnit")
-  jabatan         Jabatan[]
+  sekolah    Sekolah          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  induk_unit UnitOrganisasi?  @relation("HierarkiUnit", fields: [induk_unit_id], references: [id], onDelete: SetNull)
+  sub_unit   UnitOrganisasi[] @relation("HierarkiUnit")
+  jabatan    Jabatan[]
 
   @@unique([sekolah_id, nama])
   @@map("unit_organisasi")
@@ -63,18 +84,18 @@ model UnitOrganisasi {
 
 /// M01 — School & Organization: Jabatan organisasi struktural (Kepala Sekolah, Wakasek, dll)
 model Jabatan {
-  id              String   @id
-  sekolah_id      String
-  unit_id         String?
-  kode_jabatan    String   // HEADMASTER | VICE_PRINCIPAL_CURRICULUM | VICE_PRINCIPAL_STUDENT_AFFAIRS | PROGRAM_HEAD | CUSTOM
-  nama_jabatan    String
-  tingkat_akses   String?  // Scope default (SCHOOL_WIDE | UNIT_WIDE | PROGRAM_WIDE)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id            String   @id
+  sekolah_id    String
+  unit_id       String?
+  kode_jabatan  String // HEADMASTER | VICE_PRINCIPAL_CURRICULUM | VICE_PRINCIPAL_STUDENT_AFFAIRS | PROGRAM_HEAD | CUSTOM
+  nama_jabatan  String
+  tingkat_akses String? // Scope default (SCHOOL_WIDE | UNIT_WIDE | PROGRAM_WIDE)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  sekolah         Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  unit            UnitOrganisasi?   @relation(fields: [unit_id], references: [id], onDelete: SetNull)
-  penugasan       PenugasanJabatan[]
+  sekolah   Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  unit      UnitOrganisasi?    @relation(fields: [unit_id], references: [id], onDelete: SetNull)
+  penugasan PenugasanJabatan[]
 
   @@unique([sekolah_id, kode_jabatan])
   @@map("jabatan")
@@ -82,19 +103,19 @@ model Jabatan {
 
 /// M01 — School & Organization: Penugasan personil ke jabatan dalam periode tertentu
 model PenugasanJabatan {
-  id              String    @id
-  sekolah_id      String
-  jabatan_id      String
-  personil_id     String    // Mengacu ke User Account / Profil Personil
-  berlaku_mulai   DateTime
-  berlaku_sampai  DateTime?
-  status          String    @default("AKTIF") // AKTIF | SELESAI | DIBATALKAN
-  catatan         String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+  id             String    @id
+  sekolah_id     String
+  jabatan_id     String
+  personil_id    String // Mengacu ke User Account / Profil Personil
+  berlaku_mulai  DateTime
+  berlaku_sampai DateTime?
+  status         String    @default("AKTIF") // AKTIF | SELESAI | DIBATALKAN
+  catatan        String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
 
-  sekolah         Sekolah   @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  jabatan         Jabatan   @relation(fields: [jabatan_id], references: [id], onDelete: Restrict)
+  sekolah Sekolah @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  jabatan Jabatan @relation(fields: [jabatan_id], references: [id], onDelete: Restrict)
 
   @@index([personil_id, status])
   @@map("penugasan_jabatan")
@@ -102,16 +123,16 @@ model PenugasanJabatan {
 
 /// M03 — Platform Configuration: Parameter konfigurasi sistem & sekolah
 model KonfigurasiSistem {
-  id              String   @id
-  sekolah_id      String?
-  kunci           String
-  nilai           String
-  kategori        String   @default("UMUM") // UMUM | AKADEMIK | TAMPILAN | INTEGRASI
-  deskripsi       String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id         String   @id
+  sekolah_id String?
+  kunci      String
+  nilai      String
+  kategori   String   @default("UMUM") // UMUM | AKADEMIK | TAMPILAN | INTEGRASI
+  deskripsi  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  sekolah         Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+  sekolah Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
 
   @@unique([sekolah_id, kunci])
   @@map("konfigurasi_sistem")
@@ -119,19 +140,23 @@ model KonfigurasiSistem {
 
 /// M04 — File & Document: Metadata berkas privat & attachment
 model MetadataBerkas {
-  id                String   @id
-  sekolah_id        String?
-  nama_file_asli    String
-  storage_provider  String   @default("LOCAL") // LOCAL | S3_COMPATIBLE
-  storage_key       String   @unique
-  mime_type         String
-  ukuran_byte       Int
-  checksum          String?
-  status            String   @default("AKTIF") // DRAFT | AKTIF | TERHAPUS
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id               String   @id
+  sekolah_id       String?
+  nama_file_asli   String
+  storage_provider String   @default("LOCAL") // LOCAL | S3_COMPATIBLE
+  storage_key      String   @unique
+  mime_type        String
+  ukuran_byte      Int
+  checksum         String?
+  status           String   @default("AKTIF") // DRAFT | AKTIF | TERHAPUS
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
-  sekolah           Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+  sekolah Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+
+  materi_pembelajaran MateriPembelajaran[]
+  definisi_tugas      DefinisiTugas[]
+  pengumpulan_tugas   PengumpulanTugas[]
 
   @@index([storage_provider, status])
   @@map("metadata_berkas")
@@ -139,20 +164,20 @@ model MetadataBerkas {
 
 /// M05 — Audit & Traceability: Log audit transaksi & mutasi data (Append-only)
 model LogAudit {
-  id                String   @id
-  sekolah_id        String?
-  aktor_id          String
-  aktor_role        String
-  aksi              String   // CREATE | UPDATE | DELETE | PUBLISH | FINALIZE | AUTH_LOGIN | dll
-  tipe_sumber       String   // Nama agregat / modul terkait (e.g. SEKOLAH | PENILAIAN | PRESENSI | PENGGUNA)
-  id_sumber         String
-  payload_sebelum   String?  // JSON snapshot sebelum perubahan (opsional)
-  payload_sesudah   String?  // JSON snapshot setelah perubahan (opsional)
-  ip_address        String?
-  user_agent        String?
-  dibuat_pada       DateTime @default(now())
+  id              String   @id
+  sekolah_id      String?
+  aktor_id        String
+  aktor_role      String
+  aksi            String // CREATE | UPDATE | DELETE | PUBLISH | FINALIZE | AUTH_LOGIN | dll
+  tipe_sumber     String // Nama agregat / modul terkait (e.g. SEKOLAH | PENILAIAN | PRESENSI | PENGGUNA)
+  id_sumber       String
+  payload_sebelum String? // JSON snapshot sebelum perubahan (opsional)
+  payload_sesudah String? // JSON snapshot setelah perubahan (opsional)
+  ip_address      String?
+  user_agent      String?
+  dibuat_pada     DateTime @default(now())
 
-  sekolah           Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+  sekolah Sekolah? @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
 
   @@index([sekolah_id, dibuat_pada])
   @@index([aktor_id, dibuat_pada])
@@ -162,19 +187,19 @@ model LogAudit {
 
 /// Data Architecture: Transactional Outbox untuk pemrosesan asinkron reliabel
 model OutboxPesan {
-  id                         String    @id
-  tipe_event                 String
-  tipe_agregat               String
-  id_agregat                 String
-  payload                    String    // JSON data spesifik downstream
-  status                     String    @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
-  jumlah_percobaan           Int       @default(0)
-  maks_percobaan             Int       @default(5)
-  percobaan_berikutnya_pada  DateTime  @default(now())
-  diproses_pada              DateTime?
-  pesan_error                String?
-  dibuat_pada                DateTime  @default(now())
-  diperbarui_pada            DateTime  @updatedAt
+  id                        String    @id
+  tipe_event                String
+  tipe_agregat              String
+  id_agregat                String
+  payload                   String // JSON data spesifik downstream
+  status                    String    @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+  jumlah_percobaan          Int       @default(0)
+  maks_percobaan            Int       @default(5)
+  percobaan_berikutnya_pada DateTime  @default(now())
+  diproses_pada             DateTime?
+  pesan_error               String?
+  dibuat_pada               DateTime  @default(now())
+  diperbarui_pada           DateTime  @updatedAt
 
   @@index([status, percobaan_berikutnya_pada])
   @@map("outbox_pesan")
@@ -182,25 +207,27 @@ model OutboxPesan {
 
 /// M02 — Identity & Access: Akun pengguna autentikasi
 model Pengguna {
-  id                     String    @id
-  sekolah_id             String?
-  username               String    @unique
-  email                  String?   @unique
-  password_hash          String
-  nama_lengkap           String
-  peran_dasar            String    // SUPER_ADMIN | SCHOOL_STAFF | TEACHER | STUDENT | GUARDIAN
-  status_akun            String    @default("AKTIF") // AKTIF | NONAKTIF | TERKUNCI | DITANGGUHKAN | MENUNGGU_VERIFIKASI
-  harus_ganti_password   Boolean   @default(false)
-  terakhir_login_pada    DateTime?
-  percobaan_login_gagal  Int       @default(0)
-  dikunci_sampai         DateTime?
-  created_at             DateTime  @default(now())
-  updated_at             DateTime  @updatedAt
+  id                    String    @id
+  sekolah_id            String?
+  username              String    @unique
+  email                 String?   @unique
+  password_hash         String
+  nama_lengkap          String
+  peran_dasar           String // SUPER_ADMIN | SCHOOL_STAFF | TEACHER | STUDENT | GUARDIAN
+  status_akun           String    @default("AKTIF") // AKTIF | NONAKTIF | TERKUNCI | DITANGGUHKAN | MENUNGGU_VERIFIKASI
+  harus_ganti_password  Boolean   @default(false)
+  terakhir_login_pada   DateTime?
+  percobaan_login_gagal Int       @default(0)
+  dikunci_sampai        DateTime?
+  foto_url              String?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
 
-  sekolah                Sekolah?              @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
-  sesi                   SesiPengguna[]
-  kemampuan_staff        KemampuanStaff[]
-  siswa                  Siswa?
+  sekolah         Sekolah?         @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+  sesi            SesiPengguna[]
+  kemampuan_staff KemampuanStaff[]
+  siswa           Siswa?
+  guru            Guru?
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -209,12 +236,12 @@ model Pengguna {
 
 /// M02 — Identity & Access: Penugasan capability bundle untuk SCHOOL_STAFF
 model KemampuanStaff {
-  id              String    @id
-  pengguna_id     String
-  kode_kemampuan  String    // SYSTEM_ADMIN | ACADEMIC_OPERATOR | STUDENT_DATA_OPERATOR | REPORT_OPERATOR
-  created_at      DateTime  @default(now())
+  id             String   @id
+  pengguna_id    String
+  kode_kemampuan String // SYSTEM_ADMIN | ACADEMIC_OPERATOR | STUDENT_DATA_OPERATOR | REPORT_OPERATOR
+  created_at     DateTime @default(now())
 
-  pengguna        Pengguna  @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
 
   @@unique([pengguna_id, kode_kemampuan])
   @@index([kode_kemampuan])
@@ -223,19 +250,19 @@ model KemampuanStaff {
 
 /// M02 — Identity & Access: Sesi aktif server-authoritative
 model SesiPengguna {
-  id                  String    @id
+  id                  String   @id
   pengguna_id         String
-  token_hash          String    @unique
+  token_hash          String   @unique
   ip_address          String?
   user_agent          String?
   berlaku_sampai      DateTime
-  terakhir_aktif_pada DateTime  @default(now())
-  dicabut             Boolean   @default(false)
+  terakhir_aktif_pada DateTime @default(now())
+  dicabut             Boolean  @default(false)
   alasan_cabut        String?
-  created_at          DateTime  @default(now())
-  updated_at          DateTime  @updatedAt
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 
-  pengguna            Pengguna  @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
 
   @@index([pengguna_id, dicabut, berlaku_sampai])
   @@map("sesi_pengguna")
@@ -243,12 +270,12 @@ model SesiPengguna {
 
 /// M02 — Identity & Access: Pencatatan percobaan login untuk mitigasi brute force
 model LogPercobaanLogin {
-  id              String    @id
-  identifier      String    // username atau IP address
-  ip_address      String
-  sukses          Boolean
-  alasan_gagal    String?
-  dibuat_pada     DateTime  @default(now())
+  id           String   @id
+  identifier   String // username atau IP address
+  ip_address   String
+  sukses       Boolean
+  alasan_gagal String?
+  dibuat_pada  DateTime @default(now())
 
   @@index([identifier, dibuat_pada])
   @@index([ip_address, dibuat_pada])
@@ -257,20 +284,26 @@ model LogPercobaanLogin {
 
 /// M06 — Academic Period & Structure: Tahun Ajaran (Konteks siklus akademik tahunan)
 model TahunAjaran {
-  id              String               @id
+  id              String   @id
   sekolah_id      String
-  nama            String               // e.g. "2026/2027"
-  kode            String?              // e.g. "TA-2026-2027"
+  nama            String // e.g. "2026/2027"
+  kode            String? // e.g. "TA-2026-2027"
   tanggal_mulai   DateTime
   tanggal_selesai DateTime
-  status          String               @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
-  created_at      DateTime             @default(now())
-  updated_at      DateTime             @updatedAt
+  status          String   @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
   semester            Semester[]
   rombel              Rombel[]
   keikutsertaan_siswa KeikutsertaanSiswa[]
+  penugasan_mengajar  PenugasanMengajar[]
+  penugasan_wali      PenugasanWaliKelas[]
+  kalender_akademik   KalenderAkademik[]
+  versi_jadwal        VersiJadwal[]
+  jadwal_pelajaran    JadwalPelajaran[]
+  sesi_kelas_aktual   SesiKelasAktual[]
 
   @@unique([sekolah_id, nama])
   @@index([sekolah_id, status])
@@ -279,21 +312,26 @@ model TahunAjaran {
 
 /// M06 — Academic Period & Structure: Semester dalam Tahun Ajaran
 model Semester {
-  id              String      @id
+  id              String   @id
   sekolah_id      String
   tahun_ajaran_id String
-  nama            String      // e.g. "Semester Ganjil", "Semester Genap"
-  kode            String      // GANJIL | GENAP | PENDEK
-  urutan          Int         @default(1) // 1 = Ganjil, 2 = Genap, 3 = Pendek
+  nama            String // e.g. "Semester Ganjil", "Semester Genap"
+  kode            String // GANJIL | GENAP | PENDEK
+  urutan          Int      @default(1) // 1 = Ganjil, 2 = Genap, 3 = Pendek
   tanggal_mulai   DateTime
   tanggal_selesai DateTime
-  status          String      @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @updatedAt
+  status          String   @default("DRAFT") // DRAFT | AKTIF | SELESAI | DIARSIPKAN
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  sekolah         Sekolah     @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  tahun_ajaran    TahunAjaran @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
-  rombel          Rombel[]
+  sekolah            Sekolah             @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tahun_ajaran       TahunAjaran         @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  rombel             Rombel[]
+  penugasan_mengajar PenugasanMengajar[]
+  kalender_akademik  KalenderAkademik[]
+  versi_jadwal       VersiJadwal[]
+  jadwal_pelajaran   JadwalPelajaran[]
+  sesi_kelas_aktual  SesiKelasAktual[]
 
   @@unique([tahun_ajaran_id, kode])
   @@index([sekolah_id, status])
@@ -302,18 +340,18 @@ model Semester {
 
 /// M06 — Academic Period & Structure: Fase Pendidikan (Kurikulum Merdeka / Jenjang Pendidikan)
 model Fase {
-  id              String         @id
-  sekolah_id      String
-  nama            String         // e.g. "Fase E", "Fase F", "Fase A"
-  kode            String         // e.g. "FASE_E", "FASE_F"
-  deskripsi       String?
-  urutan          Int            @default(1)
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
+  id         String   @id
+  sekolah_id String
+  nama       String // e.g. "Fase E", "Fase F", "Fase A"
+  kode       String // e.g. "FASE_E", "FASE_F"
+  deskripsi  String?
+  urutan     Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  sekolah         Sekolah        @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  tingkat_kelas   TingkatKelas[]
-  rombel          Rombel[]
+  sekolah       Sekolah        @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tingkat_kelas TingkatKelas[]
+  rombel        Rombel[]
 
   @@unique([sekolah_id, kode])
   @@map("fase")
@@ -321,14 +359,14 @@ model Fase {
 
 /// M06 — Academic Period & Structure: Tingkat / Grade Level (X, XI, XII / 1-12)
 model TingkatKelas {
-  id              String               @id
-  sekolah_id      String
-  fase_id         String?
-  kode            String               // e.g. "10", "11", "12" atau "X", "XI", "XII"
-  nama            String               // e.g. "Kelas 10", "Kelas X"
-  urutan          Int                  @default(1)
-  created_at      DateTime             @default(now())
-  updated_at      DateTime             @updatedAt
+  id         String   @id
+  sekolah_id String
+  fase_id    String?
+  kode       String // e.g. "10", "11", "12" atau "X", "XI", "XII"
+  nama       String // e.g. "Kelas 10", "Kelas X"
+  urutan     Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
   fase                Fase?                @relation(fields: [fase_id], references: [id], onDelete: SetNull)
@@ -341,18 +379,18 @@ model TingkatKelas {
 
 /// M06 — Academic Period & Structure: Program Akademik / Jurusan / Konsentrasi Keahlian
 model ProgramKeahlian {
-  id              String     @id
-  sekolah_id      String
-  kode            String     // e.g. "RPL", "TKJ", "DKV", "IPA", "IPS", "UMUM"
-  nama            String     // e.g. "Rekayasa Perangkat Lunak"
-  jenjang         String?    // e.g. "SMK", "SMA", "SMP", "SD"
-  status_aktif    Boolean    @default(true)
-  deskripsi       String?
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  id           String   @id
+  sekolah_id   String
+  kode         String // e.g. "RPL", "TKJ", "DKV", "IPA", "IPS", "UMUM"
+  nama         String // e.g. "Rekayasa Perangkat Lunak"
+  jenjang      String? // e.g. "SMK", "SMA", "SMP", "SD"
+  status_aktif Boolean  @default(true)
+  deskripsi    String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
-  sekolah         Sekolah    @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  rombel          Rombel[]
+  sekolah Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  rombel  Rombel[]
 
   @@unique([sekolah_id, kode])
   @@map("program_keahlian")
@@ -360,28 +398,32 @@ model ProgramKeahlian {
 
 /// M06 — Academic Period & Structure: Rombel / Rombongan Belajar (Kelompok Belajar Periodik)
 model Rombel {
-  id                String             @id
-  sekolah_id        String
-  tahun_ajaran_id   String
-  semester_id       String?
-  tingkat_id        String
-  fase_id           String?
-  program_id        String?            // Opsional (null untuk non-kejuruan / SD / SMP / SMA Umum)
-  nama              String             // e.g. "X RPL 1", "XI TO 2", "7A"
-  kode              String?            // e.g. "RBL-X-RPL-1"
-  kapasitas         Int                @default(36)
-  status            String             @default("AKTIF") // AKTIF | NONAKTIF | DIARSIPKAN
-  catatan           String?
-  created_at        DateTime           @default(now())
-  updated_at        DateTime           @updatedAt
+  id              String   @id
+  sekolah_id      String
+  tahun_ajaran_id String
+  semester_id     String?
+  tingkat_id      String
+  fase_id         String?
+  program_id      String? // Opsional (null untuk non-kejuruan / SD / SMP / SMA Umum)
+  nama            String // e.g. "X RPL 1", "XI TO 2", "7A"
+  kode            String? // e.g. "RBL-X-RPL-1"
+  kapasitas       Int      @default(36)
+  status          String   @default("AKTIF") // AKTIF | NONAKTIF | DIARSIPKAN
+  catatan         String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  sekolah           Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  tahun_ajaran      TahunAjaran        @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
-  semester          Semester?          @relation(fields: [semester_id], references: [id], onDelete: SetNull)
-  tingkat           TingkatKelas       @relation(fields: [tingkat_id], references: [id], onDelete: Restrict)
-  fase              Fase?              @relation(fields: [fase_id], references: [id], onDelete: SetNull)
-  program           ProgramKeahlian?   @relation(fields: [program_id], references: [id], onDelete: SetNull)
-  penempatan_rombel PenempatanRombel[]
+  sekolah            Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tahun_ajaran       TahunAjaran          @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester           Semester?            @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  tingkat            TingkatKelas         @relation(fields: [tingkat_id], references: [id], onDelete: Restrict)
+  fase               Fase?                @relation(fields: [fase_id], references: [id], onDelete: SetNull)
+  program            ProgramKeahlian?     @relation(fields: [program_id], references: [id], onDelete: SetNull)
+  penempatan_rombel  PenempatanRombel[]
+  penugasan_mengajar PenugasanMengajar[]
+  penugasan_wali     PenugasanWaliKelas[]
+  jadwal_pelajaran   JadwalPelajaran[]
+  sesi_kelas_aktual  SesiKelasAktual[]
 
   @@unique([sekolah_id, tahun_ajaran_id, nama])
   @@index([sekolah_id, tahun_ajaran_id, status])
@@ -390,32 +432,35 @@ model Rombel {
 
 /// M07 — Student Academic Lifecycle: Identitas Dasar Siswa (Individu)
 model Siswa {
-  id               String    @id
-  sekolah_id       String
-  pengguna_id      String?   @unique
-  nis              String    // Nomor Induk Siswa lokal sekolah
-  nisn             String?   // Nomor Induk Siswa Nasional (10 digit)
-  nama_lengkap     String
-  jenis_kelamin    String    // L | P
-  tempat_lahir     String?
-  tanggal_lahir    DateTime?
-  agama            String?   // ISLAM | KRISTEN | KATOLIK | HINDU | BUDDHA | KONGHUCU | LAINNYA
-  nik              String?
-  alamat           String?
-  nama_wali        String?
-  telepon_wali     String?
-  email_wali       String?
-  status_akademik  String    @default("AKTIF") // AKTIF | NONAKTIF | LULUS | PINDAH | KELUAR | DROPOUT
-  foto_url         String?   // URL atau data foto profil siswa
-  tanggal_masuk    DateTime  @default(now())
-  tanggal_keluar   DateTime?
-  catatan          String?
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
+  id              String    @id
+  sekolah_id      String
+  pengguna_id     String?   @unique
+  nis             String // Nomor Induk Siswa lokal sekolah
+  nisn            String? // Nomor Induk Siswa Nasional (10 digit)
+  nama_lengkap    String
+  jenis_kelamin   String // L | P
+  tempat_lahir    String?
+  tanggal_lahir   DateTime?
+  agama           String? // ISLAM | KRISTEN | KATOLIK | HINDU | BUDDHA | KONGHUCU | LAINNYA
+  nik             String?
+  alamat          String?
+  nama_wali       String?
+  telepon_wali    String?
+  email_wali      String?
+  status_akademik String    @default("AKTIF") // AKTIF | NONAKTIF | LULUS | PINDAH | KELUAR | DROPOUT
+  foto_url        String? // URL atau data foto profil siswa
+  tanggal_masuk   DateTime  @default(now())
+  tanggal_keluar  DateTime?
+  catatan         String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
-  sekolah          Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  pengguna         Pengguna?            @relation(fields: [pengguna_id], references: [id], onDelete: SetNull)
-  keikutsertaan    KeikutsertaanSiswa[]
+  sekolah           Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  pengguna          Pengguna?            @relation(fields: [pengguna_id], references: [id], onDelete: SetNull)
+  keikutsertaan       KeikutsertaanSiswa[]
+  pengumpulan_tugas   PengumpulanTugas[]
+  presensi_sesi_kelas PresensiSesiKelas[]
+  nilai_siswa         NilaiSiswa[]
 
   @@unique([sekolah_id, nis])
   @@index([sekolah_id, status_akademik])
@@ -425,23 +470,23 @@ model Siswa {
 
 /// M07 — Student Academic Lifecycle: Keikutsertaan Siswa per Periode Akademik (Enrollment)
 model KeikutsertaanSiswa {
-  id              String             @id
+  id              String    @id
   sekolah_id      String
   siswa_id        String
   tahun_ajaran_id String
   tingkat_id      String?
-  status          String             @default("AKTIF") // AKTIF | LULUS | NAIK_KELAS | TINGGAL_KELAS | PINDAH | NONAKTIF
-  tanggal_mulai   DateTime           @default(now())
+  status          String    @default("AKTIF") // AKTIF | LULUS | NAIK_KELAS | TINGGAL_KELAS | PINDAH | NONAKTIF
+  tanggal_mulai   DateTime  @default(now())
   tanggal_selesai DateTime?
   catatan         String?
-  created_at      DateTime           @default(now())
-  updated_at      DateTime           @updatedAt
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
-  sekolah         Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  siswa           Siswa              @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
-  tahun_ajaran    TahunAjaran        @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
-  tingkat         TingkatKelas?      @relation(fields: [tingkat_id], references: [id], onDelete: SetNull)
-  penempatan      PenempatanRombel[]
+  sekolah      Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  siswa        Siswa              @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  tahun_ajaran TahunAjaran        @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  tingkat      TingkatKelas?      @relation(fields: [tingkat_id], references: [id], onDelete: SetNull)
+  penempatan   PenempatanRombel[]
 
   @@unique([siswa_id, tahun_ajaran_id])
   @@index([sekolah_id, tahun_ajaran_id, status])
@@ -450,24 +495,631 @@ model KeikutsertaanSiswa {
 
 /// M07 — Student Academic Lifecycle: Penempatan Siswa ke Rombongan Belajar (Rombel Placement)
 model PenempatanRombel {
-  id               String             @id
+  id               String    @id
   sekolah_id       String
   keikutsertaan_id String
   rombel_id        String
-  tanggal_mulai    DateTime           @default(now())
+  tanggal_mulai    DateTime  @default(now())
   tanggal_selesai  DateTime?
-  status           String             @default("AKTIF") // AKTIF | PINDAH | SELESAI | DIBATALKAN
+  status           String    @default("AKTIF") // AKTIF | PINDAH | SELESAI | DIBATALKAN
   nomor_absen      Int?
   catatan          String?
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
 
-  sekolah          Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
-  keikutsertaan    KeikutsertaanSiswa @relation(fields: [keikutsertaan_id], references: [id], onDelete: Restrict)
-  rombel           Rombel             @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  sekolah             Sekolah             @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  keikutsertaan       KeikutsertaanSiswa  @relation(fields: [keikutsertaan_id], references: [id], onDelete: Restrict)
+  rombel              Rombel              @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  presensi_sesi_kelas PresensiSesiKelas[]
+  nilai_siswa         NilaiSiswa[]
 
   @@index([rombel_id, status])
   @@index([keikutsertaan_id, status])
   @@index([sekolah_id, status])
   @@map("penempatan_rombel")
 }
+
+/// M08 — Teacher & Teaching Assignment: Profil Individu Profesional Pendidik / Guru
+model Guru {
+  id                 String    @id
+  sekolah_id         String
+  pengguna_id        String?   @unique
+  nip                String? // Nomor Induk Pegawai (opsional)
+  nuptk              String? // Nomor Unik Pendidik dan Tenaga Kependidikan (opsional)
+  nama_lengkap       String
+  gelar_depan        String? // Contoh: Drs., Dr., Ir.
+  gelar_belakang     String? // Contoh: S.Pd., M.Kom., M.Pd.
+  jenis_kelamin      String // L | P
+  tempat_lahir       String?
+  tanggal_lahir      DateTime?
+  email              String?
+  telepon            String?
+  alamat             String?
+  status_kepegawaian String    @default("TETAP") // TETAP | HONORER | KONTRAK | PNS | PPPK | LAINNYA
+  status_aktif       Boolean   @default(true)
+  status_lifecycle   String    @default("AKTIF") // AKTIF | NONAKTIF | ARSIP
+  foto_url           String?
+  catatan            String?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  sekolah                   Sekolah                  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  pengguna                  Pengguna?                @relation(fields: [pengguna_id], references: [id], onDelete: SetNull)
+  penugasan_mengajar        PenugasanMengajar[]
+  penugasan_wali            PenugasanWaliKelas[]
+  jadwal_pelajaran          JadwalPelajaran[]
+  sesi_kelas_aktual         SesiKelasAktual[]        @relation("GuruPengampu")
+  sesi_pengganti            SesiKelasAktual[]        @relation("GuruPenganti")
+  materi_dibuat             MateriPembelajaran[]
+  tugas_dibuat              DefinisiTugas[]
+  administrasi_pembelajaran AdministrasiPembelajaran[]
+
+  @@index([sekolah_id, status_aktif])
+  @@index([sekolah_id, status_lifecycle])
+  @@index([sekolah_id, nip])
+  @@index([sekolah_id, nuptk])
+  @@map("guru")
+}
+
+/// M08 — Teacher & Teaching Assignment: Master Mata Pelajaran Sekolah
+model MataPelajaran {
+  id           String   @id
+  sekolah_id   String
+  kode         String // Contoh: "MTK", "BIN", "PBO", "PROG-01"
+  nama         String // Contoh: "Matematika", "Bahasa Indonesia", "Pemrograman Berorientasi Objek"
+  kelompok     String? // UMUM | KEJURUAN | PILIHAN | MUATAN_LOKAL
+  status_aktif Boolean  @default(true)
+  status_lifecycle String @default("AKTIF") // AKTIF | NONAKTIF | ARSIP
+  deskripsi    String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar  PenugasanMengajar[]
+  jadwal_pelajaran    JadwalPelajaran[]
+  sesi_kelas_aktual   SesiKelasAktual[]
+  materi_pembelajaran MateriPembelajaran[]
+  definisi_tugas      DefinisiTugas[]
+
+  @@unique([sekolah_id, kode])
+  @@index([sekolah_id, status_aktif])
+  @@index([sekolah_id, status_lifecycle])
+  @@map("mata_pelajaran")
+}
+
+/// M08 — Teacher & Teaching Assignment: Penugasan Guru Mengajar Mata Pelajaran pada Rombel & Periode
+model PenugasanMengajar {
+  id                String    @id
+  sekolah_id        String
+  guru_id           String
+  mata_pelajaran_id String
+  tahun_ajaran_id   String
+  semester_id       String?
+  rombel_id         String
+  jumlah_jam_minggu Int       @default(2) // Beban Jam Pelajaran per minggu (Derived Workload context)
+  berlaku_mulai     DateTime  @default(now())
+  berlaku_sampai    DateTime?
+  status            String    @default("AKTIF") // AKTIF | NONAKTIF | DIBATALKAN | SELESAI | ARSIP
+  catatan           String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  sekolah                   Sekolah                    @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  guru                      Guru                       @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  mata_pelajaran            MataPelajaran              @relation(fields: [mata_pelajaran_id], references: [id], onDelete: Restrict)
+  tahun_ajaran              TahunAjaran                @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester                  Semester?                  @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  rombel                    Rombel                     @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  jadwal_pelajaran          JadwalPelajaran[]
+  sesi_kelas_aktual         SesiKelasAktual[]
+  lingkup_materi            LingkupMateri[]
+  publikasi_materi          PublikasiMateri[]
+  publikasi_tugas           PublikasiTugas[]
+  administrasi_pembelajaran AdministrasiPembelajaran[]
+  definisi_asesmen          DefinisiAsesmen[]
+
+  @@index([guru_id, status])
+  @@index([rombel_id, status])
+  @@index([sekolah_id, tahun_ajaran_id, status])
+  @@map("penugasan_mengajar")
+}
+
+/// M08 — Teacher & Teaching Assignment: Penugasan Guru sebagai Wali Kelas pada Rombel & Periode
+model PenugasanWaliKelas {
+  id              String    @id
+  sekolah_id      String
+  guru_id         String
+  rombel_id       String
+  tahun_ajaran_id String
+  berlaku_mulai   DateTime  @default(now())
+  berlaku_sampai  DateTime?
+  status          String    @default("AKTIF") // AKTIF | NONAKTIF | DIBATALKAN | SELESAI
+  catatan         String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  sekolah      Sekolah     @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  guru         Guru        @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  rombel       Rombel      @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  tahun_ajaran TahunAjaran @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+
+  @@index([guru_id, status])
+  @@index([rombel_id, status])
+  @@index([sekolah_id, tahun_ajaran_id, status])
+  @@map("penugasan_wali_kelas")
+}
+
+/// M09 — Academic Calendar: Kalender Akademik & Agenda Kegiatan Sekolah
+model KalenderAkademik {
+  id              String   @id
+  sekolah_id      String
+  tahun_ajaran_id String
+  semester_id     String?
+  judul           String // e.g. "Masa Pengenalan Lingkungan Sekolah (MPLS)"
+  deskripsi       String?
+  tipe_event      String // HARI_EFEKTIF | HARI_LIBUR | KEGIATAN_SEKOLAH | UJIAN | ORIENTASI | LAINNYA
+  tanggal_mulai   DateTime
+  tanggal_selesai DateTime
+  libur_kbm       Boolean  @default(false)
+  warna           String? // Hex atau nama warna token UI (e.g. "#2563EB", "emerald", "rose")
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  sekolah      Sekolah     @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tahun_ajaran TahunAjaran @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester     Semester?   @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+
+  @@index([sekolah_id, tahun_ajaran_id, tanggal_mulai])
+  @@index([sekolah_id, tipe_event])
+  @@map("kalender_akademik")
+}
+
+/// M10 — Scheduling & Class Session: Master Slot Jam Pelajaran
+model SlotWaktu {
+  id           String   @id
+  sekolah_id   String
+  nama         String // e.g. "Jam Ke-1", "Jam Ke-2", "Istirahat Pertama"
+  kode         String // e.g. "JAM_1", "JAM_2", "ISTIRAHAT_1"
+  urutan       Int      @default(1)
+  jam_mulai    String // Format "HH:mm" (24-jam), e.g. "07:00"
+  jam_selesai  String // Format "HH:mm" (24-jam), e.g. "07:45"
+  is_istirahat Boolean  @default(false)
+  is_upacara   Boolean  @default(false)
+  hari_khusus  String? // Null untuk semua hari, atau "JUMAT" jika durasi khusus
+  status_aktif Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  sekolah Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  jadwal  JadwalPelajaran[]
+
+  @@unique([sekolah_id, kode])
+  @@index([sekolah_id, urutan])
+  @@map("slot_waktu")
+}
+
+/// M10 — Scheduling & Class Session: Versi / Publikasi Jadwal Pelajaran
+model VersiJadwal {
+  id                  String    @id
+  sekolah_id          String
+  tahun_ajaran_id     String
+  semester_id         String?
+  nomor_versi         Int       @default(1)
+  nama                String // e.g. "Jadwal Semester Ganjil 2026/2027 v1"
+  status              String    @default("DRAFT") // DRAFT | PUBLISHED | ARCHIVED
+  tanggal_publikasi   DateTime?
+  dipublikasikan_oleh String?
+  catatan             String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  sekolah      Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tahun_ajaran TahunAjaran       @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester     Semester?         @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  jadwal       JadwalPelajaran[]
+
+  @@index([sekolah_id, tahun_ajaran_id, status])
+  @@map("versi_jadwal")
+}
+
+/// M10 — Scheduling & Class Session: Entri Jadwal Pelajaran Resmi (Master Schedule)
+model JadwalPelajaran {
+  id                    String   @id
+  sekolah_id            String
+  versi_jadwal_id       String
+  tahun_ajaran_id       String
+  semester_id           String?
+  rombel_id             String
+  penugasan_mengajar_id String
+  guru_id               String
+  mata_pelajaran_id     String
+  slot_waktu_id         String
+  hari                  String // SENIN | SELASA | RABU | KAMIS | JUMAT | SABTU | MINGGU
+  ruangan               String? // e.g. "Lab Komputer 1", "R. 102"
+  catatan               String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  sekolah            Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  versi_jadwal       VersiJadwal       @relation(fields: [versi_jadwal_id], references: [id], onDelete: Cascade)
+  tahun_ajaran       TahunAjaran       @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester           Semester?         @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  rombel             Rombel            @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar PenugasanMengajar @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Restrict)
+  guru               Guru              @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  mata_pelajaran     MataPelajaran     @relation(fields: [mata_pelajaran_id], references: [id], onDelete: Restrict)
+  slot_waktu         SlotWaktu         @relation(fields: [slot_waktu_id], references: [id], onDelete: Restrict)
+  sesi_aktual        SesiKelasAktual[]
+
+  @@index([versi_jadwal_id, hari, slot_waktu_id])
+  @@index([guru_id, hari, slot_waktu_id])
+  @@index([rombel_id, hari, slot_waktu_id])
+  @@map("jadwal_pelajaran")
+}
+
+/// M10 — Scheduling & Class Session: Kejadian Kelas Pembelajaran Aktual (Actual Class Session)
+model SesiKelasAktual {
+  id                    String    @id
+  sekolah_id            String
+  jadwal_pelajaran_id   String?
+  penugasan_mengajar_id String
+  rombel_id             String
+  mata_pelajaran_id     String
+  guru_id               String
+  guru_pengganti_id     String?
+  tahun_ajaran_id       String
+  semester_id           String?
+  tanggal               DateTime
+  jam_mulai_aktual      DateTime?
+  jam_selesai_aktual    DateTime?
+  status                String    @default("TERJADWAL") // TERJADWAL | DIMULAI | SELESAI | DIBATALKAN | DIGANTIKAN
+  ruangan_aktual        String?
+  topik_pembelajaran    String?
+  catatan               String?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  sekolah            Sekolah                    @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  jadwal_pelajaran   JadwalPelajaran?           @relation(fields: [jadwal_pelajaran_id], references: [id], onDelete: SetNull)
+  penugasan_mengajar PenugasanMengajar          @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Restrict)
+  rombel             Rombel                     @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  mata_pelajaran     MataPelajaran              @relation(fields: [mata_pelajaran_id], references: [id], onDelete: Restrict)
+  guru               Guru                       @relation("GuruPengampu", fields: [guru_id], references: [id], onDelete: Restrict)
+  guru_pengganti     Guru?                      @relation("GuruPenganti", fields: [guru_pengganti_id], references: [id], onDelete: SetNull)
+  tahun_ajaran       TahunAjaran                @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Restrict)
+  semester           Semester?                  @relation(fields: [semester_id], references: [id], onDelete: SetNull)
+  administrasi       AdministrasiPembelajaran?
+  presensi_siswa     PresensiSesiKelas[]
+
+  @@index([guru_id, tanggal, status])
+  @@index([rombel_id, tanggal, status])
+  @@index([jadwal_pelajaran_id, tanggal])
+  @@map("sesi_kelas_aktual")
+}
+
+/// M11 — Learning: Lingkup Materi / BAB Pembelajaran (Scoped ke Penugasan Mengajar / Learning Context)
+model LingkupMateri {
+  id                    String   @id
+  sekolah_id            String
+  penugasan_mengajar_id String
+  kode                  String? // e.g. "BAB 1", "LM 1"
+  judul                 String // e.g. "Problem Solving & Computational Thinking"
+  deskripsi             String?
+  urutan                Int      @default(1)
+  status                String   @default("AKTIF") // AKTIF | NONAKTIF | ARSIP
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  sekolah             Sekolah              @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar  PenugasanMengajar    @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Cascade)
+  tujuan_pembelajaran TujuanPembelajaran[]
+  materi              MateriPembelajaran[]
+  tugas               DefinisiTugas[]
+  definisi_asesmen    DefinisiAsesmen[]
+
+  @@index([penugasan_mengajar_id, urutan])
+  @@index([sekolah_id, status])
+  @@map("lingkup_materi")
+}
+
+/// M11 — Learning: Tujuan Pembelajaran (TP) per Lingkup Materi / BAB
+model TujuanPembelajaran {
+  id                String   @id
+  sekolah_id        String
+  lingkup_materi_id String
+  kode              String? // e.g. "TP 1.1", "TP 1.2"
+  deskripsi         String
+  urutan            Int      @default(1)
+  status            String   @default("AKTIF") // AKTIF | NONAKTIF
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sekolah        Sekolah                          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  lingkup_materi LingkupMateri                    @relation(fields: [lingkup_materi_id], references: [id], onDelete: Cascade)
+  administrasi        AdministrasiTujuanPembelajaran[]
+  definisi_asesmen    DefinisiAsesmen[]
+
+  @@index([lingkup_materi_id, urutan])
+  @@index([sekolah_id, status])
+  @@map("tujuan_pembelajaran")
+}
+
+/// M11 — Learning: Definisi Materi Pembelajaran (Reusable Content Definition)
+model MateriPembelajaran {
+  id                String   @id
+  sekolah_id        String
+  guru_id           String
+  lingkup_materi_id String?
+  mata_pelajaran_id String?
+  judul             String
+  deskripsi         String?
+  tipe_konten       String   @default("DOKUMEN") // DOKUMEN | TEKS | TAUTAN | VIDEO
+  konten_teks       String?
+  tautan_url        String?
+  berkas_id         String?
+  status            String   @default("DRAFT") // DRAFT | PUBLISHED | ARSIP
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sekolah        Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  guru           Guru              @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  lingkup_materi LingkupMateri?    @relation(fields: [lingkup_materi_id], references: [id], onDelete: SetNull)
+  mata_pelajaran MataPelajaran?    @relation(fields: [mata_pelajaran_id], references: [id], onDelete: SetNull)
+  berkas         MetadataBerkas?   @relation(fields: [berkas_id], references: [id], onDelete: SetNull)
+  publikasi      PublikasiMateri[]
+
+  @@index([guru_id, status])
+  @@index([sekolah_id, status])
+  @@map("materi_pembelajaran")
+}
+
+/// M11 — Learning: Publikasi Materi ke Learning Context Tertentu
+model PublikasiMateri {
+  id                    String   @id
+  sekolah_id            String
+  materi_id             String
+  penugasan_mengajar_id String
+  tanggal_publikasi     DateTime @default(now())
+  status                String   @default("DITERBITKAN") // DITERBITKAN | DITARIK | ARSIP
+  catatan               String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  sekolah            Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  materi             MateriPembelajaran @relation(fields: [materi_id], references: [id], onDelete: Cascade)
+  penugasan_mengajar PenugasanMengajar  @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Cascade)
+
+  @@unique([materi_id, penugasan_mengajar_id])
+  @@index([penugasan_mengajar_id, status])
+  @@map("publikasi_materi")
+}
+
+/// M11 — Learning: Definisi Tugas Pembelajaran (Reusable Assignment Definition)
+model DefinisiTugas {
+  id                String   @id
+  sekolah_id        String
+  guru_id           String
+  lingkup_materi_id String?
+  mata_pelajaran_id String?
+  judul             String
+  petunjuk          String
+  tipe_penyerahan   String   @default("FILE") // FILE | TEKS | DARING
+  berkas_id         String?
+  status            String   @default("DRAFT") // DRAFT | PUBLISHED | ARSIP
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sekolah        Sekolah          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  guru           Guru             @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  lingkup_materi LingkupMateri?   @relation(fields: [lingkup_materi_id], references: [id], onDelete: SetNull)
+  mata_pelajaran MataPelajaran?   @relation(fields: [mata_pelajaran_id], references: [id], onDelete: SetNull)
+  berkas         MetadataBerkas?  @relation(fields: [berkas_id], references: [id], onDelete: SetNull)
+  publikasi      PublikasiTugas[]
+
+  @@index([guru_id, status])
+  @@index([sekolah_id, status])
+  @@map("definisi_tugas")
+}
+
+/// M11 — Learning: Publikasi Tugas ke Learning Context Tertentu
+model PublikasiTugas {
+  id                    String    @id
+  sekolah_id            String
+  tugas_id              String
+  penugasan_mengajar_id String
+  tanggal_mulai         DateTime  @default(now())
+  batas_waktu           DateTime?
+  izinkan_terlambat     Boolean   @default(false)
+  status                String    @default("DITERBITKAN") // DITERBITKAN | DITUTUP | DRAF
+  catatan               String?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  sekolah            Sekolah            @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  tugas              DefinisiTugas      @relation(fields: [tugas_id], references: [id], onDelete: Cascade)
+  penugasan_mengajar PenugasanMengajar  @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Cascade)
+  pengumpulan        PengumpulanTugas[]
+
+  @@index([penugasan_mengajar_id, status])
+  @@map("publikasi_tugas")
+}
+
+/// M11 — Learning: Pengumpulan Tugas Siswa (Submission Foundation)
+model PengumpulanTugas {
+  id                 String   @id
+  sekolah_id         String
+  publikasi_tugas_id String
+  siswa_id           String
+  tanggal_kumpul     DateTime @default(now())
+  status             String   @default("DIKUMPULKAN") // DRAFT | DIKUMPULKAN | TERLAMBAT
+  teks_jawaban       String?
+  berkas_id          String?
+  catatan_siswa      String?
+  catatan_guru       String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  sekolah         Sekolah         @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  publikasi_tugas PublikasiTugas  @relation(fields: [publikasi_tugas_id], references: [id], onDelete: Cascade)
+  siswa           Siswa           @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  berkas          MetadataBerkas? @relation(fields: [berkas_id], references: [id], onDelete: SetNull)
+
+  @@unique([publikasi_tugas_id, siswa_id])
+  @@index([siswa_id, status])
+  @@map("pengumpulan_tugas")
+}
+
+/// M11 — Learning: Jurnal / Administrasi Pembelajaran Guru (Linked to Actual Class Session)
+model AdministrasiPembelajaran {
+  id                    String   @id
+  sekolah_id            String
+  penugasan_mengajar_id String
+  sesi_kelas_aktual_id  String?  @unique
+  guru_id               String
+  tanggal               DateTime
+  pertemuan_ke          Int      @default(1)
+  materi_disampaikan    String
+  kegiatan_pembelajaran String?
+  catatan_refleksi      String?
+  status_realisasi      String   @default("TERLAKSANA") // TERLAKSANA | TERTUNDA | DIGANTI
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  sekolah            Sekolah                          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar PenugasanMengajar                @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Restrict)
+  sesi_kelas_aktual  SesiKelasAktual?                 @relation(fields: [sesi_kelas_aktual_id], references: [id], onDelete: SetNull)
+  guru               Guru                             @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  tp_terkait         AdministrasiTujuanPembelajaran[]
+
+  @@index([penugasan_mengajar_id, tanggal])
+  @@index([guru_id, tanggal])
+  @@map("administrasi_pembelajaran")
+}
+
+/// M11 — Learning: Relasi Many-to-Many Administrasi Pembelajaran dengan Tujuan Pembelajaran
+model AdministrasiTujuanPembelajaran {
+  id              String   @id
+  administrasi_id String
+  tp_id           String
+  created_at      DateTime @default(now())
+
+  administrasi AdministrasiPembelajaran @relation(fields: [administrasi_id], references: [id], onDelete: Cascade)
+  tp           TujuanPembelajaran       @relation(fields: [tp_id], references: [id], onDelete: Cascade)
+
+  @@unique([administrasi_id, tp_id])
+  @@map("administrasi_tujuan_pembelajaran")
+}
+
+/// M12 — Attendance: Presensi Kehadiran Siswa pada Kejadian Sesi Kelas Pembelajaran Aktual
+model PresensiSesiKelas {
+  id                   String    @id
+  sekolah_id           String
+  sesi_kelas_id        String
+  siswa_id             String
+  penempatan_rombel_id String?
+  status               String    @default("HADIR") // HADIR | IZIN | SAKIT | ALPHA | DISPENSASI | TERLAMBAT
+  catatan              String?
+  waktu_presensi       DateTime  @default(now())
+  diinput_oleh         String?
+  diubah_terakhir_oleh String?
+  alasan_koreksi       String?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  sekolah           Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  sesi_kelas        SesiKelasAktual   @relation(fields: [sesi_kelas_id], references: [id], onDelete: Cascade)
+  siswa             Siswa             @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  penempatan_rombel PenempatanRombel? @relation(fields: [penempatan_rombel_id], references: [id], onDelete: SetNull)
+
+  @@unique([sesi_kelas_id, siswa_id])
+  @@index([sesi_kelas_id, status])
+  @@index([siswa_id, status])
+  @@index([sekolah_id, status])
+  @@map("presensi_sesi_kelas")
+}
+
+/// M13 — Assessment: Definisi Asesmen Pembelajaran (Formatif / Sumatif per TP atau Bab)
+model DefinisiAsesmen {
+  id                    String    @id
+  sekolah_id            String
+  penugasan_mengajar_id String
+  tp_id                 String?
+  lingkup_materi_id     String?
+  judul                 String
+  deskripsi             String?
+  kategori              String    @default("FORMATIF") // FORMATIF | SUMATIF | SUMATIF_AKHIR | TUGAS | PRAKTIK
+  teknik_penilaian      String    @default("TES_TERTULIS") // TES_TERTULIS | TES_LISAN | PENUGASAN | KINERJA | PORTOFOLIO
+  bobot                 Float     @default(1.0)
+  skala_maksimal        Float     @default(100.0)
+  kkm_kktp              Float     @default(75.0)
+  tanggal_pelaksanaan   DateTime  @default(now())
+  status                String    @default("DRAFT") // DRAFT | PUBLISHED | FINALIZED | ARSIP
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  sekolah             Sekolah                  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar  PenugasanMengajar        @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Cascade)
+  tujuan_pembelajaran TujuanPembelajaran?      @relation(fields: [tp_id], references: [id], onDelete: SetNull)
+  lingkup_materi      LingkupMateri?           @relation(fields: [lingkup_materi_id], references: [id], onDelete: SetNull)
+  nilai_siswa         NilaiSiswa[]
+  publikasi           PublikasiNilaiAsesmen[]
+
+  @@index([penugasan_mengajar_id, tanggal_pelaksanaan])
+  @@index([tp_id])
+  @@index([lingkup_materi_id])
+  @@index([sekolah_id, status])
+  @@map("definisi_asesmen")
+}
+
+/// M13 — Assessment: Nilai Siswa per Asesmen (Missing Grade != Zero Grade: nilai_angka nullable)
+model NilaiSiswa {
+  id                   String    @id
+  sekolah_id           String
+  asesmen_id           String
+  siswa_id             String
+  penempatan_rombel_id String?
+  nilai_angka          Float?    // NULLABLE! Missing Grade != Zero Grade (belum dinilai != nol)
+  nilai_huruf          String?   // A | B | C | D
+  capaian_kompetensi   String?   // Deskripsi capaian e-rapor (e.g. "Tercapai optimal dalam...")
+  catatan              String?
+  status               String    @default("DRAFT") // DRAFT | PUBLISHED | FINALIZED
+  diinput_oleh         String?
+  diubah_terakhir_oleh String?
+  alasan_koreksi       String?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  sekolah           Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  asesmen           DefinisiAsesmen   @relation(fields: [asesmen_id], references: [id], onDelete: Cascade)
+  siswa             Siswa             @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  penempatan_rombel PenempatanRombel? @relation(fields: [penempatan_rombel_id], references: [id], onDelete: SetNull)
+
+  @@unique([asesmen_id, siswa_id])
+  @@index([asesmen_id, status])
+  @@index([siswa_id])
+  @@index([sekolah_id, status])
+  @@map("nilai_siswa")
+}
+
+/// M13 — Assessment: Publikasi Nilai Asesmen ke Siswa & Wali Murid (Assessment Definition != Grade != Grade Publication)
+model PublikasiNilaiAsesmen {
+  id                  String    @id
+  sekolah_id          String
+  asesmen_id          String
+  target_audience     String    @default("SEMUA") // SISWA | WALI | SEMUA
+  tanggal_publikasi   DateTime  @default(now())
+  dipublikasikan_oleh String
+  status              String    @default("PUBLISHED") // PUBLISHED | DITARIK
+  catatan             String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  sekolah Sekolah         @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  asesmen DefinisiAsesmen @relation(fields: [asesmen_id], references: [id], onDelete: Cascade)
+
+  @@index([asesmen_id, status])
+  @@index([sekolah_id, status])
+  @@map("publikasi_nilai_asesmen")
+}
+
+

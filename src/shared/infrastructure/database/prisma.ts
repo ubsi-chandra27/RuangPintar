@@ -14,8 +14,10 @@ export async function configureSqlitePragmas(client: PrismaClient): Promise<void
   // Production-grade concurrency: Write-Ahead Logging (returns a result row in SQLite)
   await client.$queryRawUnsafe("PRAGMA journal_mode = WAL;");
 
-  // Durability baseline: synchronous FULL
-  await client.$queryRawUnsafe("PRAGMA synchronous = FULL;");
+  // Durability & Throughput baseline: synchronous NORMAL
+  // With WAL mode active, NORMAL is 100% crash-safe against application crashes,
+  // avoids fsync-per-commit bottleneck, and enables target P99 write latency < 200ms.
+  await client.$queryRawUnsafe("PRAGMA synchronous = NORMAL;");
 
   // Busy timeout to handle brief concurrent write locks
   await client.$queryRawUnsafe("PRAGMA busy_timeout = 5000;");

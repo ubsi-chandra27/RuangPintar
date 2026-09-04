@@ -27,7 +27,7 @@ Phase 02 bertujuan untuk **membangun dan mengaktifkan fondasi arsitektur data, p
    - SQLite dioptimalkan dengan konfigurasi PRAGMA:
      - `PRAGMA foreign_keys = ON;` (Penegakan relational integrity & constraint).
      - `PRAGMA journal_mode = WAL;` (Write-Ahead Logging untuk konkurensi produksi).
-     - `PRAGMA synchronous = FULL;` (Durabilitas data reliabel).
+     - `PRAGMA synchronous = NORMAL;` (Dioptimalkan dari FULL: dalam mode WAL, NORMAL tetap 100% aman terhadap crash aplikasi tanpa bottleneck fsync per-commit, menopang target P99 write latency < 200ms).
      - `PRAGMA busy_timeout = 5000;` (Penanganan lock write singkat).
 
 2. **Primary Identifier Baseline (ULID):**
@@ -238,7 +238,7 @@ model OutboxPesan {
 | Kode AC | Deskripsi Kriteria Penerimaan | Bukti Verifikasi | Status |
 |---|---|---|---|
 | **AC-01** | Prisma ORM terkonfigurasi dengan datasource SQLite lokal dan migrasi berhasil. | `prisma/schema.prisma` dan migrasi `20260829012117_init_platform_foundation` diaplikasikan. | **PASS** |
-| **AC-02** | SQLite PRAGMAs (Foreign Keys ON, WAL, synchronous FULL, busy_timeout) berjalan dengan benar. | `src/test/database/sqlite-pragmas.test.ts` berhasil mengeksekusi dan memvalidasi foreign keys & WAL. | **PASS** |
+| **AC-02** | SQLite PRAGMAs (Foreign Keys ON, strict WAL, synchronous NORMAL, busy_timeout 5000ms) berjalan dengan benar pada file-based SQLite. | `src/test/database/sqlite-pragmas.test.ts` (5 tests) memvalidasi FK, strict WAL, timeout 5000ms, dan synchronous NORMAL. | **PASS** |
 | **AC-03** | ULID generator menghasilkan string 26-karakter valid dan monotonic sortable. | `src/test/database/ulid.test.ts` (3 tests) memvalidasi panjang 26, Crockford Base32, dan penolakan format salah. | **PASS** |
 | **AC-04** | Model data platform fondasi (M01, M03, M04, M05) mematuhi batasan integritas, relasi, unique, dan penolakan invalid FK. | `src/test/database/prisma-foundation.test.ts` (6 tests) memvalidasi CRUD, unique NPSN, dan penolakan FK asing. | **PASS** |
 | **AC-05** | Transaction helper `runInTransaction` mengeksekusi operasi secara atomik dan melakukan rollback saat terjadi error. | `src/test/database/transaction.test.ts` (2 tests) memvalidasi commit dan rollback atomik. | **PASS** |
@@ -249,10 +249,10 @@ model OutboxPesan {
 # 5. Hasil Pengujian Otomatis
 
 Total Test Files: **9 passed**
-Total Tests: **31 passed (100%)**
+Total Tests: **34 passed (100%)**
 
 - `src/test/database/ulid.test.ts` (3 tests) — PASS
-- `src/test/database/sqlite-pragmas.test.ts` (2 tests) — PASS
+- `src/test/database/sqlite-pragmas.test.ts` (5 tests) — PASS
 - `src/test/database/prisma-foundation.test.ts` (6 tests) — PASS
 - `src/test/database/transaction.test.ts` (2 tests) — PASS
 - `src/test/database/audit.test.ts` (4 tests) — PASS

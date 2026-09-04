@@ -47,33 +47,36 @@ export function StudentManagementTabs({ dataset, canManage }: StudentManagementT
 
   return (
     <div className="space-y-6">
-      {/* Symmetrical 3-Tab Navigator (Academic Glass UI v1.2) */}
-      <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-slate-200/50 backdrop-blur-md border border-slate-200/80 shadow-inner">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer ${
-                isActive
-                  ? "bg-white text-slate-800 shadow-md shadow-slate-200/60 border border-slate-200/60"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-white/40"
-              }`}
-            >
-              <Icon
-                className={`h-4 w-4 shrink-0 ${isActive ? "text-[#2563EB]" : "text-slate-400"}`}
-              />
-              <span className="truncate">{tab.label}</span>
-              <span
-                className={`hidden md:inline-block text-[11px] font-bold px-2 py-0.5 rounded-full ${tab.badgeColor}`}
+      {/* Responsive Tab Bar matching Struktur Kurikulum (Academic Glass UI v1.2) */}
+      <div className="rounded-3xl bg-white/80 backdrop-blur-md border border-slate-200/80 p-2 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/20"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                }`}
               >
-                {tab.count}
-              </span>
-            </button>
-          );
-        })}
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{tab.label}</span>
+                <span
+                  className={`ml-1 text-[11px] px-2 py-0.5 rounded-full font-extrabold ${
+                    isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Active Tab View */}

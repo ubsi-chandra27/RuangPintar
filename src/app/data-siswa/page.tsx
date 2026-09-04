@@ -125,7 +125,7 @@ export default async function StudentLifecyclePage() {
             <div className="hidden md:flex flex-col items-center justify-center shrink-0 relative pr-4">
               <div className="relative w-44 h-36 lg:w-52 lg:h-44 transition-transform duration-500 hover:scale-105">
                 <Image
-                  src="/images/illustrations/school-hero-3d.png"
+                  src="/images/illustrations/student-lifecycle-3d.png"
                   alt="Student Lifecycle Illustration"
                   fill
                   sizes="(max-width: 1024px) 176px, 208px"

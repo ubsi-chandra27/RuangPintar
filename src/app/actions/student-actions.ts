@@ -5,8 +5,11 @@
  */
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
 import { requirePermission } from "@/shared/infrastructure/authorization/authz-guard";
+import { identityService } from "@/shared/infrastructure/auth/identity-service";
+import { prisma } from "@/shared/infrastructure/database/prisma";
 import { studentIdentityService } from "@/modules/student/application/student-identity-service";
 import { studentEnrollmentService } from "@/modules/student/application/student-enrollment-service";
 import { rombelPlacementService } from "@/modules/student/application/rombel-placement-service";
@@ -210,6 +213,196 @@ export async function deleteStudentAction(id: string): Promise<StudentActionResu
         error instanceof Error
           ? error.message
           : "Terjadi kesalahan sistem saat menghapus data siswa.",
+    };
+  }
+}
+
+export async function bulkDeleteStudentsAction(ids: string[]): Promise<StudentActionResult> {
+  try {
+    const actor = await requireAuth();
+    if (!actor.sekolah_id) {
+      return { success: false, message: "Konteks sekolah tidak valid." };
+    }
+
+    await requirePermission("academic.students.manage", {
+      sekolah_id: actor.sekolah_id,
+    });
+
+    let deletedCount = 0;
+    let protectedCount = 0;
+
+    for (const id of ids) {
+      try {
+        await studentIdentityService.deleteStudent(
+          id,
+          actor.sekolah_id,
+          actor.id,
+          actor.peran_dasar
+        );
+        deletedCount++;
+      } catch {
+        protectedCount++;
+      }
+    }
+
+    revalidatePath("/data-siswa");
+    const msg =
+      protectedCount > 0
+        ? `${deletedCount} siswa berhasil dihapus, ${protectedCount} siswa tidak dapat dihapus karena memiliki riwayat akademik.`
+        : `${deletedCount} siswa berhasil dihapus.`;
+
+    return {
+      success: true,
+      message: msg,
+      data: { deletedCount, protectedCount },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Gagal memproses penghapusan massal.",
+    };
+  }
+}
+
+export async function bulkStudentLifecycleAction(
+  ids: string[],
+  status: "AKTIF" | "NONAKTIF"
+): Promise<StudentActionResult> {
+  try {
+    const actor = await requireAuth();
+    if (!actor.sekolah_id) {
+      return { success: false, message: "Konteks sekolah tidak valid." };
+    }
+
+    await requirePermission("academic.students.manage", {
+      sekolah_id: actor.sekolah_id,
+    });
+
+    const updated = await prisma.siswa.updateMany({
+      where: {
+        id: { in: ids },
+        sekolah_id: actor.sekolah_id,
+      },
+      data: {
+        status_akademik: status,
+      },
+    });
+
+    revalidatePath("/data-siswa");
+    return {
+      success: true,
+      message: `${updated.count} siswa berhasil diubah statusnya menjadi ${status}.`,
+      data: { count: updated.count },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Gagal memperbarui status massal siswa.",
+    };
+  }
+}
+
+export async function resetStudentPasswordAction(
+  siswaId: string,
+  customPassword?: string
+): Promise<StudentActionResult> {
+  try {
+    const actor = await requireAuth();
+    if (!actor.sekolah_id) {
+      return { success: false, message: "Konteks sekolah tidak valid." };
+    }
+
+    await requirePermission("academic.students.manage", {
+      sekolah_id: actor.sekolah_id,
+    });
+
+    const student = await studentIdentityService.getStudentById(siswaId, actor.sekolah_id);
+    if (!student) {
+      return { success: false, message: "Data siswa tidak ditemukan." };
+    }
+
+    let penggunaId = student.pengguna_id;
+
+    // Jika siswa belum memiliki akun pengguna login, buatkan akun baru
+    if (!penggunaId) {
+      const cleanUsername = `siswa_${student.nis}`;
+      const temporaryPassword = customPassword?.trim() || "Password123#";
+
+      const createdAccount = await identityService.createAccount(
+        {
+          sekolah_id: actor.sekolah_id,
+          username: cleanUsername,
+          email: `${cleanUsername}@sekolah.sch.id`,
+          password: temporaryPassword,
+          nama_lengkap: student.nama_lengkap,
+          peran_dasar: "STUDENT",
+          status_akun: "AKTIF",
+          harus_ganti_password: true,
+        },
+        actor.id,
+        actor.peran_dasar
+      );
+
+      await prisma.siswa.update({
+        where: { id: student.id },
+        data: {
+          pengguna_id: createdAccount.id,
+        },
+      });
+
+      revalidatePath("/data-siswa");
+      return {
+        success: true,
+        message: `Akun login baru berhasil dibuat untuk ${student.nama_lengkap}.`,
+        data: {
+          username: createdAccount.username,
+          temporaryPassword,
+        },
+      };
+    }
+
+    // Jika sudah punya akun, reset password akun tersebut
+    const reqHeaders = await headers();
+    const ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+    const userAgent = reqHeaders.get("user-agent") || undefined;
+
+    const resetResult = await identityService.adminResetPassword(
+      penggunaId,
+      customPassword,
+      actor.id,
+      actor.peran_dasar,
+      ipAddress,
+      userAgent
+    );
+
+    if (!resetResult.success) {
+      return {
+        success: false,
+        message: resetResult.error || "Gagal mereset kata sandi siswa.",
+      };
+    }
+
+    const userAccount = await prisma.pengguna.findUnique({
+      where: { id: penggunaId },
+      select: { username: true, email: true },
+    });
+
+    revalidatePath("/data-siswa");
+    return {
+      success: true,
+      message: `Kata sandi untuk ${student.nama_lengkap} berhasil di-reset.`,
+      data: {
+        username: userAccount?.username || userAccount?.email || "",
+        temporaryPassword: resetResult.temporaryPassword || "Password123#",
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan sistem saat mereset kata sandi siswa.",
     };
   }
 }

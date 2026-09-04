@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { StudentDirectoryView } from "@/modules/student/presentation/student-directory-view";
 import { StudentEnrollmentsView } from "@/modules/student/presentation/student-enrollments-view";
 import { StudentPlacementsView } from "@/modules/student/presentation/student-placements-view";
@@ -17,6 +17,9 @@ vi.mock("@/app/actions/student-actions", () => ({
   createStudentAction: vi.fn(),
   updateStudentAction: vi.fn(),
   deleteStudentAction: vi.fn(),
+  bulkDeleteStudentsAction: vi.fn(),
+  bulkStudentLifecycleAction: vi.fn(),
+  resetStudentPasswordAction: vi.fn(),
   createEnrollmentAction: vi.fn(),
   updateEnrollmentStatusAction: vi.fn(),
   deleteEnrollmentAction: vi.fn(),
@@ -156,9 +159,9 @@ describe("M07 — Student Presentation Views Rendering", () => {
       />
     );
 
-    expect(screen.getByText("Buku Induk & Direktori Siswa")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search siswa/i)).toBeInTheDocument();
     expect(screen.getAllByText("Ahmad Fauzi").length).toBeGreaterThan(0);
-    expect(screen.getByText("Tambah Siswa")).toBeInTheDocument();
+    expect(screen.getByText(/Tambah Siswa/i)).toBeInTheDocument();
   });
 
   it("merender StudentEnrollmentsView dengan data keikutsertaan", () => {
@@ -174,8 +177,8 @@ describe("M07 — Student Presentation Views Rendering", () => {
       />
     );
 
-    expect(screen.getByText("Keikutsertaan Akademik Siswa")).toBeInTheDocument();
-    expect(screen.getByText("Daftarkan ke Periode")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search nama atau nis siswa/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daftarkan ke Periode/i)).toBeInTheDocument();
   });
 
   it("merender StudentPlacementsView dengan kontrol penempatan rombel", () => {
@@ -189,9 +192,9 @@ describe("M07 — Student Presentation Views Rendering", () => {
       />
     );
 
-    expect(screen.getByText("Penempatan Rombongan Belajar (Rombel)")).toBeInTheDocument();
-    expect(screen.getByText("Penempatan Massal")).toBeInTheDocument();
-    expect(screen.getByText("Tempatkan Siswa")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search siswa di rombel ini/i)).toBeInTheDocument();
+    expect(screen.getByText(/Massal/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tempatkan Siswa/i)).toBeInTheDocument();
   });
 
   it("merender StudentManagementTabs dengan switcher symmetrical 3 tabs", () => {
@@ -200,5 +203,52 @@ describe("M07 — Student Presentation Views Rendering", () => {
     expect(screen.getByText("Daftar Siswa")).toBeInTheDocument();
     expect(screen.getByText("Keikutsertaan Akademik")).toBeInTheDocument();
     expect(screen.getByText("Penempatan Rombel")).toBeInTheDocument();
+  });
+
+  it("merender toolbar aksi massal saat siswa dipilih via checkbox", () => {
+    render(
+      <StudentDirectoryView
+        initialStudents={mockStudents}
+        academicYears={mockDataset.academicYears}
+        gradeLevels={mockDataset.gradeLevels}
+        rombels={mockDataset.rombels}
+        canManage={true}
+      />
+    );
+
+    // Initial state: bulk toolbar tidak muncul
+    expect(screen.queryByTestId("bulk-toolbar")).not.toBeInTheDocument();
+
+    // Pilih checkbox siswa
+    const checkbox = screen.getAllByRole("checkbox", { name: /Pilih siswa Ahmad Fauzi/i })[0];
+    fireEvent.click(checkbox);
+
+    // Toolbar aksi massal muncul
+    expect(screen.getByTestId("bulk-toolbar")).toBeInTheDocument();
+    expect(screen.getByText("1 siswa dipilih")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Nonaktifkan" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Hapus Permanen" })).toBeInTheDocument();
+  });
+
+  it("membuka modal reset kata sandi saat tombol reset password ditekan", () => {
+    render(
+      <StudentDirectoryView
+        initialStudents={mockStudents}
+        academicYears={mockDataset.academicYears}
+        gradeLevels={mockDataset.gradeLevels}
+        rombels={mockDataset.rombels}
+        canManage={true}
+      />
+    );
+
+    const resetBtn = screen.getAllByTitle("Reset Kata Sandi Akun")[0];
+    expect(resetBtn).toBeInTheDocument();
+    fireEvent.click(resetBtn);
+
+    expect(screen.getByText("Reset Kata Sandi Siswa")).toBeInTheDocument();
+    expect(screen.getByText(/Ahmad Fauzi \(NIS: 20261001\)/i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/Biarkan kosong untuk default: Password123#/i)
+    ).toBeInTheDocument();
   });
 });

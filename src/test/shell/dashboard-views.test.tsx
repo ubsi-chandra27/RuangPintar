@@ -64,14 +64,71 @@ const mockAdmin: AuthenticatedUser = {
 };
 
 describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
-  it("renders TeacherDashboard with schedule and academic quick actions", () => {
-    render(<TeacherDashboard user={mockTeacher} />);
+  it("renders TeacherDashboard with schedule and academic quick actions", async () => {
+    const jsx = await TeacherDashboard({
+      user: mockTeacher,
+      initialData: {
+        hasProfile: true,
+        teacher: {
+          id: "01J00000000000000000000001",
+          sekolah_id: "01J00000000000000000000001",
+          nama_lengkap: "Ahmad Dahlan",
+          gelar_belakang: "S.Pd.",
+          nama_dengan_gelar: "Ahmad Dahlan, S.Pd.",
+          jenis_kelamin: "L",
+          status_kepegawaian: "PNS",
+          status_aktif: true,
+          status_lifecycle: "AKTIF",
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        activeAssignments: [
+          {
+            id: "01J00000000000000000000002",
+            sekolah_id: "01J00000000000000000000001",
+            guru_id: "01J00000000000000000000001",
+            mata_pelajaran_id: "01J00000000000000000000003",
+            tahun_ajaran_id: "01J00000000000000000000004",
+            rombel_id: "01J00000000000000000000005",
+            jumlah_jam_minggu: 4,
+            berlaku_mulai: new Date(),
+            status: "AKTIF",
+            created_at: new Date(),
+            updated_at: new Date(),
+            guru_nama: "Ahmad Dahlan, S.Pd.",
+            mata_pelajaran_kode: "PWPB",
+            mata_pelajaran_nama: "Pemrograman Web & Mobile",
+            tahun_ajaran_nama: "2026/2027",
+            rombel_nama: "X RPL 1",
+          },
+        ],
+        activeHomeroom: {
+          id: "01J00000000000000000000006",
+          sekolah_id: "01J00000000000000000000001",
+          guru_id: "01J00000000000000000000001",
+          rombel_id: "01J00000000000000000000005",
+          tahun_ajaran_id: "01J00000000000000000000004",
+          berlaku_mulai: new Date(),
+          status: "AKTIF",
+          created_at: new Date(),
+          updated_at: new Date(),
+          guru_nama: "Ahmad Dahlan, S.Pd.",
+          rombel_nama: "X RPL 1",
+          tahun_ajaran_nama: "2026/2027",
+          total_siswa_rombel: 36,
+        },
+        totalJamMinggu: 4,
+        totalRombel: 1,
+        totalSiswaBinaan: 36,
+      },
+    });
+    render(jsx);
 
     expect(screen.getByText(/Selamat Datang, Ahmad Dahlan, S.Pd./i)).toBeInTheDocument();
     expect(screen.getByText("Guru Pengajar")).toBeInTheDocument();
-    expect(screen.getByText("Jadwal Mengajar Hari Ini")).toBeInTheDocument();
+    expect(screen.getByText("Penugasan Mengajar & Kelas Saya")).toBeInTheDocument();
+    expect(screen.getByText("1 Penugasan")).toBeInTheDocument();
     expect(screen.getByText("Pemrograman Web & Mobile")).toBeInTheDocument();
-    expect(screen.getByText("Ketuntasan Presensi")).toBeInTheDocument();
     expect(screen.getByText("Aksi Cepat Guru")).toBeInTheDocument();
   });
 

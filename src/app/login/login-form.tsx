@@ -41,6 +41,7 @@ export function LoginForm({ status }: { status?: string }) {
 
   return (
     <form
+      method="POST"
       onSubmit={handleSubmit}
       className="flex flex-col gap-4 sm:gap-5 w-full"
       noValidate={false}

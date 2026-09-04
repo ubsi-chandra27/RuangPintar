@@ -28,6 +28,7 @@ export interface AuthenticatedUser {
   peran_dasar: string;
   status_akun: string;
   harus_ganti_password: boolean;
+  foto_url?: string | null;
 }
 
 export interface LoginResult {
@@ -209,6 +210,7 @@ export class AuthService {
         peran_dasar: user.peran_dasar,
         status_akun: user.status_akun,
         harus_ganti_password: user.harus_ganti_password,
+        foto_url: user.foto_url,
       },
     };
   }
@@ -255,6 +257,7 @@ export class AuthService {
         peran_dasar: session.pengguna.peran_dasar,
         status_akun: session.pengguna.status_akun,
         harus_ganti_password: session.pengguna.harus_ganti_password,
+        foto_url: session.pengguna.foto_url,
       },
     };
   }

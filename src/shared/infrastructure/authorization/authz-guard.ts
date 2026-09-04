@@ -8,6 +8,7 @@
 
 import { requireAuth, getCurrentUser } from "../auth/auth-guard";
 import { AuthenticatedUser } from "../auth/auth-service";
+import { prisma } from "../database/prisma";
 import { accessControlEngine } from "./access-control";
 import { staffCapabilityService } from "./staff-capability-service";
 import { recordAuditEvent } from "../audit/audit-logger";
@@ -39,6 +40,45 @@ export async function requirePermission(
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
   }
 
+  // Load teacher active teaching assignments from DB if actor is TEACHER and context not provided
+  let evaluationContext: EvaluationContext = context ?? {};
+  if (user.peran_dasar === "TEACHER" && !evaluationContext.teachingAssignments) {
+    const guru = await prisma.guru.findFirst({
+      where: { pengguna_id: user.id },
+      select: { id: true },
+    });
+
+    if (guru) {
+      const activeAssignments = await prisma.penugasanMengajar.findMany({
+        where: {
+          guru_id: guru.id,
+          status: "AKTIF",
+        },
+        select: {
+          id: true,
+          sekolah_id: true,
+          rombel_id: true,
+          mata_pelajaran_id: true,
+          created_at: true,
+          status: true,
+        },
+      });
+
+      evaluationContext = {
+        ...evaluationContext,
+        teachingAssignments: activeAssignments.map((ta) => ({
+          id: ta.id,
+          teacher_id: user.id, // mapped to actor.id (user.id)
+          sekolah_id: ta.sekolah_id,
+          rombel_id: ta.rombel_id,
+          subject_id: ta.mata_pelajaran_id,
+          valid_from: ta.created_at,
+          status: ta.status as any,
+        })),
+      };
+    }
+  }
+
   const actor: ActorContext = {
     id: user.id,
     username: user.username,
@@ -52,7 +92,7 @@ export async function requirePermission(
     actor,
     permission,
     resource,
-    context,
+    context: evaluationContext,
   });
 
   if (!decision.allowed) {

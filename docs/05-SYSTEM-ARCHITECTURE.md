@@ -1818,18 +1818,68 @@ ADR tidak boleh diam-diam mengubah baseline.
 
 ---
 
-# 87. Trigger untuk Review SQLite
+# 87. Trigger untuk Review SQLite & ADR-001 (PostgreSQL Transition)
 
-SQLite harus dievaluasi ulang jika terdapat bukti seperti:
+SQLite dengan konfigurasi interim production-grade saat ini menggunakan:
+- `PRAGMA foreign_keys = ON;` (Integritas relasional basis data).
+- `PRAGMA journal_mode = WAL;` (Write-Ahead Logging: concurrent readers + single-writer non-blocking reads).
+- `PRAGMA busy_timeout = 5000;` (Toleransi antrean lock tulis hingga 5.000 ms sebelum melempar `SQLITE_BUSY`).
+- `PRAGMA synchronous = NORMAL;` (Dipilih menggantikan `FULL`. Dalam mode WAL, `NORMAL` menjamin integritas 100% aman terhadap crash aplikasi/Next.js tanpa risiko korupsi berkas database, mengeliminasi bottleneck `fsync` per-commit ke disk, dan membuka kapasitas write throughput lebih tinggi guna menjaga target P99 write latency < 200 ms).
 
-- write contention berulang;
-- kebutuhan horizontal scale;
-- multi-region requirement;
-- high write concurrency yang tidak dapat ditangani;
-- operational requirement yang tidak cocok;
-- SaaS multi-school architecture berubah secara fundamental.
+Perubahan database ke PostgreSQL (ADR-001) tidak dilakukan atas dasar tren atau preferensi subjektif ("Postgres lebih enterprise"), melainkan wajib berdasar bukti metrik kuantitatif dan karakteristik beban kerja (khususnya menjelang modul M14 CBT / Ujian Berbasis Komputer).
 
-Perubahan database tidak dilakukan hanya karena database lain dianggap lebih enterprise.
+---
+
+## 87.1. Hirarki Metrik & Tabel SLI/SLO (Penyelesaian Konflik Indikator)
+
+Untuk menghindari perbedaan kesimpulan antara jumlah siswa (mis. 300 siswa ujian serentak dengan interval submit terdistribusi) dan throughput tulis riil, ditetapkan **Hirarki Metrik Keputusan**:
+
+### A. Metrik Primer (Trigger Eksekusi Migrasi / Hard Decisional Trigger)
+Hanya metrik teknis yang langsung merefleksikan kegagalan engine database yang menjadi pemicu wajib cutover ke PostgreSQL:
+1. **Tingkat Kegagalan Lock (`SQLITE_BUSY` Error Rate):**
+   - Ambang batas: **> 0.1%** dari total transaksi tulis pada jam operasional/ujian, atau terjadi query lock timeout > 5.000 ms yang menyebabkan siswa gagal menyimpan jawaban.
+2. **P99 Write Latency:**
+   - Ambang batas: **> 1.000 ms (1 detik)** bertahan terus menerus $\ge 5$ menit.
+3. **Sustained Write Throughput:**
+   - Ambang batas: **> 30 write TPS** (transaksi per detik) yang bertahan terus menerus $> 30$ detik pada media penyimpanan SSD/NVMe sekolah.
+
+### B. Metrik Sekunder (Indikator Pendukung / Early Warning Capacity)
+Digunakan sebagai peringatan awal untuk kesiapan infrastruktur, bukan trigger otomatis eksekusi:
+1. **Beban Siswa Ujian Serentak (CBT M14):** Estimasi $\ge 100$ siswa mengerjakan ujian secara bersamaan dalam jendela waktu yang sama.
+2. **Kapasitas Berkas Basis Data:** Ukuran berkas database SQLite $> 5\text{ GB}$ (warning) atau $> 10\text{ GB}$ (evaluasi kapasitas).
+3. **Akumulasi Berkas WAL:** Ukuran file `-wal` persisten $> 100\text{ MB}$ yang gagal di-checkpoint otomatis.
+
+---
+
+## 87.2. Kebijakan Zona Ambang Batas (Tiga Zona Eksplisit)
+
+| Zona Operasional | Kondisi Metrik Primer & Sekunder | Status Sistem | Kebijakan & Tindakan Operasional |
+| :--- | :--- | :--- | :--- |
+| 🟢 **Zona Hijau (Aman)** | • Write Throughput $< 15\text{ TPS}$<br>• Siswa Ujian Serentak $< 100\text{ siswa}$<br>• `SQLITE_BUSY` Rate $= 0\%$<br>• P99 Write Latency $< 200\text{ ms}$ | **OPERASIONAL STABIL** | Pertahankan SQLite (WAL + `synchronous=NORMAL`). Tidak diperlukan perubahan arsitektur. |
+| 🟡 **Zona Kuning (Waspada / Grey Zone)** | • Write Throughput $15 - 30\text{ TPS}$, ATAU<br>• Siswa Ujian Serentak $100 - 300\text{ siswa}$, DENGAN:<br>• `SQLITE_BUSY` Rate $= 0\%$ (tidak ada error)<br>• P99 Write Latency $< 1.000\text{ ms}$ | **MONITORING KETAT & MIGRATION PREP** | **TIDAK langsung cutover.** Sistem berada dalam status persiapan migrasi:<br>1. Aktifkan mitigasi aplikasi: debounce/batch autosave jawaban CBT (mis. submit per-blok 15–30s, bukan per-klik soal).<br>2. Pantau laju checkpoint WAL dan IOPS disk.<br>3. Siapkan instance PostgreSQL & checklist pre-migration.<br>4. Selama lock failure tetap 0%, SQLite diizinkan beroperasi. |
+| 🔴 **Zona Merah (Trigger Wajib / Cutover)** | • Write Throughput $> 30\text{ TPS}$ sustained, ATAU<br>• `SQLITE_BUSY` Rate $> 0.1\%$, ATAU<br>• P99 Write Latency $> 1.000\text{ ms}$ | **EKSEKUSI MIGRASI (ADR-001)** | **Wajib Migrasi ke PostgreSQL.** Antrean tulis single-writer SQLite telah melampaui kapasitas aman sistem dan membahayakan integritas jawaban ujian siswa. |
+
+---
+
+## 87.3. Checklist Pre-Migration PostgreSQL yang Realistis & Jujur
+
+Migrasi dari SQLite ke PostgreSQL **bukan proses instan ("zero friction")** dan tidak cukup hanya dengan mengubah baris connection string. Terdapat perbedaan semantik dan arsitektur mendasar antara file-based embedded engine dan client-server RDBMS yang wajib diaudit melalui checklist berikut sebelum cutover:
+
+1. **Audit Query Pencarian (Case-Sensitivity: `LIKE` vs `ILIKE`):**
+   - *Masalah:* SQLite menerapkan operator `LIKE` secara *case-insensitive* untuk karakter ASCII standar secara default. Sebaliknya, PostgreSQL menerapkan operator `LIKE` secara *case-sensitive*, sehingga query pencarian Prisma seperti `contains: "budi"` berisiko tidak menemukan `"Budi"` jika tidak dikonfigurasi dengan mode `mode: 'insensitive'` (yang di-compile menjadi `ILIKE`).
+   - *Tindakan Wajib:* Audit seluruh repository dan action (pencarian nama siswa, NIS/NISN, nama guru, mata pelajaran, rombel) untuk memastikan parameter `mode: 'insensitive'` diterapkan konsisten guna mencegah regresi pencarian pasca-migrasi.
+
+2. **Regenerasi Berkas Migrasi Skema (Prisma Migration Re-generation):**
+   - *Masalah:* Berkas migrasi SQL yang dihasilkan Prisma untuk provider SQLite (`prisma/migrations/*`) mengandung dialek SQLite (`DATETIME`, `TEXT` tanpa length, autoincrement internal) yang **incompatible** dengan parser PostgreSQL.
+   - *Tindakan Wajib:* Berkas migrasi tidak boleh langsung diaplikasikan ke Postgres. Tim wajib meng-generate migration baseline baru khusus PostgreSQL (`prisma migrate dev --name init_postgresql` atau `prisma migrate diff`) pada branch migrasi tersendiri dan memvalidasi tipe data native (`TIMESTAMPTZ`, `VARCHAR`, `BOOLEAN`).
+
+3. **Infrastruktur Connection Pooling (TCP Connection Management):**
+   - *Masalah:* SQLite bersifat *in-process / single-file* dan tidak menggunakan koneksi jaringan. PostgreSQL adalah server jaringan eksternal berbasis proses/thread per koneksi. Arsitektur Next.js Server Actions / API Routes yang bersifat stateless dapat membuka puluhan hingga ratusan koneksi TCP baru secara serentak saat traffic tinggi, memicu *connection exhaustion* (`FATAL: remaining connection slots are reserved`).
+   - *Tindakan Wajib:* Konfigurasikan connection pooler (seperti **PgBouncer** dalam mode *transaction pooling* atau Supabase Connection Pooler) dan atur parameter `connection_limit` serta timeout pada URL koneksi Prisma.
+
+4. **Audit Integritas Data & Ekspor/Impor (Data Dump & Restore):**
+   - *Masalah:* Perbedaan representasi data boolean (integer `0/1` di SQLite vs native `TRUE/FALSE` di PostgreSQL) dan presisi timestamp milidetik.
+   - *Tindakan Wajib:* Buat dan uji script ETL data migran (ekspor JSON/CSV dengan validasi skema Zod) untuk memindahkan seluruh riwayat akademik (siswa, rombel, nilai, presensi, pengguna) tanpa data truncation atau timezone shifting.
 
 ---
 

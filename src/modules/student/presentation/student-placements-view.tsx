@@ -4,7 +4,8 @@
  * Ruang Pintar — M07 Student Academic Lifecycle: Student Rombel Placements View
  */
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Plus,
@@ -19,6 +20,12 @@ import {
   X,
   AlertTriangle,
   Search,
+  Filter,
+  ChevronDown,
+  Check,
+  RotateCcw,
+  Download,
+  ArrowUpDown,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import {
@@ -52,11 +59,32 @@ export function StudentPlacementsView({
   academicYears,
   canManage,
 }: StudentPlacementsViewProps) {
-  const [placements] = useState<RombelPlacementDTO[]>(initialPlacements);
+  const router = useRouter();
+  const placements = initialPlacements;
   const [selectedRombelId, setSelectedRombelId] = useState<string>(rombels[0]?.id || "ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("absen_asc");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Popover toggle states
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Modals
   const [isPlaceOpen, setIsPlaceOpen] = useState(false);
@@ -86,8 +114,23 @@ export function StudentPlacementsView({
     return matchesRombel && matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredPlacements.length / rowsPerPage) || 1;
-  const paginatedPlacements = filteredPlacements.slice(
+  const sortedPlacements = [...filteredPlacements].sort((a, b) => {
+    switch (sortBy) {
+      case "absen_asc":
+        return (a.nomor_absen || 999) - (b.nomor_absen || 999);
+      case "name_asc":
+        return (a.siswa_nama || "").localeCompare(b.siswa_nama || "", "id");
+      case "name_desc":
+        return (b.siswa_nama || "").localeCompare(a.siswa_nama || "", "id");
+      case "nis_asc":
+        return (a.siswa_nis || "").localeCompare(b.siswa_nis || "", "id");
+      default:
+        return (a.nomor_absen || 999) - (b.nomor_absen || 999);
+    }
+  });
+
+  const totalPages = Math.ceil(sortedPlacements.length / rowsPerPage) || 1;
+  const paginatedPlacements = sortedPlacements.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -154,6 +197,56 @@ export function StudentPlacementsView({
     });
   };
 
+  const handleExportCSV = () => {
+    if (sortedPlacements.length === 0) {
+      setToast({ message: "Tidak ada data penempatan untuk diekspor.", type: "error" });
+      return;
+    }
+
+    const headers = [
+      "No",
+      "No Absen",
+      "NIS",
+      "Nama Siswa",
+      "Rombel",
+      "Tahun Ajaran",
+      "Status Penempatan",
+    ];
+    const escapeCsv = (val: unknown) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = sortedPlacements.map((p, idx) => [
+      idx + 1,
+      escapeCsv(p.nomor_absen || "-"),
+      escapeCsv(p.siswa_nis),
+      escapeCsv(p.siswa_nama),
+      escapeCsv(p.rombel_nama),
+      escapeCsv(p.tahun_ajaran_nama),
+      escapeCsv(p.status),
+    ]);
+
+    const delimiter = ";";
+    const csvContent =
+      "\uFEFF" + [headers.join(delimiter), ...rows.map((r) => r.join(delimiter))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `penempatan_rombel_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToast({
+      message: `Berhasil mengekspor ${sortedPlacements.length} data penempatan ke CSV.`,
+      type: "success",
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Toast */}
@@ -166,89 +259,208 @@ export function StudentPlacementsView({
         />
       )}
 
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-sm">
-        <div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[#2563EB]" />
-            Penempatan Rombongan Belajar (Rombel)
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Alokasikan siswa terdaftar ke rombongan belajar dengan validasi batas kapasitas kelas.
-          </p>
-        </div>
-        {canManage && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsBulkOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
-            >
-              <Users className="h-4 w-4" />
-              Penempatan Massal
-            </button>
-            <button
-              onClick={() => setIsPlaceOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-            >
-              <Plus className="h-4 w-4" />
-              Tempatkan Siswa
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Rombel Selector & Capacity Card */}
-      <div className="p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          <div className="sm:col-span-5">
-            <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-              Pilih Rombel / Kelas
-            </label>
-            <select
-              value={selectedRombelId}
+      {/* Table Toolbar (UI Kit Standard: Search + Filter + Sort + Export + Bulk + Primary Button) */}
+      <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+          {/* Search Input with Leading & Trailing Icon */}
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
               onChange={(e) => {
-                setSelectedRombelId(e.target.value);
+                setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-            >
-              <option value="ALL">Semua Rombel</option>
-              {rombels.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.nama} ({r.tingkat_nama ?? ""} {r.program_nama ? `• ${r.program_nama}` : ""})
-                </option>
-              ))}
-            </select>
+              placeholder="Search siswa di rombel ini..."
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all shadow-2xs"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Hapus pencarian"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : (
+              <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none hidden sm:block" />
+            )}
           </div>
 
-          <div className="sm:col-span-4 relative">
-            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Pencarian</label>
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
+          {/* Action Toolbar Buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
+            {/* Filter Dropdown Button */}
+            <div className="relative" ref={filterRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                  setIsSortOpen(false);
                 }}
-                placeholder="Cari siswa di rombel ini..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
-              />
-            </div>
-          </div>
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0 ${
+                  selectedRombelId !== "ALL"
+                    ? "border-blue-300 bg-blue-50/70 text-[#2563EB]"
+                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                }`}
+              >
+                <Filter
+                  className={`h-4 w-4 ${
+                    selectedRombelId !== "ALL" ? "text-[#2563EB]" : "text-slate-600"
+                  }`}
+                />
+                <span>Filter</span>
+                {selectedRombelId !== "ALL" && (
+                  <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
+                )}
+              </button>
 
-          {/* Capacity Status Pill */}
-          {currentRombel && (
-            <div className="sm:col-span-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                  Kapasitas Rombel
-                </span>
-                <span className="text-xs font-bold text-slate-700">
-                  {activePlacementsInRombel.length} / {currentRombel.kapasitas} Siswa
-                </span>
-              </div>
+              {/* Filter Popover Menu */}
+              {isFilterOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 p-4 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-3 animate-in fade-in zoom-in-95">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Filter className="h-3.5 w-3.5 text-[#2563EB]" />
+                      Pilih Rombel
+                    </span>
+                    {selectedRombelId !== "ALL" && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedRombelId("ALL");
+                          setCurrentPage(1);
+                        }}
+                        className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        Reset
+                      </button>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Rombel / Kelas
+                    </label>
+                    <select
+                      value={selectedRombelId}
+                      onChange={(e) => {
+                        setSelectedRombelId(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                    >
+                      <option value="ALL">Semua Rombel</option>
+                      {rombels.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.nama} ({r.tingkat_nama ?? ""}{" "}
+                          {r.program_nama ? `• ${r.program_nama}` : ""})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sort Dropdown Button */}
+            <div className="relative" ref={sortRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsFilterOpen(false);
+                }}
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              >
+                <ArrowUpDown className="h-4 w-4 text-slate-600" />
+                <span>Sort</span>
+              </button>
+
+              {/* Sort Popover Menu */}
+              {isSortOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 p-2 rounded-2xl bg-white border border-slate-200 shadow-xl z-30 space-y-1 animate-in fade-in zoom-in-95">
+                  {[
+                    { id: "absen_asc", label: "No Absen (Terkecil)" },
+                    { id: "name_asc", label: "Nama Siswa (A - Z)" },
+                    { id: "name_desc", label: "Nama Siswa (Z - A)" },
+                    { id: "nis_asc", label: "NIS (Terkecil)" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                        sortBy === opt.id
+                          ? "bg-blue-50 text-[#2563EB] font-bold"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {sortBy === opt.id && <Check className="h-3.5 w-3.5 text-[#2563EB]" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Export Dropdown / Button */}
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              title="Ekspor data penempatan ke file CSV"
+            >
+              <Download className="h-4 w-4 text-slate-600" />
+              <span>Export</span>
+              <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+            </button>
+
+            {/* Penempatan Massal Button */}
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => setIsBulkOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm shadow-2xs transition-colors cursor-pointer shrink-0"
+              >
+                <Users className="h-4 w-4 text-slate-600" />
+                <span>Massal</span>
+              </button>
+            )}
+
+            {/* + Tempatkan Siswa Primary Button */}
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => setIsPlaceOpen(true)}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tempatkan Siswa</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Capacity Info Strip when a rombel is selected */}
+        {currentRombel && (
+          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-slate-600">Rombel: {currentRombel.nama}</span>
+              <span className="text-slate-400">•</span>
+              <span className="text-slate-500">
+                {currentRombel.tingkat_nama ?? ""}{" "}
+                {currentRombel.program_nama ? `(${currentRombel.program_nama})` : ""}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-slate-700">
+                Terisi: {activePlacementsInRombel.length} / {currentRombel.kapasitas} Siswa
+              </span>
               <span
                 className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                   activePlacementsInRombel.length >= currentRombel.kapasitas
@@ -261,8 +473,8 @@ export function StudentPlacementsView({
                   : `Sisa ${currentRombel.kapasitas - activePlacementsInRombel.length} Kursi`}
               </span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Content: Mobile Cards (< 640px) */}
