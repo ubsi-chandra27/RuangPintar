@@ -32,15 +32,15 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 13 — ASSESSMENT, TP & GRADEBOOK (M13)
+PHASE 14 — CBT: COMPUTER BASED TEST (M14)
 
 Current Phase Status:
-READY FOR HUMAN REVIEW
+IN PROGRESS
 
 Last Human-Approved Implementation Phase:
-PHASE 12 — CLASS SESSION ATTENDANCE (MILESTONE D)
+PHASE 13 — ASSESSMENT, TP & GRADEBOOK (MILESTONE D)
 
-Phase 12 Official Human Approval:
+Phase 13 Official Human Approval:
 APPROVED BY HUMAN (4 September 2026)
 ```
 
@@ -635,14 +635,38 @@ Catatan implementasi Phase 13 (4 September 2026):
    - `PublishAssessmentModal`: Dialog pelepasan publikasi resmi ke siswa dan orang tua/wali.
    - `ClassAssessmentTabView`: Tab 8 Workspace Kelas (`/kelas-saya/[id]`) yang menyajikan sub-tab Daftar Asesmen & Matriks Buku Nilai Dinamis dengan metrik rerata kelas dan persentase KKTP.
    - `TeacherGradebookOverviewView`: Halaman terpusat Buku Nilai Guru (`/penilaian`) yang merangkum seluruh kelas penugasan mengajar.
-6. **Verifikasi Quality Gates:**
-   - Typecheck (`tsc --noEmit`): 0 errors.
-   - ESLint: 0 errors, 0 warnings.
-   - Formatter (`prettier`): 100% compliant.
-   - Unit & Integration Tests (`vitest`): 65 test files, 340 tests passing (100% PASS).
-   - Production Build: 100% PASS.
-   - Automated Walkthrough: 11 skenario visual berhasil 100% tersimpan di `docs/phases/screenshots/phase-13-walkthrough/`.
-   - Status: **READY FOR HUMAN REVIEW**.
+6. **Koreksi Human Review & Verifikasi Final:**
+   - Resolusi lint error `react-hooks/set-state-in-effect` pada `input-grades-modal.tsx` dengan refaktor `handleClose` dan sinkronisasi dependensi.
+   - Pengecekan Prettier di seluruh repository: 100% compliant.
+   - Verifikasi Typecheck (`tsc --noEmit`): 0 errors.
+   - Verifikasi ESLint: 0 errors, 0 warnings.
+   - Verifikasi Unit & Integration Tests (`vitest`): 65 test files, 347 tests passing (100% PASS).
+   - Verifikasi Production Build (`next build`): 100% PASS (13 rute terkompilasi optimal).
+   - Verifikasi visual Playwright Walkthrough: 11 skenario di `docs/phases/screenshots/phase-13-walkthrough/`.
+   - Status: **APPROVED BY HUMAN (4 September 2026)**.
+
+---
+
+# 29. Inisiasi PHASE 14 — CBT (COMPUTER BASED TEST) (M14)
+
+Persetujuan resmi Phase 13 diberikan oleh Human Reviewer pada 4 September 2026. Milestone D (Teacher Academic MVP) dinyatakan **APPROVED & LOCKED**.
+
+Inisiasi Phase 14 — CBT (Computer Based Test):
+1. **Target:** Digital Assessment Ready.
+2. **Arsitektur Pemisahan Entitas (Domain Invariants Wajib):**
+   ```text
+   Question ≠ Question Version ≠ Exam Blueprint ≠ Exam ≠ Exam Snapshot ≠ Attempt ≠ Answer ≠ Result ≠ Assessment ≠ Grade
+   Question Bank ≠ Exam
+   ```
+3. **Prinsip Kunci:**
+   - **Bank Soal & Versioning:** Soal reusable memiliki versioning (`QuestionVersion`). Modifikasi soal di kemudian hari tidak boleh merusak riwayat/attempt ujian lama.
+   - **Immutable Exam Snapshot:** Sebelum peserta mengerjakan ujian, sistem membekukan snapshot ujian (konfigurasi, versi soal, opsi, bobot, durasi). Attempt selalu mengacu pada snapshot yang immutable.
+   - **One Active Attempt:** Satu peserta + satu ujian = maksimal 1 active attempt.
+   - **Server-Authoritative Timer:** Deadline waktu dihitung di server (`started_at + duration`). Browser client hanya menampilkan visual countdown. Refresh/interupsi koneksi tidak me-reset sisa waktu server.
+   - **Autosave & Resume:** Penyimpanan jawaban otomatis berkala yang idempotent dan dapat dilanjutkan jika terjadi gangguan jaringan.
+   - **Answer Key Security (Critical):** Kunci jawaban (`answer_key`, `is_correct`) DILARANG DIKIRIM ke client CBT Player. Penilaian objektif dilakukan di server boundary.
+   - **Integrasi Phase 13 Resmi:** Hasil CBT ditransfer ke Assessment & Gradebook melalui contract resmi tanpa menduplikasi kepemilikan Gradebook.
+   - **Integrity Indicator:** Deteksi perubahan fokus/tab sebagai indikator audit tanpa vonis kecurangan otomatis sepihak.
 
 
 

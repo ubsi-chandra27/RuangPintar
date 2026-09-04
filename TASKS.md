@@ -1,8 +1,8 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 3.0  
-**Current Active Phase:** PHASE 13 — ASSESSMENT, TP & GRADEBOOK (M13)  
+**Versi:** 4.0  
+**Current Active Phase:** PHASE 14 — CBT: COMPUTER BASED TEST (M14)  
 **Status:** ACTIVE  
 
 ---
@@ -10,66 +10,74 @@
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 13 — ASSESSMENT, TP & GRADEBOOK (M13)
+PHASE 14 — CBT: COMPUTER BASED TEST (M14)
 ```
 
 Tujuan:
-> Membangun sistem penilaian berbasis Tujuan Pembelajaran (TP) dan Buku Nilai Terpadu (Gradebook) untuk menyempurnakan Teacher Academic MVP:
-> 1. Mendukung alur: Lingkup Materi/BAB ➔ Tujuan Pembelajaran (TP) ➔ Definisi Asesmen (`DefinisiAsesmen`) ➔ Nilai Siswa (`NilaiSiswa`).
-> 2. Menjaga invariant kanonikal: `Assessment Definition ≠ Grade ≠ Grade Publication` dan `Missing Grade ≠ Zero Grade`.
-> 3. Dilarang membuat kolom permanen `nilai_tp1`, `nilai_tp2` (TP adalah data domain dinamis).
-> 4. Auto-populasi seluruh siswa rombel aktif (`PenempatanRombel`) saat proses input nilai.
-> 5. Lembar penilaian cepat (Bulk Grade Entry & Keyboard-friendly) dengan validasi skala numerik (0–100), draft vs publish.
-> 6. Matriks Buku Nilai (Gradebook Matrix) komprehensif pada Workspace Kelas (`/kelas-saya/[id]`) dengan rekapitulasi rata-rata & capaian KKTP.
-> 7. Halaman terpusat Buku Nilai Guru (`/penilaian`) yang menghubungkan seluruh rombel penugasan.
-> 8. Verifikasi workflow end-to-end Teacher Academic MVP (Login ➔ Dashboard ➔ Kelas Saya ➔ BAB/TP ➔ KBM ➔ Presensi ➔ Input Nilai TP ➔ Gradebook).
+> Membangun CBT engine Ruang Pintar yang aman, konsisten, auditable, dan terintegrasi dengan domain akademik (Digital Assessment Ready):
+> 1. Mendukung alur: Guru ➔ Kelas Saya ➔ Workspace Kelas ➔ CBT ➔ Bank Soal ➔ Susun Ujian ➔ Atur Blueprint ➔ Publish / Siapkan Ujian ➔ Immutable Exam Snapshot ➔ Peserta mengerjakan CBT ➔ Autosave ➔ Resume bila terputus ➔ Submit ➔ Penilaian sesuai aturan ➔ Hasil CBT ➔ Transfer resmi ke Assessment/Gradebook (Phase 13).
+> 2. Menjaga domain invariants wajib:
+>    - `Question ≠ Question Version ≠ Exam Blueprint ≠ Exam ≠ Exam Snapshot ≠ Attempt ≠ Answer ≠ Result ≠ Assessment ≠ Grade`
+>    - `Question Bank ≠ Exam`
+>    - `Immutable Exam Snapshot`: Soal di bank diedit TIDAK mengubah snapshot atau attempt yang sedang berjalan.
+>    - `One Active Attempt`: Satu peserta + satu ujian = maksimal satu active attempt.
+>    - `Server-Authoritative Timer`: Deadline waktu absolut ditentukan server (`started_at + duration`). Manipulasi jam lokal / refresh browser tidak me-reset waktu.
+>    - `Answer Key Security`: Kunci jawaban DILARANG DIKIRIM ke client CBT Player dalam bentuk apa pun. Grading dilakukan di trusted server boundary.
+>    - `Ownership Gradebook Tetap Phase 13`: CBT tidak membuat tabel gradebook kedua; hasil CBT ditransfer via official contract.
+>    - `Integrity Event = Indikator`, BUKAN vonis kecurangan otomatis sepihak.
 
 ---
 
-# 2. Checklist Phase 13 — Assessment, TP & Gradebook
+# 2. Checklist Phase 14 — CBT (Computer Based Test)
 
 ## Database & Persistence
 ```text
-[x] Prisma model: DefinisiAsesmen (id, sekolah_id, penugasan_mengajar_id, tp_id, lingkup_materi_id, judul, deskripsi, kategori, teknik_penilaian, bobot, skala_maksimal, kkm_kktp, tanggal_pelaksanaan, status, created_at, updated_at)
-[x] Prisma model: NilaiSiswa (id, sekolah_id, asesmen_id, siswa_id, penempatan_rombel_id, nilai_angka, nilai_huruf, capaian_kompetensi, catatan, status, diinput_oleh, diubah_terakhir_oleh, alasan_koreksi, created_at, updated_at)
-[x] Prisma model: PublikasiNilaiAsesmen (id, sekolah_id, asesmen_id, target_audience, tanggal_publikasi, dipublikasikan_oleh, status, catatan, created_at, updated_at)
-[x] Unique constraints: @@unique([asesmen_id, siswa_id]), @@index([asesmen_id, status])
-[x] Invariant Guard: Memastikan nilai_angka bersifat nullable (Missing Grade ≠ Zero Grade)
-[x] Forward migration: add_assessment_and_gradebook
-[x] Domain Types, Validation & Error Guards (src/modules/assessment/domain/)
+[ ] Prisma model: BankSoal & VersiSoal (id, sekolah_id, guru_id, mapel_id, tp_id, jenis_soal, konten, opsi_jawaban, kunci_jawaban, bobot, status, versi, created_at, updated_at)
+[ ] Prisma model: BlueprintUjian & UjianCbt (id, sekolah_id, penugasan_mengajar_id, asesmen_id, judul, deskripsi, durasi_menit, tanggal_mulai, tanggal_selesai, status, acak_soal, acak_opsi, max_attempt, created_at, updated_at)
+[ ] Prisma model: SnapshotUjian (id, sekolah_id, ujian_id, payload_snapshot, total_soal, total_bobot, created_at)
+[ ] Prisma model: SesiUjianSiswa / Attempt (id, sekolah_id, ujian_id, snapshot_id, siswa_id, waktu_mulai, batas_waktu_server, waktu_selesai, status, attempt_ke, created_at, updated_at)
+[ ] Prisma model: JawabanSiswa (id, sekolah_id, sesi_ujian_id, soal_id, jawaban_peserta, ragu_ragu, skor_diperoleh, status_koreksi, waktu_simpan, updated_at)
+[ ] Prisma model: HasilUjianCbt (id, sekolah_id, sesi_ujian_id, total_soal, dijawab, benar, salah, kosong, nilai_akhir, status, ditransfer_ke_gradebook, waktu_transfer)
+[ ] Prisma model: EventIntegritasUjian (id, sekolah_id, sesi_ujian_id, jenis_event, deskripsi, payload, waktu_kejadian)
+[ ] Database constraints: @@unique([ujian_id, siswa_id, attempt_ke]), @@unique([sesi_ujian_id, soal_id]), indexes
+[ ] Forward migration: add_cbt_engine
 ```
 
 ## Infrastructure & Application Services
 ```text
-[x] AssessmentRepository: CRUD Asesmen, CRUD Nilai Siswa, Batch Upsert Nilai, Query Gradebook Matrix, Query Publikasi (src/modules/assessment/infrastructure/)
-[x] AssessmentService: Validasi hak mengajar guru (penugasan aktif), kalkulasi rekapitulasi gradebook, workflow draft-to-publish, audit koreksi nilai (src/modules/assessment/application/)
-[x] Invariant Guard: Menegakkan pemisahan tegas antara Asesmen, Nilai, dan Publikasi Nilai
+[ ] CbtRepository: CRUD Bank Soal & Versi, Blueprint & Snapshot Generation, Attempt Lifecycle, Atomic Autosave, Submission, Scoring, Gradebook Transfer
+[ ] CbtService: Teacher scope verification, Student eligibility check, Attempt resume & validation
+[ ] CbtTimerService: Server-authoritative countdown & expiration enforcement
+[ ] CbtGradingService: Server-side objective auto-grading without leaking answer keys to client
+[ ] CbtTransferService: Idempotent transfer of CBT results into Phase 13 DefinisiAsesmen & NilaiSiswa
 ```
 
 ## Server Actions & Authorization
 ```text
-[x] assessment-actions.ts: Server actions aman dengan requireAuth(), requirePermission() dan audit logging
-[x] Permission checks: assessment.grades.view, assessment.grades.manage, assessment.grades.publish, assessment.grades.finalize
-[x] Teacher scope check: Hanya guru pengampu penugasan (atau Super Admin) yang berhak menginput/mengubah nilai
+[ ] cbt-actions.ts: Server actions aman dengan requireAuth(), requirePermission(), dan audit logging
+[ ] Permission checks: cbt.question_bank.manage, cbt.exam.manage, cbt.attempt.start, cbt.attempt.submit, cbt.results.transfer
+[ ] Teacher scope check: Guru hanya dapat mengelola CBT pada penugasan mengajar rombelnya
+[ ] Student scope check: Siswa hanya dapat membuka attempt miliknya sendiri pada rombel aktif
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[x] Tab Penilaian di Workspace Kelas (/kelas-saya/[id]): Daftar Asesmen & Matriks Buku Nilai (Gradebook)
-[x] Modal Buat/Edit Asesmen: Hubungkan dengan TP/BAB, tentukan kategori (Formatif/Sumatif), bobot, dan KKTP
-[x] Modal / Lembar Input Nilai Siswa: Form input tabel cepat dengan auto-populasi siswa rombel aktif, quick fill KKTP, validasi 0-100
-[x] Modal Publikasi Nilai: Konfirmasi publikasi hasil asesmen ke siswa/wali dengan status badge jelas
-[x] Halaman Terpusat Buku Nilai Guru (/penilaian): Mengaktifkan route menu utama guru dengan filter rombel dan mapel
+[ ] Tab CBT pada Workspace Kelas (/kelas-saya/[id]): Daftar Ujian CBT rombel & aksi cepat
+[ ] Halaman Bank Soal (/bank-soal atau terintegrasi di Workspace Kelas): Manajemen soal & versi
+[ ] Editor Ujian CBT: Modal/Workflow penyusunan blueprint, pemilihan soal, dan snapshot freezing
+[ ] CBT Player (/cbt/[attemptId]): Interface pengerjaan ujian aman, responsif, timer server, autosave status, tanpa bocor kunci jawaban
+[ ] Hasil CBT & Review: Tampilan rekapitulasi nilai peserta, audit log integritas, dan tombol "Transfer ke Buku Nilai"
 ```
 
 ## Quality Gates & Verification
 ```text
-[x] Format check: Prettier 100% clean (npm run format:check)
-[x] Lint check: ESLint 0 errors, 0 warnings (npm run lint)
-[x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: Unit & Integration tests passing (src/test/assessment/)
-[x] Build: Next.js production build PASS
-[x] Automated Walkthrough: Praktik workflow nyata Teacher Academic MVP end-to-end
+[ ] Format check: Prettier 100% clean (npm run format:check)
+[ ] Lint check: ESLint 0 errors, 0 warnings (npm run lint)
+[ ] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
+[ ] Tests: Unit & Integration tests passing (src/test/cbt/)
+[ ] Regression: Seluruh test Phase 00–13 tetap PASS (100%)
+[ ] Build: Next.js production build PASS
+[ ] Automated Walkthrough: Praktik workflow nyata CBT end-to-end (Teacher build exam ➔ Student take exam ➔ Autosave ➔ Submit ➔ Result ➔ Transfer to Gradebook)
 ```
 
 ---
@@ -85,10 +93,14 @@ Tujuan:
     ├── [x] Phase 09 — Teacher & Teaching Assignment (APPROVED BY HUMAN)
     └── [x] Phase 10 — Academic Calendar, Schedule & Class Session (APPROVED BY HUMAN)
 
-[ ] Milestone D — Teacher Academic MVP (Phase 11–13) [IN PROGRESS]
+[x] Milestone D — Teacher Academic MVP (Phase 11–13) [APPROVED BY HUMAN (4 September 2026)]
     ├── [x] Phase 11 — Teacher Workspace & Learning Administration [APPROVED BY HUMAN (3 September 2026)]
     ├── [x] Phase 12 — Class Session Attendance [APPROVED BY HUMAN (4 September 2026)]
-    └── [x] Phase 13 — Assessment, TP & Gradebook [READY FOR HUMAN REVIEW]
+    └── [x] Phase 13 — Assessment, TP & Gradebook [APPROVED BY HUMAN (4 September 2026)]
+
+[ ] Milestone E — Digital Assessment Ready (Phase 14–15) [ACTIVE]
+    ├── [ ] Phase 14 — CBT: Computer Based Test (M14) [ACTIVE]
+    └── [ ] Phase 15 — Assessment Compilation & Student Experience (M15)
 ```
 
 ---
@@ -101,8 +113,8 @@ Tujuan:
 [x] Format check: Prettier 100% clean (npm run format:check)
 [x] Lint check: 0 errors, 0 warnings (npm run lint)
 [x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: 65 test files, 340 tests passing (100% PASS)
+[x] Tests: 65 test files, 347 tests passing (100% PASS)
 [x] Build: Next.js production compilation 100% PASS (npm run build)
 [x] End-to-End Walkthrough: Playwright automated test & visual screenshots PASS (qa-phase13-full-walkthrough.mjs)
-[x] Status: READY FOR HUMAN REVIEW
+[x] Official Human Approval: APPROVED BY HUMAN (4 September 2026) [LOCKED FOR REGRESSION]
 ```
