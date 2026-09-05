@@ -50,6 +50,10 @@ export const BASE_ROLE_PERMISSIONS: Record<BaseRole, ReadonlyArray<PermissionStr
     "assessment.grades.view",
     "assessment.report_card.view",
     "cbt.exam.view",
+    "cbt.exam.manage",
+    "cbt.attempt.monitor",
+    "cbt.results.transfer",
+    "cbt.attempt.start",
 
     // Communication & Reports
     "monitoring.student.view",
@@ -82,6 +86,7 @@ export const BASE_ROLE_PERMISSIONS: Record<BaseRole, ReadonlyArray<PermissionStr
     "cbt.exam.view",
     "cbt.exam.manage",
     "cbt.attempt.monitor",
+    "cbt.results.transfer",
     "monitoring.student.view",
     "communication.announcement.view",
   ],

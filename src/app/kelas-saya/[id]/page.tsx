@@ -10,6 +10,7 @@ import { prisma } from "@/shared/infrastructure/database/prisma";
 import { learningService } from "@/modules/learning/application/learning-service";
 import { attendanceService } from "@/modules/attendance/application/attendance-service";
 import { assessmentService } from "@/modules/assessment/application/assessment-service";
+import { cbtService } from "@/modules/cbt/application/cbt-service";
 import { ClassWorkspaceView } from "@/modules/learning/presentation/class-workspace-view";
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 
@@ -70,12 +71,13 @@ export default async function ClassWorkspacePage({ params, searchParams }: PageP
     notFound();
   }
 
-  // Ambil data presensi, riwayat sesi kelas, asesmen, dan gradebook untuk penugasan ini
-  const [attendanceHistory, attendanceStats, assessments, gradebook] = await Promise.all([
+  // Ambil data presensi, riwayat sesi kelas, asesmen, gradebook, dan ujian CBT untuk penugasan ini
+  const [attendanceHistory, attendanceStats, assessments, gradebook, exams] = await Promise.all([
     attendanceService.getAssignmentAttendanceHistory(penugasanId, user.sekolah_id),
     attendanceService.getOverallAttendanceStats(penugasanId, user.sekolah_id),
     assessmentService.getAssessments(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
     assessmentService.getGradebook(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
+    cbtService.getExamsByPenugasan(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
   ]);
 
   const searchParamsObj = searchParams ? await searchParams : undefined;
@@ -105,6 +107,7 @@ export default async function ClassWorkspacePage({ params, searchParams }: PageP
         attendanceStats={attendanceStats}
         assessments={assessments}
         gradebook={gradebook}
+        exams={exams}
         initialTab={initialTab}
       />
     </AcademicShell>

@@ -45,6 +45,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Settings,
   ShieldAlert,
   Building2,
+  Sparkles,
 };
 
 export interface SidebarProps {

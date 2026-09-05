@@ -85,11 +85,12 @@ export type PermissionString =
   | "assessment.report_card.generate"
   | "assessment.report_card.sign"
 
-  // CBT / Computer-Based Test (M16)
+  // CBT / Computer-Based Test (M14)
   | "cbt.exam.view"
   | "cbt.exam.manage"
   | "cbt.attempt.start"
   | "cbt.attempt.monitor"
+  | "cbt.results.transfer"
 
   // Student Attention & Monitoring (M17)
   | "monitoring.student.view"

@@ -59,6 +59,14 @@ model Sekolah {
   definisi_asesmen          DefinisiAsesmen[]
   nilai_siswa               NilaiSiswa[]
   publikasi_nilai_asesmen   PublikasiNilaiAsesmen[]
+  bank_soal                 BankSoal[]
+  versi_soal                VersiSoal[]
+  ujian_cbt                 UjianCbt[]
+  snapshot_ujian            SnapshotUjian[]
+  sesi_ujian_siswa          SesiUjianSiswa[]
+  jawaban_siswa             JawabanSiswa[]
+  hasil_ujian_cbt           HasilUjianCbt[]
+  event_integritas_ujian    EventIntegritasUjian[]
 
   @@map("sekolah")
 }
@@ -461,6 +469,8 @@ model Siswa {
   pengumpulan_tugas   PengumpulanTugas[]
   presensi_sesi_kelas PresensiSesiKelas[]
   nilai_siswa         NilaiSiswa[]
+  sesi_ujian_siswa    SesiUjianSiswa[]
+  hasil_ujian_cbt     HasilUjianCbt[]
 
   @@unique([sekolah_id, nis])
   @@index([sekolah_id, status_akademik])
@@ -512,6 +522,7 @@ model PenempatanRombel {
   rombel              Rombel              @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
   presensi_sesi_kelas PresensiSesiKelas[]
   nilai_siswa         NilaiSiswa[]
+  sesi_ujian_siswa    SesiUjianSiswa[]
 
   @@index([rombel_id, status])
   @@index([keikutsertaan_id, status])
@@ -553,6 +564,7 @@ model Guru {
   materi_dibuat             MateriPembelajaran[]
   tugas_dibuat              DefinisiTugas[]
   administrasi_pembelajaran AdministrasiPembelajaran[]
+  bank_soal                 BankSoal[]
 
   @@index([sekolah_id, status_aktif])
   @@index([sekolah_id, status_lifecycle])
@@ -580,6 +592,7 @@ model MataPelajaran {
   sesi_kelas_aktual   SesiKelasAktual[]
   materi_pembelajaran MateriPembelajaran[]
   definisi_tugas      DefinisiTugas[]
+  bank_soal           BankSoal[]
 
   @@unique([sekolah_id, kode])
   @@index([sekolah_id, status_aktif])
@@ -617,6 +630,7 @@ model PenugasanMengajar {
   publikasi_tugas           PublikasiTugas[]
   administrasi_pembelajaran AdministrasiPembelajaran[]
   definisi_asesmen          DefinisiAsesmen[]
+  ujian_cbt                 UjianCbt[]
 
   @@index([guru_id, status])
   @@index([rombel_id, status])
@@ -816,6 +830,7 @@ model LingkupMateri {
   materi              MateriPembelajaran[]
   tugas               DefinisiTugas[]
   definisi_asesmen    DefinisiAsesmen[]
+  bank_soal           BankSoal[]
 
   @@index([penugasan_mengajar_id, urutan])
   @@index([sekolah_id, status])
@@ -838,6 +853,7 @@ model TujuanPembelajaran {
   lingkup_materi LingkupMateri                    @relation(fields: [lingkup_materi_id], references: [id], onDelete: Cascade)
   administrasi        AdministrasiTujuanPembelajaran[]
   definisi_asesmen    DefinisiAsesmen[]
+  bank_soal           BankSoal[]
 
   @@index([lingkup_materi_id, urutan])
   @@index([sekolah_id, status])
@@ -1063,6 +1079,7 @@ model DefinisiAsesmen {
   lingkup_materi      LingkupMateri?           @relation(fields: [lingkup_materi_id], references: [id], onDelete: SetNull)
   nilai_siswa         NilaiSiswa[]
   publikasi           PublikasiNilaiAsesmen[]
+  ujian_cbt           UjianCbt[]
 
   @@index([penugasan_mengajar_id, tanggal_pelaksanaan])
   @@index([tp_id])
@@ -1121,5 +1138,236 @@ model PublikasiNilaiAsesmen {
   @@index([sekolah_id, status])
   @@map("publikasi_nilai_asesmen")
 }
+
+/// M14 — CBT: Master Bank Soal Reusable per Sekolah & Mata Pelajaran
+model BankSoal {
+  id                     String    @id
+  sekolah_id             String
+  guru_id                String
+  mata_pelajaran_id      String
+  lingkup_materi_id      String?
+  tujuan_pembelajaran_id String?
+  kode                   String    // e.g. "SOAL-INF-001"
+  judul                  String
+  tipe_soal              String    @default("PILIHAN_GANDA") // PILIHAN_GANDA | PILIHAN_GANDA_KOMPLEKS | BENAR_SALAH | ISIAN_SINGKAT | ESAI
+  tingkat_kesulitan      String    @default("SEDANG") // MUDAH | SEDANG | SULIT
+  versi_aktif            Int       @default(1)
+  status                 String    @default("AKTIF") // AKTIF | ARSIP
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  sekolah             Sekolah             @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  guru                Guru                @relation(fields: [guru_id], references: [id], onDelete: Restrict)
+  mata_pelajaran      MataPelajaran       @relation(fields: [mata_pelajaran_id], references: [id], onDelete: Restrict)
+  lingkup_materi      LingkupMateri?      @relation(fields: [lingkup_materi_id], references: [id], onDelete: SetNull)
+  tujuan_pembelajaran TujuanPembelajaran? @relation(fields: [tujuan_pembelajaran_id], references: [id], onDelete: SetNull)
+  versi_soal          VersiSoal[]
+
+  @@unique([sekolah_id, kode])
+  @@index([sekolah_id, mata_pelajaran_id, status])
+  @@index([guru_id])
+  @@index([lingkup_materi_id])
+  @@index([tujuan_pembelajaran_id])
+  @@map("bank_soal")
+}
+
+/// M14 — CBT: Versi Soal Stabil (Question Versioning - Editing question != editing historical snapshot)
+model VersiSoal {
+  id             String    @id
+  sekolah_id     String
+  bank_soal_id   String
+  nomor_versi    Int       @default(1)
+  pertanyaan     String    // Konten teks/pertanyaan soal
+  gambar_url     String?   // URL/Base64/path gambar stimulus/diagram
+  opsi_jawaban   String?   // JSON Array: [{ id: "A", teks: "...", urutan: 1 }]
+  kunci_jawaban  String?   // JSON string/array: ["A"] - SECRET! ONLY ON SERVER BOUNDARY
+  pembahasan     String?   // Penjelasan jawaban
+  bobot_default  Float     @default(1.0)
+  dibuat_oleh    String
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  sekolah   Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  bank_soal BankSoal @relation(fields: [bank_soal_id], references: [id], onDelete: Cascade)
+
+  @@unique([bank_soal_id, nomor_versi])
+  @@index([sekolah_id])
+  @@map("versi_soal")
+}
+
+/// M14 — CBT: Pelaksanaan Ujian CBT per Penugasan Mengajar / Rombel
+model UjianCbt {
+  id                    String    @id
+  sekolah_id            String
+  penugasan_mengajar_id String
+  asesmen_id            String?   // Terhubung ke Phase 13 DefinisiAsesmen untuk transfer nilai ke Gradebook
+  judul                 String
+  deskripsi             String?
+  durasi_menit          Int       @default(60)
+  waktu_mulai           DateTime?
+  waktu_selesai         DateTime?
+  kkm_kktp              Float     @default(75.0)
+  acak_soal             Boolean   @default(false)
+  acak_opsi             Boolean   @default(false)
+  gunakan_token         Boolean   @default(false)
+  token_masuk           String?   // Token masuk ujian 6 karakter (e.g. "KRYZQA")
+  tampilkan_nilai       Boolean   @default(false)
+  tampilkan_pembahasan  Boolean   @default(false)
+  maksimal_attempt      Int       @default(1)
+  status                String    @default("DRAFT") // DRAFT | DITERBITKAN | BERLANGSUNG | SELESAI | ARSIP
+  blueprint             String?   // JSON Blueprint: komposisi soal, filter TP, bobot
+  snapshot_aktif_id     String?   // ID SnapshotUjian yang aktif
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  sekolah            Sekolah           @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penugasan_mengajar PenugasanMengajar @relation(fields: [penugasan_mengajar_id], references: [id], onDelete: Cascade)
+  asesmen            DefinisiAsesmen?  @relation(fields: [asesmen_id], references: [id], onDelete: SetNull)
+  snapshot_ujian     SnapshotUjian[]
+  sesi_ujian_siswa   SesiUjianSiswa[]
+  hasil_ujian_cbt    HasilUjianCbt[]
+
+  @@index([sekolah_id, penugasan_mengajar_id, status])
+  @@index([penugasan_mengajar_id])
+  @@index([asesmen_id])
+  @@map("ujian_cbt")
+}
+
+/// M14 — CBT: Immutable Exam Snapshot (Source of truth ujian saat attempt dimulai)
+model SnapshotUjian {
+  id              String    @id
+  sekolah_id      String
+  ujian_cbt_id    String
+  nomor_snapshot  Int       @default(1)
+  total_soal      Int
+  total_bobot     Float
+  durasi_menit    Int
+  konfigurasi     String    // JSON: settings (acak_soal, acak_opsi, kktp, dll)
+  manifest_soal   String    // JSON: array item soal (TANPA KUNCI JAWABAN! Aman dikirim ke client)
+  kunci_penilaian String    // JSON: array kunci jawaban + bobot (SECRET! SERVER BOUNDARY ONLY)
+  dibekukan_oleh  String
+  created_at      DateTime  @default(now())
+
+  sekolah          Sekolah          @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  ujian_cbt        UjianCbt         @relation(fields: [ujian_cbt_id], references: [id], onDelete: Cascade)
+  sesi_ujian_siswa SesiUjianSiswa[]
+
+  @@unique([ujian_cbt_id, nomor_snapshot])
+  @@index([sekolah_id])
+  @@map("snapshot_ujian")
+}
+
+/// M14 — CBT: Sesi Pengerjaan Siswa / Exam Attempt (One active attempt, server-authoritative timer)
+model SesiUjianSiswa {
+  id                   String    @id
+  sekolah_id           String
+  ujian_cbt_id         String
+  snapshot_id          String
+  siswa_id             String
+  penempatan_rombel_id String?
+  attempt_ke           Int       @default(1)
+  waktu_mulai          DateTime  @default(now())
+  batas_waktu_server   DateTime  // Server authoritative deadline = waktu_mulai + durasi_menit
+  waktu_selesai        DateTime?
+  status               String    @default("SEDANG_MENGERJAKAN") // SEDANG_MENGERJAKAN | DIKUMPULKAN | WAKTU_HABIS | TERKUNCI_PELANGGARAN
+  urutan_soal_peserta  String?   // JSON Array string id soal sesuai permutasi acak peserta ini
+  ip_address           String?
+  user_agent           String?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  sekolah                Sekolah                @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  ujian_cbt              UjianCbt               @relation(fields: [ujian_cbt_id], references: [id], onDelete: Cascade)
+  snapshot               SnapshotUjian          @relation(fields: [snapshot_id], references: [id], onDelete: Restrict)
+  siswa                  Siswa                  @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  penempatan_rombel      PenempatanRombel?      @relation(fields: [penempatan_rombel_id], references: [id], onDelete: SetNull)
+  jawaban_siswa          JawabanSiswa[]
+  event_integritas_ujian EventIntegritasUjian[]
+  hasil                  HasilUjianCbt?
+
+  @@unique([ujian_cbt_id, siswa_id, attempt_ke])
+  @@index([siswa_id, status])
+  @@index([ujian_cbt_id, status])
+  @@index([snapshot_id])
+  @@index([sekolah_id, status])
+  @@map("sesi_ujian_siswa")
+}
+
+/// M14 — CBT: Jawaban Siswa per Butir Soal (Autosave, Idempotent, Flag Ragu-Ragu)
+model JawabanSiswa {
+  id              String    @id
+  sekolah_id      String
+  sesi_ujian_id   String
+  soal_id         String    // bank_soal_id
+  versi_soal_id   String
+  jawaban_peserta String?   // JSON or text string: ["A"] or "jawaban"
+  ragu_ragu       Boolean   @default(false)
+  apakah_benar    Boolean?  // null if essay/belum dinilai
+  skor_diperoleh  Float     @default(0.0)
+  catatan_koreksi String?
+  waktu_simpan    DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  sekolah    Sekolah        @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  sesi_ujian SesiUjianSiswa @relation(fields: [sesi_ujian_id], references: [id], onDelete: Cascade)
+
+  @@unique([sesi_ujian_id, soal_id])
+  @@index([sesi_ujian_id])
+  @@index([soal_id])
+  @@map("jawaban_siswa")
+}
+
+/// M14 — CBT: Hasil Penilaian Ujian CBT & Transfer ke Gradebook Phase 13
+model HasilUjianCbt {
+  id                           String    @id
+  sekolah_id                   String
+  sesi_ujian_id                String    @unique
+  ujian_cbt_id                 String
+  siswa_id                     String
+  total_soal                   Int
+  total_dijawab                Int
+  jumlah_benar                 Int       @default(0)
+  jumlah_salah                 Int       @default(0)
+  jumlah_kosong                Int       @default(0)
+  skor_mentah                  Float     @default(0.0)
+  skor_maksimal                Float     @default(100.0)
+  nilai_akhir                  Float     @default(0.0) // Nilai standar 0–100
+  apakah_tuntas                Boolean   @default(false) // nilai_akhir >= kktp
+  status_penilaian             String    @default("LENGKAP") // LENGKAP | PERLU_KOREKSI_MANUAL
+  status_transfer              String    @default("BELUM_DITRANSFER") // BELUM_DITRANSFER | SUDAH_DITRANSFER
+  ditransfer_ke_nilai_siswa_id String?
+  waktu_transfer               DateTime?
+  ditransfer_oleh              String?
+  created_at                   DateTime  @default(now())
+  updated_at                   DateTime  @updatedAt
+
+  sekolah    Sekolah        @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  sesi_ujian SesiUjianSiswa @relation(fields: [sesi_ujian_id], references: [id], onDelete: Cascade)
+  ujian_cbt  UjianCbt       @relation(fields: [ujian_cbt_id], references: [id], onDelete: Cascade)
+  siswa      Siswa          @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+
+  @@index([ujian_cbt_id, siswa_id])
+  @@index([sekolah_id, status_transfer])
+  @@map("hasil_ujian_cbt")
+}
+
+/// M14 — CBT: Event Integritas Ujian (Indikator review pengawas, BUKAN vonis otomatis)
+model EventIntegritasUjian {
+  id             String    @id
+  sekolah_id     String
+  sesi_ujian_id  String
+  jenis_event    String    // TAB_SWITCH | FULLSCREEN_EXIT | WINDOW_BLUR | RECONNECT | DEVICE_CHANGE
+  deskripsi      String
+  payload        String?   // JSON metadata (screen, focus time, dll)
+  waktu_kejadian DateTime  @default(now())
+
+  sekolah    Sekolah        @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  sesi_ujian SesiUjianSiswa @relation(fields: [sesi_ujian_id], references: [id], onDelete: Cascade)
+
+  @@index([sesi_ujian_id, waktu_kejadian])
+  @@index([sekolah_id])
+  @@map("event_integritas_ujian")
+}
+
 
 

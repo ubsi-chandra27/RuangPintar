@@ -266,13 +266,13 @@ describe("M11 Learning Presentation Views", () => {
       expect(screen.getByText("Daftar Asesmen")).toBeInTheDocument();
     });
 
-    it("switches to CBT tab and shows controlled Phase 14 placeholder", () => {
+    it("switches to CBT tab and renders CBT workspace view", () => {
       render(<ClassWorkspaceView workspace={mockWorkspace} canManage={true} />);
 
       const cbtTabBtn = screen.getByRole("button", { name: /cbt/i });
       fireEvent.click(cbtTabBtn);
 
-      expect(screen.getByText(/segera hadir pada phase 14/i)).toBeInTheDocument();
+      expect(screen.getByText("Ujian Berbasis Komputer (CBT)")).toBeInTheDocument();
     });
   });
 });

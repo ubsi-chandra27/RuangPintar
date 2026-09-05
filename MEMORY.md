@@ -35,13 +35,13 @@ Current Implementation Phase:
 PHASE 14 — CBT: COMPUTER BASED TEST (M14)
 
 Current Phase Status:
-IN PROGRESS
+APPROVED BY HUMAN (5 September 2026)
 
 Last Human-Approved Implementation Phase:
-PHASE 13 — ASSESSMENT, TP & GRADEBOOK (MILESTONE D)
+PHASE 14 — CBT: COMPUTER BASED TEST (M14)
 
-Phase 13 Official Human Approval:
-APPROVED BY HUMAN (4 September 2026)
+Phase 14 Official Human Approval:
+APPROVED BY HUMAN (5 September 2026)
 ```
 
 ---
@@ -667,6 +667,38 @@ Inisiasi Phase 14 — CBT (Computer Based Test):
    - **Answer Key Security (Critical):** Kunci jawaban (`answer_key`, `is_correct`) DILARANG DIKIRIM ke client CBT Player. Penilaian objektif dilakukan di server boundary.
    - **Integrasi Phase 13 Resmi:** Hasil CBT ditransfer ke Assessment & Gradebook melalui contract resmi tanpa menduplikasi kepemilikan Gradebook.
    - **Integrity Indicator:** Deteksi perubahan fokus/tab sebagai indikator audit tanpa vonis kecurangan otomatis sepihak.
+
+---
+
+# 30. Implementasi Phase 14 — CBT: Computer Based Test (M14)
+
+Catatan implementasi Phase 14 (4 September 2026):
+1. **Pondasi Digital Assessment (Milestone E):** Menghadirkan mesin CBT terpadu sekolah dengan pemisahan entitas yang ketat (`BankSoal` -> `VersiSoal` -> `UjianCbt` -> `SnapshotUjian` -> `SesiUjianSiswa` -> `JawabanSiswa` -> `HasilUjianCbt`).
+2. **Kepatuhan Invariant Domain & Keamanan Ujian:**
+   - **Immutable Exam Snapshot:** Snapshot ujian dibekukan saat publikasi sehingga perubahan di bank soal tidak merusak attempt ujian berjalan atau historis.
+   - **Zero Answer Key Leakage:** Manifest soal ke client siswa secara mutlak dibersihkan dari atribut `kunci_jawaban` dan flag `is_correct`. Auto-grading dieksekusi murni di trusted server boundary.
+   - **Server-Authoritative Timer & Autosave:** Batas waktu dihitung absolut oleh server (`batas_waktu_server = waktu_mulai + durasi_menit`). Status autosave real-time dan mekanisme resume aman dari koneksi terputus.
+   - **Anti-Cheat 2-Strike System:** Peringatan visual dan audio chime edukatif pada pelanggaran keluar layar penuh / ganti jendela pertama; penguncian sesi otomatis (*LOCKED*) pada pelanggaran kedua, dengan hak pembukaan (*unlock*) eksklusif oleh guru pengawas melalui panel proctor.
+   - **Bridge Tunggal Buku Nilai:** Hasil CBT ditransfer secara idempoten ke `DefinisiAsesmen` dan `NilaiSiswa` Phase 13 tanpa menduplikasi data gradebook.
+3. **Database Schema & Migrasi:**
+   - Migrasi forward: `20260904230000_add_cbt_engine`.
+   - 8 Model: `BankSoal`, `VersiSoal`, `UjianCbt`, `SnapshotUjian`, `SesiUjianSiswa`, `JawabanSiswa`, `HasilUjianCbt`, `EventIntegritasUjian`.
+4. **Presentation Layer (Academic Glass UI v1.2):**
+   - Central Hub CBT (`/cbt-ujian`): Direktori kelas & bank soal untuk Guru/Admin, dan portal ujian terjadwal untuk Siswa.
+   - Tab 9 CBT pada Workspace Kelas (`/kelas-saya/[id]`).
+   - Modal Bank Soal (`QuestionBankModal`), Modal Pembuatan Ujian & Blueprint (`CreateExamModal`), Modal Hasil Ujian & Proctor Monitor (`ExamResultsModal`).
+   - CBT Player (`/cbt/[attemptId]`) dan Launcher (`/cbt/start`).
+5. **Quality Gates & Bukti Visual:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors, 0 warnings.
+   - Prettier: 100% compliant.
+   - Vitest: 100% PASS (17 CBT tests, 7 navigation tests, all pass).
+   - Playwright Visual Walkthrough: 10 skenario screenshot tersimpan di `docs/phases/screenshots/phase-14-walkthrough/` (Portal Guru, Bank Soal, Workspace Tab CBT, Blueprint Modal, Monitor & Proctor, Portal Siswa, Desktop Player, Anti-Cheat Strike 1 Warning, Mobile 390px, dan Layar Selesai).
+6. **Dokumentasi Inisiatif Masa Depan (RFC):**
+   - File kanonikal `docs/future-initiatives/RFC-AI-ASSISTANT-WHATSAPP-GUARDIAN.md` mencatat arsitektur Guru AI Copilot (M20/M21), WhatsApp Notification Adapter (M16/M17), dan Multi-Child Single Guardian Login (M15 / PR-GUARDIAN-005).
+7. **Status:**
+   - `READY FOR HUMAN REVIEW`.
+
 
 
 

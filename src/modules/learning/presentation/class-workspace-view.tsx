@@ -63,6 +63,8 @@ import {
   ClassGradebookDTO,
 } from "@/modules/assessment/domain/assessment-types";
 import { ClassAssessmentTabView } from "@/modules/assessment/presentation/class-assessment-tab-view";
+import { UjianCbtDTO } from "@/modules/cbt/domain/cbt-types";
+import { ClassCbtTabView } from "@/modules/cbt/presentation/class-cbt-tab-view";
 
 type WorkspaceTab =
   | "RINGKASAN"
@@ -87,6 +89,7 @@ interface ClassWorkspaceViewProps {
   };
   assessments?: DefinisiAsesmenDTO[];
   gradebook?: ClassGradebookDTO;
+  exams?: UjianCbtDTO[];
   initialTab?: WorkspaceTab;
 }
 
@@ -102,6 +105,7 @@ export function ClassWorkspaceView({
   },
   assessments = [],
   gradebook,
+  exams = [],
   initialTab,
 }: ClassWorkspaceViewProps) {
   const router = useRouter();
@@ -249,7 +253,8 @@ export function ClassWorkspaceView({
     },
     {
       id: "CBT" as const,
-      label: "CBT (Phase 14)",
+      label: "CBT (Ujian)",
+      count: exams.length,
       icon: Layers,
     },
   ];
@@ -372,7 +377,7 @@ export function ClassWorkspaceView({
                 {tab.id === "CBT" && (
                   <span
                     className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold shrink-0 ${
-                      isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                      isActive ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-700"
                     }`}
                   >
                     P14
@@ -1106,20 +1111,18 @@ export function ClassWorkspaceView({
       )}
 
       {/* ========================================== */}
-      {/* TAB 9: CBT UJIAN (PHASE 14 CONTROLLED)     */}
+      {/* TAB 9: CBT UJIAN (PHASE 14)                */}
       {/* ========================================== */}
       {activeTab === "CBT" && (
-        <div className="p-10 text-center rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3 max-w-md mx-auto">
-          <Layers className="h-10 w-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-800">CBT Ujian Daring (Phase 14)</h3>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Modul Computer-Based Testing (CBT) untuk ujian online, bank soal, dan koreksi otomatis
-            akan hadir pada Phase 14.
-          </p>
-          <span className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
-            Segera Hadir pada Phase 14
-          </span>
-        </div>
+        <ClassCbtTabView
+          penugasanId={penugasan.id}
+          sekolahId={penugasan.sekolah_id}
+          mapelId={penugasan.mata_pelajaran_id}
+          canManage={canManage}
+          exams={exams}
+          onRefresh={() => router.refresh()}
+          onShowToast={(message, type) => setToast({ message, type })}
+        />
       )}
 
       {/* Modals */}
