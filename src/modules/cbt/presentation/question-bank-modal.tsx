@@ -109,9 +109,7 @@ export function QuestionBankModal({
   const [aiKesulitan, setAiKesulitan] = useState<any>("SEDANG");
   const [aiJenis, setAiJenis] = useState<any>("PILIHAN_GANDA");
   const [aiApiKey, setAiApiKey] = useState(() =>
-    typeof window !== "undefined"
-      ? localStorage.getItem("rp_gemini_api_key") || ""
-      : ""
+    typeof window !== "undefined" ? localStorage.getItem("rp_gemini_api_key") || "" : ""
   );
   const [aiGeneratedList, setAiGeneratedList] = useState<any[]>([]);
   const [isAiGenerating, setIsAiGenerating] = useState(false);

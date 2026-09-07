@@ -1,86 +1,73 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 4.1  
-**Current Active Phase:** PHASE 14 — CBT: COMPUTER BASED TEST (M14)  
-**Status:** APPROVED BY HUMAN (5 September 2026)  
+**Versi:** 5.0  
+**Current Active Phase:** PHASE 15 — STUDENT EXPERIENCE (M15)  
+**Status:** READY FOR HUMAN REVIEW  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 14 — CBT: COMPUTER BASED TEST (M14) [APPROVED BY HUMAN]
+PHASE 15 — STUDENT EXPERIENCE (M15) [READY FOR HUMAN REVIEW]
 ```
 
 Tujuan:
-> Membangun CBT engine Ruang Pintar yang aman, konsisten, auditable, dan terintegrasi dengan domain akademik (Digital Assessment Ready):
-> 1. Mendukung alur: Guru ➔ Kelas Saya ➔ Workspace Kelas ➔ CBT ➔ Bank Soal ➔ Susun Ujian ➔ Atur Blueprint ➔ Publish / Siapkan Ujian ➔ Immutable Exam Snapshot ➔ Peserta mengerjakan CBT ➔ Autosave ➔ Resume bila terputus ➔ Submit ➔ Penilaian sesuai aturan ➔ Hasil CBT ➔ Transfer resmi ke Assessment/Gradebook (Phase 13).
-> 2. Menjaga domain invariants wajib:
->    - `Question ≠ Question Version ≠ Exam Blueprint ≠ Exam ≠ Exam Snapshot ≠ Attempt ≠ Answer ≠ Result ≠ Assessment ≠ Grade`
->    - `Question Bank ≠ Exam`
->    - `Immutable Exam Snapshot`: Soal di bank diedit TIDAK mengubah snapshot atau attempt yang sedang berjalan.
->    - `One Active Attempt`: Satu peserta + satu ujian = maksimal satu active attempt.
->    - `Server-Authoritative Timer`: Deadline waktu absolut ditentukan server (`started_at + duration`). Manipulasi jam lokal / refresh browser tidak me-reset waktu.
->    - `Answer Key Security`: Kunci jawaban DILARANG DIKIRIM ke client CBT Player dalam bentuk apa pun. Grading dilakukan di trusted server boundary.
->    - `Ownership Gradebook Tetap Phase 13`: CBT tidak membuat tabel gradebook kedua; hasil CBT ditransfer via official contract.
->    - `Integrity Event = Indikator`, BUKAN vonis kecurangan otomatis sepihak.
+> Membangun portal dan subsistem Student Experience (M15) yang terintegrasi secara data-driven, aman dengan self-scope enforcement, dan responsif sesuai Academic Glass UI v1.2:
+> 1. Dashboard Siswa live (`/dashboard`): Profil rombel aktif, kartu statistik kehadiran & nilai, timeline jadwal KBM hari ini, deadline tugas mendatang, ujian CBT aktif, dan nilai asesmen terpublikasi resmi.
+> 2. Materi & Tugas Siswa (`/tugas-siswa`): Tab terpadu untuk Tugas Kelas (dengan deteksi keterlambatan & modal submit jawaban teks/berkas), Materi Pembelajaran (modal pembaca materi teks, unduhan berkas, tautan luar), dan Presensi Kehadiran Kelas.
+> 3. Buku Nilai & e-Rapor Kurikulum Merdeka (`/rapor-siswa`): Kompilasi capaian kompetensi semester, predikat, KKTP, catatan wali kelas, rincian seluruh asesmen terpublikasi resmi (zero draft leakage), serta Lembar Cetak Rapor Resmi A4 (print-ready / save PDF).
+> 4. Penegakan Domain Invariants wajib:
+>    - `Student Self-Scope (STUDENT_SELF)`: Siswa hanya dapat mengakses dan mengumpulkan data miliknya sendiri.
+>    - `FR-SXP-004 (Strict Non-Leakage of Draft Grades)`: Hanya nilai berstatus `PUBLISHED` dengan target `SISWA` atau `SEMUA` yang ditampilkan ke siswa.
+>    - `Missing Grade != Zero Grade`: Nilai yang belum ada ditampilkan `-`, bukan angka `0`.
+>    - `Toleransi Batas Waktu`: Keterlambatan divalidasi berdasarkan aturan `izinkan_terlambat` guru.
 
 ---
 
-# 2. Checklist Phase 14 — CBT (Computer Based Test)
+# 2. Checklist Phase 15 — Student Experience (M15)
 
-## Database & Persistence
+## Domain & Invariants
 ```text
-[x] Prisma model: BankSoal & VersiSoal (id, sekolah_id, guru_id, mapel_id, tp_id, jenis_soal, konten, opsi_jawaban, kunci_jawaban, bobot, status, versi, created_at, updated_at)
-[x] Prisma model: BlueprintUjian & UjianCbt (id, sekolah_id, penugasan_mengajar_id, asesmen_id, judul, deskripsi, durasi_menit, tanggal_mulai, tanggal_selesai, status, acak_soal, acak_opsi, max_attempt, created_at, updated_at)
-[x] Prisma model: SnapshotUjian (id, sekolah_id, ujian_id, payload_snapshot, total_soal, total_bobot, created_at)
-[x] Prisma model: SesiUjianSiswa / Attempt (id, sekolah_id, ujian_id, snapshot_id, siswa_id, waktu_mulai, batas_waktu_server, waktu_selesai, status, attempt_ke, created_at, updated_at)
-[x] Prisma model: JawabanSiswa (id, sekolah_id, sesi_ujian_id, soal_id, jawaban_peserta, ragu_ragu, skor_diperoleh, status_koreksi, waktu_simpan, updated_at)
-[x] Prisma model: HasilUjianCbt (id, sekolah_id, sesi_ujian_id, total_soal, dijawab, benar, salah, kosong, nilai_akhir, status, ditransfer_ke_gradebook, waktu_transfer)
-[x] Prisma model: EventIntegritasUjian (id, sekolah_id, sesi_ujian_id, jenis_event, deskripsi, payload, waktu_kejadian)
-[x] Database constraints: @@unique([ujian_id, siswa_id, attempt_ke]), @@unique([sesi_ujian_id, soal_id]), indexes
-[x] Forward migration: add_cbt_engine
+[x] Student Self-Scope (STUDENT_SELF) strictly enforced pada data repository & service layer
+[x] FR-SXP-004: Zero draft grade leakage (hanya status PUBLISHED dengan target publikasi SISWA/SEMUA)
+[x] Missing Grade != Zero Grade: Nilai asesmen belum dinilai bernilai null dan tampil sebagai "-"
+[x] Rule keterlambatan pengumpulan tugas tervalidasi berdasarkan izinkan_terlambat
+[x] Audit Logging terintegrasi untuk aksi SUBMIT_ASSIGNMENT
 ```
 
-## Infrastructure & Application Services
+## Data Layer & Application Services
 ```text
-[x] CbtRepository: CRUD Bank Soal & Versi, Blueprint & Snapshot Generation, Attempt Lifecycle, Atomic Autosave, Submission, Scoring, Gradebook Transfer
-[x] CbtService: Teacher scope verification, Student eligibility check, Attempt resume & validation
-[x] CbtTimerService: Server-authoritative countdown & expiration enforcement
-[x] CbtGradingService: Server-side objective auto-grading without leaking answer keys to client
-[x] CbtTransferService: Idempotent transfer of CBT results into Phase 13 DefinisiAsesmen & NilaiSiswa
-```
-
-## Server Actions & Authorization
-```text
-[x] cbt-actions.ts: Server actions aman dengan requireAuth(), requirePermission(), dan audit logging
-[x] Permission checks: cbt.question_bank.manage, cbt.exam.manage, cbt.attempt.start, cbt.attempt.submit, cbt.results.transfer
-[x] Teacher scope check: Guru hanya dapat mengelola CBT pada penugasan mengajar rombelnya
-[x] Student scope check: Siswa hanya dapat membuka attempt miliknya sendiri pada rombel aktif
+[x] student-experience-types.ts: Model domain profil, jadwal, tugas, materi, presensi, nilai, e-rapor
+[x] student-experience-errors.ts: Domain errors khusus pengalaman siswa
+[x] student-experience-validation.ts: Skema validasi Zod SubmitAssignmentSchema
+[x] student-experience-repository.ts: Repository query teroptimasi prisma untuk seluruh fitur siswa
+[x] student-experience-service.ts: Application service terpadu orkestrasi bisnis & audit logger
+[x] student-experience-actions.ts: Server actions submit tugas mandiri siswa & file upload storage
+[x] seed-student-experience.ts: Seed data realistis X RPL (materi, tugas, CBT, nilai, presensi)
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[x] Tab CBT pada Workspace Kelas (/kelas-saya/[id]): Daftar Ujian CBT rombel, status token, & aksi cepat
-[x] Halaman Bank Soal: Manajemen soal terversi, pembuat butir satuan, dan pratinjau soal
-[x] Import Masal Spreadsheet (Excel / CSV): Format No | Soal | Pilihan A-E | Tingkat Kesulitan C1-C6 | Jawaban Benar
-[x] Asisten AI Guru (Google Gemini): Generator butir soal Kurikulum Merdeka otomatis dengan offline fallback
-[x] Editor Ujian CBT: Modal/Workflow penyusunan blueprint, sakelar Token Masuk Ujian (ANBK-Style), dan snapshot freezing
-[x] Layar Konfirmasi Token CBT (/cbt/start): Verifikasi token pengawas 6 digit sebelum masuk pengerjaan
-[x] CBT Player (/cbt/[attemptId]): Interface pengerjaan ujian aman, responsif, timer server, autosave status, stimulus gambar + lightbox modal, tipe soal Menjodohkan (Matching Pairs) touch-friendly, tanpa bocor kunci jawaban
-[x] Hasil CBT & Review: Tampilan rekapitulasi nilai peserta, audit log integritas, dan tombol "Transfer ke Buku Nilai"
+[x] StudentDashboard (/dashboard): Server component live data-driven, profil siswa, jadwal, tugas, CBT, nilai
+[x] StudentLearningView (/tugas-siswa): Tab terpadu Tugas Kelas, Materi Pelajaran, dan Presensi Kehadiran
+[x] SubmitAssignmentModal: Form uraian teks, upload berkas dropzone, toleransi keterlambatan
+[x] MaterialDetailModal: Pembaca materi teks, unduh lampiran berkas guru, tautan eksternal
+[x] StudentReportCardView (/rapor-siswa): Transkrip Kurikulum Merdeka, KKTP, predikat, catatan wali kelas, rincian asesmen
+[x] ReportCardPrintModal: Pratinjau cetak resmi A4 print-ready (window.print() & save PDF)
+[x] Canonical Navigation: /tugas-siswa dan /rapor-siswa diaktifkan di navigation-config.ts
 ```
 
 ## Quality Gates & Verification
 ```text
-[x] Format check: Prettier 100% clean (npm run format:check)
-[x] Lint check: ESLint 0 errors, 0 warnings (npm run lint)
 [x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: Unit & Integration tests passing (src/test/cbt/)
-[x] Regression: Seluruh test Phase 00–13 tetap PASS (100%)
-[x] Build: Next.js production build PASS
-[x] Automated Walkthrough: Praktik workflow nyata CBT end-to-end (Teacher build exam ➔ Student take exam ➔ Autosave ➔ Submit ➔ Result ➔ Transfer to Gradebook)
+[x] Lint check: ESLint 0 errors, 4 warnings non-blocking (npm run lint)
+[x] Format check: Prettier 100% clean (npm run format:check)
+[x] Tests: 71 test files, 385 tests passing (100% PASS)
+[x] Regression: Seluruh test Phase 00–14 tetap PASS (100%)
+[x] Build: Next.js production build PASS (16 static & dynamic pages)
+[x] Playwright Visual Walkthrough: 10 screenshot lengkap tersimpan di docs/phases/screenshots/phase-15-walkthrough/
 ```
 
 ---
@@ -103,21 +90,19 @@ Tujuan:
 
 [ ] Milestone E — Digital Assessment Ready (Phase 14–15) [ACTIVE]
     ├── [x] Phase 14 — CBT: Computer Based Test (M14) [APPROVED BY HUMAN (5 September 2026)]
-    └── [ ] Phase 15 — Assessment Compilation & Student Experience (M15)
+    └── [x] Phase 15 — Assessment Compilation & Student Experience (M15) [READY FOR HUMAN REVIEW]
 ```
 
 ---
 
-# 4. Milestone D Historical Quality Gates (Phase 13)
+# 4. Milestone E Historical Quality Gates (Phase 15)
 
 ```text
-[x] Database: Migration forward assessment & gradebook verified (20260904101500_add_assessment_and_gradebook)
-[x] Domain Invariants: Assessment != Grade != Grade Publication, Missing Grade != Zero Grade
+[x] Domain Invariants: Student Self-Scope, Zero Draft Grade Leakage, Missing Grade != Zero Grade
 [x] Format check: Prettier 100% clean (npm run format:check)
-[x] Lint check: 0 errors, 0 warnings (npm run lint)
+[x] Lint check: 0 errors (npm run lint)
 [x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: 65 test files, 347 tests passing (100% PASS)
+[x] Tests: 71 test files, 385 tests passing (100% PASS)
 [x] Build: Next.js production compilation 100% PASS (npm run build)
-[x] End-to-End Walkthrough: Playwright automated test & visual screenshots PASS (qa-phase13-full-walkthrough.mjs)
-[x] Official Human Approval: APPROVED BY HUMAN (4 September 2026) [LOCKED FOR REGRESSION]
+[x] End-to-End Walkthrough: Playwright automated test & 10 visual screenshots PASS (qa-phase15-visual-walkthrough.mjs)
 ```

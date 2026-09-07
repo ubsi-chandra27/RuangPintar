@@ -32,10 +32,10 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 14 — CBT: COMPUTER BASED TEST (M14)
+PHASE 15 — STUDENT EXPERIENCE (M15)
 
 Current Phase Status:
-APPROVED BY HUMAN (5 September 2026)
+READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
 PHASE 14 — CBT: COMPUTER BASED TEST (M14)
@@ -697,8 +697,34 @@ Catatan implementasi Phase 14 (4 September 2026):
 6. **Dokumentasi Inisiatif Masa Depan (RFC):**
    - File kanonikal `docs/future-initiatives/RFC-AI-ASSISTANT-WHATSAPP-GUARDIAN.md` mencatat arsitektur Guru AI Copilot (M20/M21), WhatsApp Notification Adapter (M16/M17), dan Multi-Child Single Guardian Login (M15 / PR-GUARDIAN-005).
 7. **Status:**
+   - **APPROVED BY HUMAN (5 September 2026)**.
+
+---
+
+# 31. Implementasi Phase 15 — Student Experience (M15)
+
+Catatan implementasi Phase 15 (7 September 2026):
+1. **Pondasi Student Experience (Milestone E):** Menghadirkan portal komprehensif bagi siswa untuk mengakses kegiatan akademik, materi pembelajaran, pengumpulan tugas mandiri, evaluasi presensi sesi kelas, peninjauan nilai terpublikasi resmi, dan transkrip e-Rapor Kurikulum Merdeka.
+2. **Kepatuhan Invariant Domain & Keamanan Siswa:**
+   - **Student Self-Scope (`STUDENT_SELF`):** Query repository dan service layer mengunci akses strictly pada ID siswa pemilik akun aktif (`user.id` -> `siswa.id`), mencegah akses cross-student.
+   - **Zero Draft Grade Leakage (`FR-SXP-004`):** Nilai yang tampil di portal siswa disaring secara ketat hanya yang berstatus `PUBLISHED` dengan target `SISWA` atau `SEMUA`.
+   - **Missing Grade != Zero Grade:** Mata pelajaran atau asesmen yang belum dinilai ditampilkan dengan simbol `-` (bukan angka 0).
+   - **Toleransi Batas Waktu Tugas:** Pengumpulan tugas tervalidasi terhadap bendera `izinkan_terlambat` milik guru.
+   - **Audit Trail:** Penyerahan tugas dicatat ke log audit sistem (`SUBMIT_ASSIGNMENT`).
+3. **Presentation Layer (Academic Glass UI v1.2):**
+   - Dashboard Siswa data-driven live (`/dashboard`).
+   - Portal KBM Siswa (`/tugas-siswa`): Tab Tugas Kelas, Materi Pelajaran, dan Presensi Kelas.
+   - Modal Pengumpulan Tugas (`SubmitAssignmentModal`) dengan textarea uraian dan dropzone berkas.
+   - Modal Pembaca Materi (`MaterialDetailModal`) dengan teks, berkas lampiran unduh `/api/berkas/[id]`, dan tautan luar.
+   - Buku Nilai & e-Rapor (`/rapor-siswa`): Ringkasan capaian KKTP, nilai akhir, predikat, dan rincian seluruh asesmen.
+   - Modal Cetak Rapor Resmi A4 (`ReportCardPrintModal`): Layout cetak dokumen resmi A4 standar Kurikulum Merdeka (`window.print()`).
+   - Canonical Navigation teraktivasi (`isPhaseDeferred: false`).
+4. **Quality Gates & Bukti Visual:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors.
+   - Prettier: 100% compliant.
+   - Vitest: 71 test files, 385 tests passed (100% PASS).
+   - Next.js Build: 16 route pages compiled successfully.
+   - Playwright Walkthrough: 10 screenshot tersimpan di `docs/phases/screenshots/phase-15-walkthrough/`.
+5. **Status:**
    - `READY FOR HUMAN REVIEW`.
-
-
-
-

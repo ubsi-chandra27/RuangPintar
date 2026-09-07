@@ -25,7 +25,12 @@ import {
   RecordIntegrityEventInput,
   TransferToGradebookInput,
 } from "@/modules/cbt/domain/cbt-types";
-import { generateQuestionsWithGemini } from "@/modules/cbt/infrastructure/gemini-cbt-ai-service";
+import {
+  generateQuestionsWithGemini,
+  generateMixedExamWithGemini,
+  generateRppWithGemini,
+  generateMateriSummaryWithGemini,
+} from "@/modules/cbt/infrastructure/gemini-cbt-ai-service";
 
 export interface CbtActionResult<T = unknown> {
   success: boolean;
@@ -589,6 +594,66 @@ export async function generateAiQuestionsAction(params: any): Promise<CbtActionR
     await requirePermission("cbt.exam.manage", { sekolah_id: user.sekolah_id });
 
     const result = await generateQuestionsWithGemini(params);
+    return {
+      success: result.success,
+      message: result.message,
+      data: result.data,
+    };
+  } catch (err) {
+    return { success: false, message: getSafeErrorMessage(err) };
+  }
+}
+
+export async function generateAiMixedExamAction(params: any): Promise<CbtActionResult<any>> {
+  try {
+    const user = await requireAuth();
+    if (!user.sekolah_id) return { success: false, message: "Sekolah tidak teridentifikasi." };
+    const allowedRoles = ["TEACHER", "SUPER_ADMIN", "SCHOOL_STAFF"];
+    if (!allowedRoles.includes(user.peran_dasar)) {
+      return { success: false, message: "Akses ditolak untuk Studio AI." };
+    }
+
+    const result = await generateMixedExamWithGemini(params);
+    return {
+      success: result.success,
+      message: result.message,
+      data: result.data,
+    };
+  } catch (err) {
+    return { success: false, message: getSafeErrorMessage(err) };
+  }
+}
+
+export async function generateAiRppAction(params: any): Promise<CbtActionResult<any>> {
+  try {
+    const user = await requireAuth();
+    if (!user.sekolah_id) return { success: false, message: "Sekolah tidak teridentifikasi." };
+    const allowedRoles = ["TEACHER", "SUPER_ADMIN", "SCHOOL_STAFF"];
+    if (!allowedRoles.includes(user.peran_dasar)) {
+      return { success: false, message: "Akses ditolak untuk Studio AI." };
+    }
+
+    const result = await generateRppWithGemini(params);
+    return {
+      success: result.success,
+      message: result.message,
+      data: result.data,
+    };
+  } catch (err) {
+    return { success: false, message: getSafeErrorMessage(err) };
+  }
+}
+
+export async function generateAiMateriAction(params: any): Promise<CbtActionResult<any>> {
+  try {
+    const user = await requireAuth();
+    if (!user.sekolah_id) return { success: false, message: "Sekolah tidak teridentifikasi." };
+    const allowedRoles = ["TEACHER", "SUPER_ADMIN", "SCHOOL_STAFF"];
+    if (!allowedRoles.includes(user.peran_dasar)) {
+      return { success: false, message: "Akses ditolak untuk Studio AI." };
+    }
+
+    const result = await generateMateriSummaryWithGemini(params);
     return {
       success: result.success,
       message: result.message,

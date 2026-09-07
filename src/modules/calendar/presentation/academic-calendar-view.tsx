@@ -291,7 +291,7 @@ export function AcademicCalendarView({
       </div>
 
       {/* Table Toolbar (UI Kit Standard: Search + Filter + Sort + Export + Primary Button) */}
-      <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
+      <div className="relative z-20 p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
           {/* Search Input with Leading & Trailing Icon */}
           <div className="relative flex-1 min-w-[220px]">

@@ -30,7 +30,12 @@ import {
   HelpCircle,
   Cpu,
 } from "lucide-react";
-import { bulkCreateQuestionsAction } from "@/app/actions/cbt-actions";
+import {
+  bulkCreateQuestionsAction,
+  generateAiMixedExamAction,
+  generateAiRppAction,
+  generateAiMateriAction,
+} from "@/app/actions/cbt-actions";
 
 interface SubjectOption {
   id: string;
@@ -46,15 +51,17 @@ interface AiTeacherStudioViewProps {
 
 export function AiTeacherStudioView({ userRole, teacherName, subjects }: AiTeacherStudioViewProps) {
   const [activeTab, setActiveTab] = useState<"SOAL" | "RPP" | "MATERI" | "SETTINGS">("SOAL");
-  const [selectedModel, setSelectedModel] = useState(() =>
-    typeof window !== "undefined"
-      ? localStorage.getItem("rp_gemini_model") || "gemini-2.0-flash"
-      : "gemini-2.0-flash"
-  );
+  const [selectedModel, setSelectedModel] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rp_gemini_model");
+      if (saved && !saved.includes("2.0") && !saved.includes("1.5") && !saved.includes("2.5")) {
+        return saved;
+      }
+    }
+    return "gemini-3.6-flash";
+  });
   const [apiKey, setApiKey] = useState(() =>
-    typeof window !== "undefined"
-      ? localStorage.getItem("rp_gemini_api_key") || ""
-      : ""
+    typeof window !== "undefined" ? localStorage.getItem("rp_gemini_api_key") || "" : ""
   );
   const [toast, setToast] = useState<{
     message: string;
@@ -116,85 +123,32 @@ export function AiTeacherStudioView({ userRole, teacherName, subjects }: AiTeach
     setIsGeneratingSoal(true);
     setGeneratedPaketSoal(null);
 
-    // Call internal reasoning generator
-    setTimeout(() => {
-      const mapelName = subjects.find((s) => s.id === soalMapelId)?.nama || "Mata Pelajaran";
-      const pgList: any[] = [];
-      for (let i = 1; i <= soalCountPg; i++) {
-        pgList.push({
-          nomor: i,
-          pertanyaan: `Berdasarkan materi ${soalTopik}, manakah pernyataan yang paling tepat mengenai prinsip kerja konsep butir ke-${i}?`,
-          opsi: [
-            {
-              label: "A",
-              teks: `Konsep ${soalTopik} bekerja secara linear searah jarum jam`,
-              isCorrect: false,
-            },
-            {
-              label: "B",
-              teks: `Penerapan ${soalTopik} menghasilkan efisiensi proses optimal`,
-              isCorrect: true,
-            },
-            {
-              label: "C",
-              teks: `Prinsip ${soalTopik} hanya berlaku pada ruang hampa`,
-              isCorrect: false,
-            },
-            {
-              label: "D",
-              teks: `Tidak memiliki pengaruh signifikan terhadap variabel output`,
-              isCorrect: false,
-            },
-            {
-              label: "E",
-              teks: `Hanya dapat dioperasikan pada sistem analog tertutup`,
-              isCorrect: false,
-            },
-          ],
-          kunci: "B",
-          tingkat: i % 2 === 0 ? "SEDANG" : "HOTS",
-          bobot: 2,
-        });
-      }
+    const mapelName = subjects.find((s) => s.id === soalMapelId)?.nama || "Mata Pelajaran";
 
-      const matchPairs: any[] = [];
-      const terms = [
-        { p: `Komponen Utama ${soalTopik}`, t: "Elemen Sentral Penggerak Sistem" },
-        { p: `Fungsi Pengendali ${soalTopik}`, t: "Regulator Alur dan Validasi Data" },
-        { p: `Indikator Evaluasi`, t: "Tolok Ukur Ketercapaian Standar Mutu" },
-        { p: `Karakteristik Operasional`, t: "Responsif, Adaptif, dan Terstruktur" },
-        { p: `Faktor Pendukung`, t: "Infrastruktur Terintegrasi dan SDM Kompeten" },
-      ];
-
-      for (let i = 0; i < Math.min(soalCountMenjodohkan, terms.length); i++) {
-        matchPairs.push({
-          nomor: i + 1,
-          premis: terms[i].p,
-          target: terms[i].t,
-          bobot: 2,
-        });
-      }
-
-      const essayList: any[] = [];
-      for (let i = 1; i <= soalCountEsai; i++) {
-        essayList.push({
-          nomor: i,
-          pertanyaan: `Jelaskan secara komprehensif implementasi nyata ${soalTopik} dalam kehidupan sehari-hari dan bagaimana cara mengatasi kendala operasionalnya!`,
-          rubrik:
-            "Skor 4: Menjelaskan implementasi, 2 contoh kasus nyata, analisis kendala dan solusi mitigasi secara runut.",
-          bobot: 4,
-        });
-      }
-
-      setGeneratedPaketSoal({
-        bagianA: pgList,
-        bagianB: matchPairs,
-        bagianC: essayList,
+    try {
+      const res = await generateAiMixedExamAction({
+        topikMateri: soalTopik,
+        mataPelajaran: mapelName,
+        jenjangKelas: soalFase,
+        tingkatKesulitan: soalKesulitan,
+        countPg: soalCountPg,
+        countMenjodohkan: soalCountMenjodohkan,
+        countEsai: soalCountEsai,
+        apiKey: apiKey || undefined,
+        model: selectedModel,
       });
 
+      if (res.success && res.data) {
+        setGeneratedPaketSoal(res.data);
+        showToast(res.message, "success");
+      } else {
+        showToast(res.message || "Gagal merancang paket soal.", "error");
+      }
+    } catch {
+      showToast("Terjadi kendala saat merancang soal dengan AI.", "error");
+    } finally {
       setIsGeneratingSoal(false);
-      showToast("Paket butir soal berhasil dirancang oleh Asisten AI!", "success");
-    }, 1200);
+    }
   };
 
   const handleSaveToBankSoal = () => {
@@ -282,7 +236,7 @@ export function AiTeacherStudioView({ userRole, teacherName, subjects }: AiTeach
   };
 
   // 2. Generate RPP / Modul Ajar Handlers
-  const handleGenerateRpp = () => {
+  const handleGenerateRpp = async () => {
     if (!rppMateri.trim()) {
       showToast("Tuliskan materi pokok untuk modul ajar.", "error");
       return;
@@ -290,67 +244,33 @@ export function AiTeacherStudioView({ userRole, teacherName, subjects }: AiTeach
     setIsGeneratingRpp(true);
     setGeneratedRppText("");
 
-    setTimeout(() => {
-      const content = `# MODUL AJAR KURIKULUM MERDEKA
-## MATA PELAJARAN: ${rppMapel.toUpperCase()}
+    try {
+      const res = await generateAiRppAction({
+        topikMateri: rppMateri,
+        mataPelajaran: rppMapel,
+        fase: rppFase,
+        modelPembelajaran: rppModel,
+        alokasiWaktu: rppAlokasi,
+        guruNama: teacherName,
+        apiKey: apiKey || undefined,
+        model: selectedModel,
+      });
 
----
-
-### I. INFORMASI UMUM
-- **Penyusun:** ${teacherName}
-- **Fase / Kelas:** ${rppFase}
-- **Alokasi Waktu:** ${rppAlokasi}
-- **Model Pembelajaran:** ${rppModel}
-- **Target Peserta Didik:** Reguler / Tipikal (36 Siswa)
-- **Profil Pelajar Pancasila:** Bernalar Kritis, Gotong Royong, Mandiri, dan Kreatif.
-
----
-
-### II. KOMPONEN INTI
-
-#### 1. Capaian Pembelajaran (CP) & Tujuan Pembelajaran (TP)
-Peserta didik mampu menganalisis konsep **${rppMateri}**, mengidentifikasi karakteristik esensial, dan menerapkannya dalam pemecahan masalah kontekstual.
-- **TP 1:** Menjelaskan pengertian dan prinsip dasar ${rppMateri} dengan bahasa sendiri secara tepat.
-- **TP 2:** Menguraikan komponen pendukung dan keterkaitan fungsional pada ${rppMateri}.
-- **TP 3:** Merancang solusi kontekstual terhadap studi kasus nyata menggunakan prinsip ${rppMateri}.
-
-#### 2. Pemahaman Bermakna & Pertanyaan Pemantik
-- **Pemahaman Bermakna:** Penguasaan terhadap ${rppMateri} memberdayakan individu untuk berpikir sistematis dalam mengoptimalkan sumber daya.
-- **Pertanyaan Pemantik:** *"Bagaimana jika sistem di sekitar kita tidak memiliki mekanisme kerja seperti ${rppMateri}? Dampak apa yang akan timbul?"*
-
-#### 3. Urutan Kegiatan Pembelajaran
-1. **Kegiatan Pendahuluan (15 Menit):**
-   - Guru membuka kelas dengan salam, doa, dan presensi melalui platform Ruang Pintar.
-   - Apersepsi: Menampilkan video stimulus berdurasi 3 menit terkait ${rppMateri}.
-   - Guru menyampaikan tujuan pembelajaran dan indikator ketercapaian (KKTP).
-
-2. **Kegiatan Inti (60 Menit - Sintaks ${rppModel}):**
-   - *Orientasi Masalah:* Siswa mengamati studi kasus kontekstual pada LKPD digital.
-   - *Pengorganisasian Belajar:* Siswa membentuk kelompok heterogen beranggotakan 4-5 orang.
-   - *Penyelidikan Mandiri/Kelompok:* Siswa mengeksplorasi materi bacaan di platform Ruang Pintar dan mendiskusikan alternatif solusi.
-   - *Pengembangan & Penyajian Hasil:* Masing-masing kelompok mempresentasikan hasil analisis di depan kelas.
-   - *Evaluasi & Refleksi:* Guru memberikan penguatan konsep dan klarifikasi miskonsepsi.
-
-3. **Kegiatan Penutup (15 Menit):**
-   - Siswa bersama guru menyimpulkan butir-butir esensial pembelajaran.
-   - Asesmen formatif kilat (kuis 3 butir di Ruang Pintar CBT).
-   - Refleksi pembelajaran dan tindak lanjut penugasan mandiri.
-
----
-
-### III. ASESMEN & KRITERIA KETERCAPAIAN (KKTP)
-- **Asesmen Diagnostik:** Tanya jawab pemantik di awal KBM.
-- **Asesmen Formatif:** Observasi diskusi kelompok dan pengerjaan LKPD.
-- **Asesmen Sumatif:** Tes CBT Ruang Pintar (Pilihan Ganda & Uraian) dengan KKTP $\\ge 75$.
-`;
-      setGeneratedRppText(content);
+      if (res.success && res.data) {
+        setGeneratedRppText(res.data.markdown);
+        showToast(res.message, "success");
+      } else {
+        showToast(res.message || "Gagal menyusun modul ajar.", "error");
+      }
+    } catch {
+      showToast("Terjadi kendala saat menyusun RPP dengan AI.", "error");
+    } finally {
       setIsGeneratingRpp(false);
-      showToast("Modul Ajar Kurikulum Merdeka berhasil disusun!", "success");
-    }, 1400);
+    }
   };
 
   // 3. Generate Ringkasan Materi Handlers
-  const handleGenerateMateri = () => {
+  const handleGenerateMateri = async () => {
     if (!materiTopik.trim()) {
       showToast("Tuliskan topik materi ringkasan.", "error");
       return;
@@ -358,38 +278,27 @@ Peserta didik mampu menganalisis konsep **${rppMateri}**, mengidentifikasi karak
     setIsGeneratingMateri(true);
     setGeneratedMateriText("");
 
-    setTimeout(() => {
-      const text = `# RINGKASAN MATERI PEMBELAJARAN
-## Topik: ${materiTopik}
-*Gaya Penyampaian: ${materiGaya} • Disusun oleh: ${teacherName}*
+    try {
+      const res = await generateAiMateriAction({
+        topikMateri: materiTopik,
+        mataPelajaran: subjects[0]?.nama || "Umum",
+        gayaPenyampaian: materiGaya,
+        guruNama: teacherName,
+        apiKey: apiKey || undefined,
+        model: selectedModel,
+      });
 
----
-
-### 🌟 1. Mengapa Kita Perlu Mempelajari ${materiTopik}?
-Bayangkan sebuah orkestra musik di mana setiap alat musik harus bermain dengan harmoni dan ketepatan nada. Demikian pula dengan **${materiTopik}**; ini adalah fondasi yang memastikan setiap komponen berjalan selaras, efisien, dan mencapai tujuan yang direncanakan.
-
----
-
-### 🔑 2. Tiga Konsep Kunci yang Wajib Dipahami
-1. **Fondasi Dasar:** Memahami definisi operasional dan ruang lingkup agar tidak terjadi salah tafsir.
-2. **Mekanisme Kerja:** Bagaimana input diproses melalui aturan-aturan baku untuk menghasilkan output yang diharapkan.
-3. **Penerapan Praktis:** Studi kasus pemecahan kendala di dunia industri dan kehidupan sehari-hari.
-
----
-
-### 💡 3. Analogi Sederhana
-Jika diibaratkan sistem lalu lintas jalan raya, **${materiTopik}** adalah lampu lalu lintas dan rambu-rambunya. Tanpa aturan tersebut, persimpangan yang padat akan mengalami kemacetan total. Dengan adanya sistem yang teratur, setiap kendaraan dapat melintas dengan aman dan tertib.
-
----
-
-### ✍️ 4. Kuis Refleksi Cepat
-1. Apa fungsi paling mendasar dari ${materiTopik}?
-2. Sebutkan satu contoh konkret penerapan konsep ini di sekitar lingkungan sekolah Anda!
-`;
-      setGeneratedMateriText(text);
+      if (res.success && res.data) {
+        setGeneratedMateriText(res.data.markdown);
+        showToast(res.message, "success");
+      } else {
+        showToast(res.message || "Gagal menyusun ringkasan materi.", "error");
+      }
+    } catch {
+      showToast("Terjadi kendala saat menyusun ringkasan materi dengan AI.", "error");
+    } finally {
       setIsGeneratingMateri(false);
-      showToast("Ringkasan materi siswa berhasil disusun!", "success");
-    }, 1200);
+    }
   };
 
   return (
@@ -418,14 +327,14 @@ Jika diibaratkan sistem lalu lintas jalan raya, **${materiTopik}** adalah lampu 
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-blue-200">
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              <span>Studio Asisten AI Guru • Generative Engine 2.0</span>
+              <span>Studio Asisten AI Guru • Generative Engine 3.6</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
               Ruang AI Guru — Asisten Pengajaran & Asesmen
             </h1>
             <p className="text-xs sm:text-sm text-blue-100/80 max-w-2xl leading-relaxed">
               Rancang paket soal ujian campuran (PG, Menjodohkan, Esai), Modul Ajar Kurikulum
-              Merdeka, dan bahan materi ajar secara instan dengan dukungan Google Gemini 2.0 Flash.
+              Merdeka, dan bahan materi ajar secara instan dengan dukungan Google Gemini 3.6 Flash.
             </p>
           </div>
 
@@ -997,17 +906,14 @@ Jika diibaratkan sistem lalu lintas jalan raya, **${materiTopik}** adalah lampu 
                 onChange={(e) => setSelectedModel(e.target.value)}
                 className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white font-mono"
               >
-                <option value="gemini-2.0-flash">
-                  Google Gemini 2.0 Flash (Direkomendasikan: Super Cepat & Cerdas)
+                <option value="gemini-3.6-flash">
+                  Google Gemini 3.6 Flash (Rekomendasi Utama: Cepat, Cerdas & Stabil)
                 </option>
-                <option value="gemini-2.0-flash-thinking-exp">
-                  Google Gemini 2.0 Flash Thinking (Penalaran Ekstra HOTS)
+                <option value="gemini-3.8-flash">
+                  Google Gemini 3.8 Flash (Model Kecepatan Tinggi)
                 </option>
-                <option value="gemini-1.5-flash">
-                  Google Gemini 1.5 Flash (Kompatibilitas Akun Free Tier Lama)
-                </option>
-                <option value="gemini-1.5-pro">
-                  Google Gemini 1.5 Pro (Pemrosesan Naskah Panjang)
+                <option value="gemini-flash-latest">
+                  Google Gemini Flash Latest (Versi Rilis Terkini)
                 </option>
               </select>
             </div>
@@ -1020,13 +926,13 @@ Jika diibaratkan sistem lalu lintas jalan raya, **${materiTopik}** adalah lampu 
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="AIzaSy..."
+                placeholder="AQ.Ab8RN... atau AIzaSy..."
                 className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono focus:ring-2 focus:ring-blue-500/20"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Kunci disimpan secara lokal di browser Anda (*localStorage*) dan tidak pernah
-                dibagikan ke pengguna lain. Jika dikosongkan, sistem menggunakan generator penalaran
-                cerdas internal.
+                Kunci pribadi Anda disimpan secara lokal di browser (*localStorage*). Server Ruang
+                Pintar juga telah dikonfigurasi dengan kunci sistem terpadu, sehingga Anda dapat
+                langsung menggunakan AI secara optimal meski kolom ini dikosongkan.
               </p>
             </div>
 

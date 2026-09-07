@@ -132,13 +132,50 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     expect(screen.getByText("Aksi Cepat Guru")).toBeInTheDocument();
   });
 
-  it("renders StudentDashboard with student self-scope items and CBT cards", () => {
-    render(<StudentDashboard user={mockStudent} />);
+  it("renders StudentDashboard with student self-scope items and CBT cards", async () => {
+    const jsx = await StudentDashboard({
+      user: mockStudent,
+      initialData: {
+        profile: {
+          siswaId: "01M18QCSXR59TR1FXG03V6YT91",
+          namaLengkap: "Budi Santoso",
+          nis: "20261001",
+          nisn: "0081234501",
+          fotoUrl: null,
+          statusAkademik: "AKTIF",
+          tahunAjaranId: "01M18FWDEHE6QRXKWP4H2ASHXY",
+          tahunAjaranNama: "2026/2027",
+          semesterId: "01M18FWDEHE6QRXKWP4H2ASHXZ",
+          semesterNama: "Semester Ganjil",
+          rombelId: "01M19MV91XH1TVZE0RJVPKDJN2",
+          rombelNama: "X RPL",
+          tingkatNama: "Kelas 10",
+          waliKelasNama: "Ahmad Dahlan, S.Pd.",
+          nomorAbsen: 1,
+        },
+        statCards: {
+          rombelNama: "X RPL",
+          waliKelasNama: "Ahmad Dahlan, S.Pd.",
+          persentaseKehadiran: 100,
+          totalHadir: 18,
+          totalAlpha: 0,
+          tugasPerluDikerjakan: 2,
+          totalTugasAktif: 4,
+          nilaiRataRata: 88.5,
+          cbtAktifCount: 1,
+        },
+        jadwalHariIni: [],
+        tugasMendatang: [],
+        cbtMendatang: [],
+        nilaiTerbaru: [],
+      },
+    });
+    render(jsx);
 
     expect(screen.getByText(/Halo, Budi Santoso!/i)).toBeInTheDocument();
     expect(screen.getByText("Siswa Aktif")).toBeInTheDocument();
     expect(screen.getByText("Jadwal Pelajaran Hari Ini")).toBeInTheDocument();
-    expect(screen.getByText("CBT & Ujian Mendatang")).toBeInTheDocument();
+    expect(screen.getByText("CBT & Ujian Online")).toBeInTheDocument();
     expect(screen.getByText("Aksi Cepat Siswa")).toBeInTheDocument();
   });
 
