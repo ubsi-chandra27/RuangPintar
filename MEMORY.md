@@ -32,7 +32,7 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 15 — STUDENT EXPERIENCE (M15)
+PHASE 16 — GUARDIAN EXPERIENCE (M15)
 
 Current Phase Status:
 READY FOR HUMAN REVIEW
@@ -728,3 +728,38 @@ Catatan implementasi Phase 15 (7 September 2026):
    - Playwright Walkthrough: 10 screenshot tersimpan di `docs/phases/screenshots/phase-15-walkthrough/`.
 5. **Status:**
    - `READY FOR HUMAN REVIEW`.
+
+---
+
+# 32. Implementasi Phase 16 — Guardian Experience (M15)
+
+Catatan implementasi Phase 16 (7 September 2026):
+1. **Pondasi Guardian Experience (Milestone F):** Menghadirkan portal orang tua / wali murid (`GUARDIAN`) yang terintegrasi secara data-driven dan aman untuk memantau kehadiran harian anak, ketuntasan tugas kelas, agenda ujian CBT, perkembangan capaian asesmen terpublikasi resmi, e-Rapor Kurikulum Merdeka, serta layanan pengajuan surat izin sakit / dispensasi.
+2. **Kepatuhan Invariant Domain & Authorization:**
+   - **Relationship-Scoped Authorization (`GUARDIAN_RELATIONSHIP`):** Akses data anak hanya melalui hubungan resmi yang sah dan terverifikasi sekolah (`WaliMurid` -> `HubunganWaliSiswa` -> `Siswa`). Server menolak tegas upaya akses data siswa yang tidak terhubung (`ChildNotLinkedError`, `UnverifiedRelationshipError`).
+   - **Multi-Child & Multi-Guardian Support:** Satu wali dapat memiliki lebih dari satu anak (`ChildSwitcherDropdown` di antarmuka), dan satu anak dapat memiliki lebih dari satu wali (Ayah dan Ibu terverifikasi terpisah).
+   - **Invariant Guardian ≠ Student proxy:** Portal wali tidak menyediakan fitur pengumpulan tugas atau pengerjaan soal CBT atas nama siswa.
+   - **Zero Draft Grade Leakage (`FR-SXP-004`):** Nilai yang tampil di area wali murid strictly hanya yang berstatus `PUBLISHED` dengan target publikasi mencakup `WALI` atau `SEMUA`.
+   - **Missing Grade != Zero Grade:** Nilai yang belum ada tampil sebagai tanda strip `-` (bukan angka 0).
+   - **Audit Trail:** Pengajuan izin sakit/dispensasi dicatat secara terstruktur ke tabel audit log platform (`recordAuditEvent`).
+3. **Database Schema & Migrasi:**
+   - Migrasi forward: `20260907130000_add_guardian_and_family`.
+   - 3 Model Relasional: `WaliMurid`, `HubunganWaliSiswa`, `PengajuanWali`.
+4. **Presentation Layer (Academic Glass UI v1.2):**
+   - Dashboard Wali Murid live data-driven (`/dashboard`).
+   - Dropdown Pemilih Konteks Anak (`ChildSwitcherDropdown`) dengan dukungan multi-child cookie-based context.
+   - Modal Pengajuan Izin/Sakit (`PengajuanIzinModal`) dengan dropzone unggah berkas surat dokter.
+   - Presensi Anak (`/presensi-anak`): 6 kartu KPI kehadiran semester dan tabel log absensi per sesi KBM.
+   - Perkembangan Nilai & Rapor Anak (`/nilai-anak`): Tabulasi nilai asesmen terpublikasi resmi & Tab buku e-Rapor Kurikulum Merdeka.
+   - Modal Cetak Lembar Rapor Resmi A4 (`GuardianReportPrintModal`) format print-ready (`window.print()`).
+   - Menu navigasi kanonikal `/presensi-anak` dan `/nilai-anak` diaktifkan resmi (`isPhaseDeferred: false`).
+5. **Quality Gates & Bukti Visual:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors, 4 warnings non-blocking.
+   - Prettier: 100% compliant.
+   - Vitest: 73 test files, 400 tests passing (100% PASS).
+   - Next.js Production Build: 18 static & dynamic route pages compiled successfully.
+   - Playwright Visual Walkthrough: 9 screenshot tersimpan di `docs/phases/screenshots/phase-16-walkthrough/`.
+6. **Status:**
+   - `READY FOR HUMAN REVIEW`.
+

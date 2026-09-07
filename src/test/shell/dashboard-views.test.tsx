@@ -179,12 +179,82 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     expect(screen.getByText("Aksi Cepat Siswa")).toBeInTheDocument();
   });
 
-  it("renders GuardianDashboard with child learning progress and quick actions", () => {
-    render(<GuardianDashboard user={mockGuardian} />);
+  it("renders GuardianDashboard with child learning progress and quick actions", async () => {
+    const jsx = await GuardianDashboard({
+      user: mockGuardian,
+      initialData: {
+        guardian: {
+          id: "01M18WALI001",
+          sekolah_id: "01J00000000000000000000001",
+          pengguna_id: mockGuardian.id,
+          nama_lengkap: "Santoso Wijaya",
+          jenis_kelamin: "L",
+          no_telepon: "081234567890",
+          email: "santoso@example.com",
+          pekerjaan: "Wiraswasta",
+          penghasilan: "Rp 15.000.000",
+          alamat: "Jakarta",
+        },
+        linkedChildren: [
+          {
+            siswa_id: "01M18QCSXR59TR1FXG03V6YT91",
+            nama_lengkap: "Rian Pratama",
+            nis: "20261001",
+            nisn: "0081234501",
+            rombel_nama: "X RPL 1",
+            tingkat_kelas: "Kelas 10",
+            jenis_kelamin: "L",
+            foto_url: null,
+            jenis_hubungan: "AYAH",
+            apakah_wali_utama: true,
+            status_verifikasi: "TERVERIFIKASI",
+          },
+        ],
+        activeChild: {
+          siswa: {
+            siswa_id: "01M18QCSXR59TR1FXG03V6YT91",
+            nama_lengkap: "Rian Pratama",
+            nis: "20261001",
+            nisn: "0081234501",
+            rombel_nama: "X RPL 1",
+            tingkat_kelas: "Kelas 10",
+            jenis_kelamin: "L",
+            foto_url: null,
+            jenis_hubungan: "AYAH",
+            apakah_wali_utama: true,
+            status_verifikasi: "TERVERIFIKASI",
+          },
+          sekolah_nama: "SMK Otomindo Jakarta",
+          tahun_ajaran_aktif: "2026/2027",
+          semester_aktif: "Semester Ganjil",
+          wali_kelas: {
+            guru_id: "01M18GURU01",
+            nama_lengkap: "Pak Andi Setiawan, S.Pd.",
+            email: "andi@otomindo.sch.id",
+            no_telepon: "08123456789",
+            foto_url: null,
+          },
+        },
+        attendanceRecap: {
+          total_sesi: 20,
+          hadir: 20,
+          sakit: 0,
+          izin: 0,
+          alpa: 0,
+          persentase_kehadiran: 100,
+          kategori_kehadiran: "Sangat Baik",
+        },
+        upcomingAssignments: [],
+        upcomingCbt: [],
+        recentPublishedGrades: [],
+        recentPengajuan: [],
+      },
+    });
+    render(jsx);
 
     expect(screen.getByText(/Selamat Datang, Bapak\/Ibu Santoso Wijaya/i)).toBeInTheDocument();
     expect(screen.getByText("Wali Murid")).toBeInTheDocument();
-    expect(screen.getByText("Aktivitas Pembelajaran Putra/Putri")).toBeInTheDocument();
+    expect(screen.getByText(/Profil Pembelajaran — Rian Pratama/i)).toBeInTheDocument();
     expect(screen.getByText("Layanan Orang Tua")).toBeInTheDocument();
   });
 

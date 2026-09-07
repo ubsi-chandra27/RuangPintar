@@ -67,6 +67,9 @@ model Sekolah {
   jawaban_siswa             JawabanSiswa[]
   hasil_ujian_cbt           HasilUjianCbt[]
   event_integritas_ujian    EventIntegritasUjian[]
+  wali_murid                WaliMurid[]
+  hubungan_wali_siswa       HubunganWaliSiswa[]
+  pengajuan_wali            PengajuanWali[]
 
   @@map("sekolah")
 }
@@ -236,6 +239,7 @@ model Pengguna {
   kemampuan_staff KemampuanStaff[]
   siswa           Siswa?
   guru            Guru?
+  wali_murid      WaliMurid?
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -471,6 +475,8 @@ model Siswa {
   nilai_siswa         NilaiSiswa[]
   sesi_ujian_siswa    SesiUjianSiswa[]
   hasil_ujian_cbt     HasilUjianCbt[]
+  hubungan_wali       HubunganWaliSiswa[]
+  pengajuan_wali      PengajuanWali[]
 
   @@unique([sekolah_id, nis])
   @@index([sekolah_id, status_akademik])
@@ -1368,6 +1374,82 @@ model EventIntegritasUjian {
   @@index([sekolah_id])
   @@map("event_integritas_ujian")
 }
+
+/// M15 — Guardian & Family: Identitas Orang Tua / Wali Siswa
+model WaliMurid {
+  id            String    @id
+  sekolah_id    String
+  pengguna_id   String?   @unique
+  nama_lengkap  String
+  jenis_kelamin String?   // L | P
+  no_telepon    String?
+  email         String?
+  pekerjaan     String?
+  penghasilan   String?
+  alamat        String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  sekolah        Sekolah             @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  pengguna       Pengguna?           @relation(fields: [pengguna_id], references: [id], onDelete: SetNull)
+  hubungan_siswa HubunganWaliSiswa[]
+  pengajuan_wali PengajuanWali[]
+
+  @@index([sekolah_id])
+  @@map("wali_murid")
+}
+
+/// M15 — Guardian & Family: Hubungan Orang Tua/Wali dengan Siswa (Multi-Child & Multi-Guardian)
+model HubunganWaliSiswa {
+  id                String   @id
+  sekolah_id        String
+  wali_id           String
+  siswa_id          String
+  jenis_hubungan    String   // AYAH | IBU | WALI | LAINNYA
+  status_verifikasi String   @default("TERVERIFIKASI") // TERVERIFIKASI | MENUNGGU | DITOLAK
+  apakah_wali_utama Boolean  @default(false)
+  catatan           String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sekolah Sekolah   @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  wali    WaliMurid @relation(fields: [wali_id], references: [id], onDelete: Cascade)
+  siswa   Siswa     @relation(fields: [siswa_id], references: [id], onDelete: Cascade)
+
+  @@unique([wali_id, siswa_id])
+  @@index([sekolah_id, status_verifikasi])
+  @@index([siswa_id])
+  @@map("hubungan_wali_siswa")
+}
+
+/// M15 — Guardian & Family: Pengajuan Izin / Permohonan Koreksi Terbatas oleh Wali
+model PengajuanWali {
+  id                 String    @id
+  sekolah_id         String
+  wali_id            String
+  siswa_id           String
+  tipe               String    // IZIN_KETIDAKHADIRAN | SAKIT | KOREKSI_DATA | CATATAN_KESEHATAN | LAINNYA
+  judul              String
+  deskripsi          String
+  tanggal_mulai      DateTime?
+  tanggal_selesai    DateTime?
+  lampiran_url       String?
+  status             String    @default("MENUNGGU") // MENUNGGU | DISETUJUI | DITOLAK
+  catatan_tanggapan  String?
+  ditanggapi_oleh_id String?
+  ditanggapi_pada    DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  sekolah Sekolah   @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  wali    WaliMurid @relation(fields: [wali_id], references: [id], onDelete: Cascade)
+  siswa   Siswa     @relation(fields: [siswa_id], references: [id], onDelete: Cascade)
+
+  @@index([sekolah_id, status])
+  @@index([siswa_id])
+  @@map("pengajuan_wali")
+}
+
 
 
 

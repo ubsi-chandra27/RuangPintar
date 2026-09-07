@@ -136,9 +136,12 @@ async function main() {
     // 4. MODAL PENGUMPULAN TUGAS SISWA
     // --------------------------------------------------------------------------
     console.log("[4/10] Membuka Modal Pengumpulan Tugas Siswa...");
-    const submitBtn = await page.waitForSelector('button:has-text("Kerjakan Tugas"), button:has-text("Lihat / Edit")', {
-      timeout: 5000,
-    });
+    const submitBtn = await page.waitForSelector(
+      'button:has-text("Kerjakan Tugas"), button:has-text("Lihat / Edit")',
+      {
+        timeout: 5000,
+      }
+    );
     await submitBtn.click();
     await page.waitForTimeout(1000);
 
@@ -148,7 +151,9 @@ async function main() {
     console.log("✓ Screenshot 04: Modal Pengumpulan Tugas Siswa tersimpan.");
 
     // Tutup modal
-    const closeSubmitModalBtn = await page.$('button:has-text("Batal"), button:has-text("Tutup"), div[role="dialog"] button:has(svg.lucide-x)');
+    const closeSubmitModalBtn = await page.$(
+      'button:has-text("Batal"), button:has-text("Tutup"), div[role="dialog"] button:has(svg.lucide-x)'
+    );
     if (closeSubmitModalBtn) {
       await closeSubmitModalBtn.click();
       await page.waitForTimeout(500);
@@ -158,9 +163,12 @@ async function main() {
     // 5. TAB MATERI PELAJARAN
     // --------------------------------------------------------------------------
     console.log("[5/10] Beralih ke Tab Materi Pelajaran...");
-    const materiTabBtn = await page.waitForSelector('button[role="tab"]:has-text("Materi Pelajaran")', {
-      timeout: 5000,
-    });
+    const materiTabBtn = await page.waitForSelector(
+      'button[role="tab"]:has-text("Materi Pelajaran")',
+      {
+        timeout: 5000,
+      }
+    );
     await materiTabBtn.click();
     await page.waitForTimeout(1000);
 
@@ -186,7 +194,9 @@ async function main() {
     console.log("✓ Screenshot 06: Modal Pembaca Materi Siswa tersimpan.");
 
     // Tutup modal materi
-    const closeMaterialModalBtn = await page.$('button:has-text("Tutup"), div[role="dialog"] button:has(svg.lucide-x)');
+    const closeMaterialModalBtn = await page.$(
+      'button:has-text("Tutup"), div[role="dialog"] button:has(svg.lucide-x)'
+    );
     if (closeMaterialModalBtn) {
       await closeMaterialModalBtn.click();
       await page.waitForTimeout(500);
@@ -225,9 +235,12 @@ async function main() {
     // 9. MODAL PRATINJAU CETAK RESMI RAPOR A4
     // --------------------------------------------------------------------------
     console.log("[9/10] Membuka Modal Pratinjau Cetak Rapor Resmi A4...");
-    const printBtn = await page.waitForSelector('button:has-text("Cetak Lembar Rapor Resmi"), button:has-text("Cetak Rapor Resmi")', {
-      timeout: 5000,
-    });
+    const printBtn = await page.waitForSelector(
+      'button:has-text("Cetak Lembar Rapor Resmi"), button:has-text("Cetak Rapor Resmi")',
+      {
+        timeout: 5000,
+      }
+    );
     await printBtn.click();
     await page.waitForTimeout(1200);
 
@@ -236,9 +249,7 @@ async function main() {
     });
     console.log("✓ Screenshot 09: Modal Cetak Rapor Resmi A4 tersimpan.");
 
-    const closePrintModalBtn = await page.$(
-      'div[role="dialog"] button:has-text("Tutup")'
-    );
+    const closePrintModalBtn = await page.$('div[role="dialog"] button:has-text("Tutup")');
     if (closePrintModalBtn) {
       await closePrintModalBtn.click();
       await page.waitForTimeout(800);
@@ -248,9 +259,12 @@ async function main() {
     // 10. TAB RINCIAN ASESMEN TERPUBLIKASI
     // --------------------------------------------------------------------------
     console.log("[10/10] Beralih ke Tab Rincian Asesmen Terpublikasi...");
-    const rincianTabBtn = await page.waitForSelector('button[role="tab"]:has-text("Rincian Asesmen Terpublikasi")', {
-      timeout: 5000,
-    });
+    const rincianTabBtn = await page.waitForSelector(
+      'button[role="tab"]:has-text("Rincian Asesmen Terpublikasi")',
+      {
+        timeout: 5000,
+      }
+    );
     await rincianTabBtn.click();
     await page.waitForTimeout(1000);
 
@@ -261,10 +275,14 @@ async function main() {
     console.log("✓ Screenshot 10: Rincian Asesmen Terpublikasi tersimpan.");
 
     await desktopContext.close();
-    console.log("\n================================================================================");
+    console.log(
+      "\n================================================================================"
+    );
     console.log("SELURUH 10 SCREENSHOT WALKTHROUGH PHASE 15 BERHASIL DIAMBIL & TERSIMPAN!");
     console.log("Direktori: docs/phases/screenshots/phase-15-walkthrough/");
-    console.log("================================================================================\n");
+    console.log(
+      "================================================================================\n"
+    );
   } finally {
     await browser.close();
     if (serverProcess && !serverWasRunning) {
