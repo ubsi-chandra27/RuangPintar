@@ -180,19 +180,38 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
         </div>
 
         {/* Metric 4: Status Wali Kelas */}
-        <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
-            <GraduationCap className="h-5 w-5" />
+        {activeHomeroom ? (
+          <Link
+            href="/wali-kelas"
+            className="p-2.5 sm:p-3 rounded-2xl bg-white hover:bg-emerald-50/40 border border-slate-200/80 hover:border-emerald-200 shadow-2xs flex items-center gap-3 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform shrink-0">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate group-hover:text-emerald-700">
+                Wali Kelas (Buka Portal →)
+              </span>
+              <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
+                {activeHomeroom.rombel_nama}
+              </span>
+            </div>
+          </Link>
+        ) : (
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-slate-50 text-slate-400 shrink-0">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
+                Status Wali Kelas
+              </span>
+              <span className="text-xs sm:text-sm font-black text-slate-500 block truncate">
+                Guru Mandiri
+              </span>
+            </div>
           </div>
-          <div className="min-w-0">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
-              Status Wali Kelas
-            </span>
-            <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
-              {activeHomeroom ? activeHomeroom.rombel_nama : "Bukan Wali"}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 3. Command Center Grid: Berdampingan Kiri & Kanan (Pas 1 Layar / Zero-Scroll Design) */}
@@ -375,9 +394,13 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
               </span>
             </div>
             {activeHomeroom ? (
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                Wali {activeHomeroom.rombel_nama}
-              </span>
+              <Link
+                href="/wali-kelas"
+                className="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-colors"
+              >
+                <span>Wali {activeHomeroom.rombel_nama}</span>
+                <ChevronRight className="h-3 w-3" />
+              </Link>
             ) : (
               <span className="text-[10px] text-slate-400">Guru Mandiri</span>
             )}

@@ -72,6 +72,7 @@ model Sekolah {
   pengajuan_wali            PengajuanWali[]
   pengumuman                Pengumuman[]
   notifikasi_pengguna       NotifikasiPengguna[]
+  catatan_monitoring        CatatanMonitoring[]
 
   @@map("sekolah")
 }
@@ -242,9 +243,11 @@ model Pengguna {
   siswa                 Siswa?
   guru                  Guru?
   wali_murid            WaliMurid?
-  pengumuman_dibuat     Pengumuman[]
-  notifikasi            NotifikasiPengguna[]
-  preferensi_notifikasi PreferensiNotifikasi?
+  pengumuman_dibuat          Pengumuman[]
+  notifikasi                 NotifikasiPengguna[]
+  preferensi_notifikasi      PreferensiNotifikasi?
+  catatan_monitoring_ditulis CatatanMonitoring[]      @relation("PenulisCatatan")
+  tindak_lanjut_ditugaskan   TindakLanjutMonitoring[] @relation("PenanggungJawabTindakLanjut")
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -442,6 +445,7 @@ model Rombel {
   jadwal_pelajaran   JadwalPelajaran[]
   sesi_kelas_aktual  SesiKelasAktual[]
   pengumuman         Pengumuman[]
+  catatan_monitoring CatatanMonitoring[]
 
   @@unique([sekolah_id, tahun_ajaran_id, nama])
   @@index([sekolah_id, tahun_ajaran_id, status])
@@ -483,6 +487,7 @@ model Siswa {
   hasil_ujian_cbt     HasilUjianCbt[]
   hubungan_wali       HubunganWaliSiswa[]
   pengajuan_wali      PengajuanWali[]
+  catatan_monitoring  CatatanMonitoring[]
 
   @@unique([sekolah_id, nis])
   @@index([sekolah_id, status_akademik])
@@ -1541,6 +1546,54 @@ model PreferensiNotifikasi {
 
   @@map("preferensi_notifikasi")
 }
+
+/// M18 — Student Monitoring: Catatan Pembinaan & Pemantauan Siswa oleh Wali Kelas
+model CatatanMonitoring {
+  id              String   @id
+  sekolah_id      String
+  rombel_id       String
+  siswa_id        String
+  penulis_id      String   // ID Pengguna (Wali Kelas / Guru / Staf / Admin)
+  judul           String
+  isi             String
+  kategori        String   @default("UMUM") // AKADEMIK | KEHADIRAN | PERILAKU | KESEHATAN | SOSIAL | LAINNYA
+  tingkat_urgensi String   @default("SEDANG") // RENDAH | SEDANG | TINGGI | KRITIS
+  status          String   @default("AKTIF") // AKTIF | SELESAI | DIARSIPKAN
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  sekolah       Sekolah                  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  rombel        Rombel                   @relation(fields: [rombel_id], references: [id], onDelete: Restrict)
+  siswa         Siswa                    @relation(fields: [siswa_id], references: [id], onDelete: Restrict)
+  penulis       Pengguna                 @relation("PenulisCatatan", fields: [penulis_id], references: [id], onDelete: Cascade)
+  tindak_lanjut TindakLanjutMonitoring[]
+
+  @@index([sekolah_id, rombel_id])
+  @@index([siswa_id, status])
+  @@index([penulis_id])
+  @@map("catatan_monitoring")
+}
+
+/// M18 — Student Monitoring: Tindak Lanjut & Rencana Intervensi Pembinaan Siswa
+model TindakLanjutMonitoring {
+  id                   String    @id
+  catatan_id           String
+  penanggung_jawab_id  String?   // ID Pengguna (Wali Kelas, Guru BK, etc.)
+  tindakan             String
+  target_tanggal       DateTime?
+  status               String    @default("DIRENCANAKAN") // DIRENCANAKAN | PROSES | SELESAI | DIBATALKAN
+  hasil                String?
+  tanggal_penyelesaian DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  catatan          CatatanMonitoring @relation(fields: [catatan_id], references: [id], onDelete: Cascade)
+  penanggung_jawab Pengguna?         @relation("PenanggungJawabTindakLanjut", fields: [penanggung_jawab_id], references: [id], onDelete: SetNull)
+
+  @@index([catatan_id, status])
+  @@map("tindak_lanjut_monitoring")
+}
+
 
 
 

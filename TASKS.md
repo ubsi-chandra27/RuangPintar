@@ -1,77 +1,86 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 8.0  
-**Current Active Phase:** PHASE 18 — STUDENT MONITORING & HOMEROOM (M18)  
-**Status:** IN PROGRESS  
+**Versi:** 9.0  
+**Current Active Phase:** PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)  
+**Status:** ACTIVE  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 18 — STUDENT MONITORING & HOMEROOM (M18) [IN PROGRESS]
+PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19) [ACTIVE]
 ```
 
 Tujuan:
-> Membangun sistem monitoring komprehensif bagi wali kelas terhadap seluruh siswa dalam rombel perwaliannya serta pusat perhatian dan tindak lanjut siswa (*Attention Center, Monitoring Notes & Follow-Up / M18*) sesuai Academic Glass UI v1.2:
+> Membangun sistem dashboard kepemimpinan sekolah (*Leadership Dashboard*), pelaporan operasional terpadu (*Operational Reporting*), analitik akademik lintas rombel (*Academic Analytics*), dan rekapitulasi data pimpinan (*Executive Export*) sesuai Academic Glass UI v1.2:
 > 1. Invariant Domain Inti:
->    - `M18 Student Monitoring ≠ Source of Truth`: Data transaksi utama (kehadiran, tugas, penilaian) tetap berada pada M11, M12, M13. Indikator siswa di M18 merupakan derived/read model yang dapat dihitung ulang kapan saja.
->    - `Monitoring Note & Follow-Up = Persistent M18 Entities`: Catatan pembinaan dan riwayat tindak lanjut wali kelas/BK disimpan persisten.
->    - `Wali Kelas ≠ Pemilik Nilai / Presensi Guru Lain`: Wali kelas memantau (*read/monitor*), bukan mengubah (*overwrite/bypass*) nilai atau presensi sesi milik guru mata pelajaran lain.
->    - `Homeroom Scoping Enforcement`: Wali kelas hanya dapat memantau rombel yang ditugaskan kepadanya secara aktif melalui `PenugasanWaliKelas`. Super Admin memiliki supervisi penuh.
+>    - `Report ≠ Source of Truth`: Data laporan dan analitik merupakan proyeksi baca (*read models/aggregations*) dari M01 (Organisasi), M07 (Akademik), M08 (Siswa), M09 (Guru), M10 (Jadwal & KBM), M11 (Tugas & Materi), M12 (Presensi), M13 (Asesmen & Nilai), dan M18 (Monitoring). Data sumber transaksi tetap menjadi acuan utama (*source of truth*).
+>    - `Leadership Monitoring ≠ Full Administrative Write Access`: Pimpinan sekolah (Kepala Sekolah, Wakasek, Kaprog) memiliki visibilitas analitik dan supervisi evaluatif, bukan hak untuk memanipulasi atau membypass penilaian (*grade override*) maupun presensi guru mata pelajaran.
+>    - `Position-Scoped Visibility Enforcement`: Akses dashboard kepemimpinan dikunci secara ketat server-side berdasarkan `PenugasanJabatan` aktif:
+>      - `HEADMASTER`: Visibilitas manajemen strategis tingkat sekolah (*School-Wide Management View*).
+>      - `VICE_PRINCIPAL_CURRICULUM`: Visibilitas manajemen akademik sekolah (*School-Wide Academic Management*).
+>      - `VICE_PRINCIPAL_STUDENT_AFFAIRS`: Visibilitas manajemen kesiswaan & kehadiran sekolah (*School-Wide Student Affairs*).
+>      - `PROGRAM_HEAD`: Visibilitas program keahlian perjurusan (*Program-Scoped View*).
+>      - `SUPER_ADMIN`: Visibilitas supervisi komprehensif dengan kemampuan memilih konteks kepemimpinan.
+>      - Role non-pimpinan tanpa penugasan struktural ditolak (*default deny*).
 > 2. Database & Data Architecture:
->    - Model `CatatanMonitoring` (id, sekolah_id, rombel_id, siswa_id, penulis_id, judul, isi, kategori [AKADEMIK, KEHADIRAN, PERILAKU, LAINNYA], tingkat_urgensi [RENDAH, SEDANG, TINGGI, KRITIS], status)
->    - Model `TindakLanjutMonitoring` (id, catatan_id, penanggung_jawab_id, tindakan, target_tanggal, status [DIRENCANAKAN, PROSES, SELESAI, DIBATALKAN], hasil)
->    - Prisma migration forward aman
+>    - Model `RiwayatEksporLaporan` (id, sekolah_id, tipe_laporan [PRESENSI, NILAI, AKADEMIK, EKSEKUTIF], judul, format [CSV, PRINT_A4], parameter_filter_json, dibuat_oleh_id, total_baris, berkas_url, created_at)
+>    - Prisma migration forward aman untuk tabel rekapitulasi / riwayat ekspor laporan
 > 3. Application & Service Layer:
->    - `MonitoringRepository` & `MonitoringService`
->    - Agregasi indikator holistik per siswa: persentase kehadiran (hadir, izin, sakit, alpha), tingkat ketuntasan tugas (dikumpulkan vs total tugas), capaian asesmen (rerata nilai, jumlah asesmen di bawah KKTP), status perhatian (*Normal*, *Perlu Perhatian*, *Kritis*)
->    - Server Actions: `getHomeroomMonitoringOverviewAction`, `getStudentMonitoringDetailAction`, `createMonitoringNoteAction`, `createFollowUpAction`, `updateFollowUpStatusAction`
+>    - `ReportingRepository` & `LeadershipAnalyticsService`
+>    - Engine agregasi metrik pimpinan (kehadiran sekolah harian/semesteran, distribusi capaian KKTP lintas rombel, pemenuhan administrasi pembelajaran guru, rasio tugas & asesmen, tren kasus kesiswaan)
+>    - Generator ekspor laporan (CSV formatter & Print-Ready data transformer)
+>    - Server Actions:
+>      - `getLeadershipDashboardOverviewAction` (overview metrik berdasarkan jabatan aktif pengguna)
+>      - `getAcademicAnalyticsAction` (analitik capaian belajar per mapel/tingkat/rombel)
+>      - `getAttendanceAnalyticsAction` (analitik tren kehadiran guru & siswa)
+>      - `generateReportExportAction` (pembuatan berkas ekspor CSV/print log)
 > 4. Presentation Layer (Academic Glass UI v1.2):
->    - Direktori / Portal Wali Kelas (`/wali-kelas`):
->      - Tab Ringkasan Rombel & KPI (total siswa, rerata presensi rombel, siswa perlu perhatian, tugas tertunda)
->      - Tab Roster Siswa & Indikator Holistik: Tabel siswa dengan badge indikator kehadiran, tugas, nilai, dan tombol "Detail & Catatan"
->      - Tab Pusat Perhatian (*Attention Center*): Sorotan otomatis siswa bermasalah absensi (alpha/terlambat tinggi), tugas belum tuntas, atau nilai anjlok
->      - Tab Catatan Pembinaan & Tindak Lanjut: Feed catatan pembinaan wali kelas, status koordinasi BK/Orang Tua, riwayat follow-up
->    - Modal Tambah Catatan Pembinaan (`CreateMonitoringNoteModal`) & Modal Tambah Tindak Lanjut (`CreateFollowUpModal`)
->    - Modal Rincian Siswa Holistik (`StudentMonitoringDetailModal`)
->    - Tautan cepat di Dashboard Guru (`/dashboard`) untuk guru yang bertugas sebagai Wali Kelas
->    - Pengaktifan rute `/wali-kelas` di `CANONICAL_NAVIGATION_CONFIG` untuk guru wali kelas & admin
+>    - Direktori Portal Kepemimpinan & Laporan (`/pimpinan` atau `/laporan`):
+>      - Dashboard Kepala Sekolah (`HeadmasterDashboardView`): KPI strategis (rasio guru-siswa, rata-rata kehadiran, distribusi ketuntasan KKTP, daftar anomali perhatian, status KBM aktif).
+>      - Dashboard Wakasek Kurikulum (`CurriculumDashboardView`): Monitoring silabus/TP, kepatuhan administrasi guru, status penilaian tugas/asesmen, beban mengajar per guru.
+>      - Dashboard Wakasek Kesiswaan (`StudentAffairsDashboardView`): Matriks presensi siswa per rombel/tingkat, daftar siswa alpha tinggi (*chronic absenteeism*), statistik catatan pembinaan & tindak lanjut.
+>      - Dashboard Kepala Program (`ProgramHeadDashboardView`): Cohort per program keahlian, performa mapel kejuruan, kehadiran siswa jurusan.
+>      - Tab Pusat Rekap & Ekspor Laporan (`ReportingExportTab`): Filter periode, tingkat kelas, rombel, unduh CSV terstruktur dan lembar cetak eksekutif A4 (*window.print()* siap tanda tangan).
+>    - Switcher Konteks Jabatan bagi Super Admin atau personil dengan multi-penugasan.
+>    - Integrasi tautan navigasi kanonikal `/pimpinan` di `CANONICAL_NAVIGATION_CONFIG` dan `AcademicShell`.
 > 5. Quality Gates & Verification:
->    - Unit/integration tests untuk M18
+>    - Unit/integration tests untuk M19 & Leadership authorization
 >    - Quality gates (typecheck, lint, format, vitest, build)
 >    - Playwright automated visual walkthrough
 
 ---
 
-# 2. Checklist Phase 18 — Student Monitoring & Homeroom (M18)
+# 2. Checklist Phase 19 — Leadership Dashboard, Reporting & Analytics (M19)
 
 ## Domain & Invariants
 ```text
-[ ] Derived Indicator Model: Indikator dihitung dinamis dari M07, M11, M12, M13 tanpa menduplikasi source of truth
-[ ] Homeroom Scoping: Akses data rombel terkunci pada penugasan wali kelas aktif guru (default deny)
-[ ] Read-Only Academic Guard: Wali kelas tidak dapat memanipulasi presensi sesi atau nilai guru lain
-[ ] Persistent Notes & Follow-Up: Catatan monitoring dan tindak lanjut tersimpan aman dengan audit log
+[ ] Read Model Integrity: Laporan & analitik merupakan derived projection, tanpa memanipulasi transaksi sumber (M11, M12, M13)
+[ ] Position-Scoped Access Control: Otorisasi server-side terkunci pada PenugasanJabatan aktif (HEADMASTER, WAKASEK_KURIKULUM, WAKASEK_KESISWAAN, PROGRAM_HEAD, SUPER_ADMIN)
+[ ] Read-Only Evaluation Guard: Pimpinan memantau performa tanpa kemampuan manipulasi nilai atau absensi
+[ ] Export & Audit Trail: Pencatatan riwayat pembuatan dan pengunduhan laporan formal
 ```
 
 ## Data Layer & Application Services
 ```text
-[ ] Prisma Migration: Model catatan_monitoring & tindak_lanjut_monitoring
-[ ] Monitoring Domain & Validation: types, errors, zod schemas
-[ ] MonitoringRepository & MonitoringService (agregasi KPI, indikator holistik, CRUD catatan)
-[ ] Server Actions: monitoring-actions.ts
-[ ] Seed Data: Sampel catatan pembinaan & tindak lanjut untuk pengujian
+[ ] Prisma Migration: Model riwayat_ekspor_laporan
+[ ] Reporting Domain & Validation: types, errors, zod schemas
+[ ] ReportingRepository & LeadershipAnalyticsService (agregasi KPI strategis, analitik akademik & presensi)
+[ ] Server Actions: leadership-actions.ts & report-export-actions.ts
+[ ] Seed Data: Pemastian personil pimpinan (Kepala Sekolah, Wakasek, Kaprog) terhubung dengan akun demo
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[ ] Homeroom Portal (/wali-kelas): Ringkasan KPI rombel, tab roster, tab attention center, tab catatan
-[ ] Attention Center Widget / View: Filter siswa berisiko (absensi rendah, tugas menumpuk, nilai < KKTP)
-[ ] Create/Edit Monitoring Note Modal & Follow-Up Modal
-[ ] Student Holistic Detail Modal: Profil siswa, breakdown presensi, tugas, nilai, dan timeline pembinaan
-[ ] Teacher Dashboard Shortcut: Card status wali kelas dengan tautan langsung ke portal /wali-kelas
-[ ] Navigation Config: Registrasi menu /wali-kelas dengan icon & role/permission guard
+[ ] Leadership Portal (/pimpinan): Multi-role leadership view dengan sub-tab & KPI cards
+[ ] Headmaster View: Strategi sekolah, KPI kehadiran global, distribusi KKTP, perhatian pimpinan
+[ ] Curriculum View: Capaian TP, ketuntasan penilaian, beban mengajar guru
+[ ] Student Affairs View: Matriks kehadiran, tren ketidakhadiran, ringkasan kasus pembinaan
+[ ] Program Head View: Fokus jurusan/program keahlian, performa kompetensi kejuruan
+[ ] Report Export Center: Filter dinamis, ekspor CSV, modal print preview A4 formal
+[ ] Navigation Config: Registrasi menu /pimpinan dengan proteksi akses jabatan
 ```
 
 ## Quality Gates & Verification
@@ -81,7 +90,7 @@ Tujuan:
 [ ] Format check: Prettier 100% clean
 [ ] Tests: Seluruh test unit & integrasi passing (100% PASS)
 [ ] Build: Next.js production build passing
-[ ] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 18
+[ ] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 19
 ```
 
 ---
@@ -112,20 +121,20 @@ Tujuan:
     └── [x] Phase 17 — Communication & Notification (M16/M17) [APPROVED BY HUMAN (11 September 2026)]
 
 [ ] Milestone G — Student Monitoring, Leadership & School Operations (Phase 18–19) [ACTIVE]
-    ├── [ ] Phase 18 — Student Monitoring & Homeroom (M18) [ACTIVE]
-    └── [ ] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19)
+    ├── [x] Phase 18 — Student Monitoring & Homeroom (M18) [APPROVED BY HUMAN (11 September 2026)]
+    └── [ ] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19) [ACTIVE]
 ```
 
 ---
 
-# 4. Milestone F Historical Quality Gates (Phase 17)
+# 4. Milestone G Historical Quality Gates (Phase 18)
 
 ```text
-[x] Domain Invariants: Announcement != Notification != Source Transaction, Server-Side Audience Filter, Fail-safe Outbox
+[x] Domain Invariants: M18 Derived Indicator Model, Homeroom Scoping (Default Deny), Read-Only Academic Guard, Persistent Guidance Notes & Follow-Up Plans
 [x] Format check: Prettier 100% clean (npm run format:check)
 [x] Lint check: 0 errors (npm run lint)
 [x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: 77 test files, 421 tests passing (100% PASS)
-[x] Build: Next.js production compilation 100% PASS (19 routes generated)
-[x] End-to-End Walkthrough: Playwright automated test & 9 visual screenshots PASS (qa-phase17-visual-walkthrough.mjs)
+[x] Tests: 79 test files, 442 tests passing (100% PASS)
+[x] Build: Next.js production compilation 100% PASS (31 routes generated)
+[x] End-to-End Walkthrough: Playwright automated test & 10 visual screenshots PASS (qa-phase18-visual-walkthrough.mjs)
 ```

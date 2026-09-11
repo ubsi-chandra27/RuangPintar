@@ -125,6 +125,14 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         isPhaseDeferred: false,
       },
       {
+        id: "teacher-homeroom",
+        title: "Wali Kelas",
+        href: "/wali-kelas",
+        iconName: "ShieldAlert",
+        roles: ["TEACHER", "SUPER_ADMIN"],
+        isPhaseDeferred: false,
+      },
+      {
         id: "teacher-ai-assistant",
         title: "Asisten AI Guru",
         href: "/asisten-ai",
@@ -302,6 +310,14 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
         requiredPermission: "learning.material.view",
         requiredCapability: "ACADEMIC_OPERATOR",
+        isPhaseDeferred: false,
+      },
+      {
+        id: "staff-homeroom",
+        title: "Monitoring Rombel",
+        href: "/wali-kelas",
+        iconName: "ShieldAlert",
+        roles: ["SUPER_ADMIN"],
         isPhaseDeferred: false,
       },
       {
