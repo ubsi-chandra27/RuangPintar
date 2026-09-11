@@ -205,10 +205,14 @@ async function main() {
       console.log("✓ Screenshot 09 tersimpan (Pratinjau Lembar Rapor Resmi A4).");
     }
 
-    console.log("\n================================================================================");
+    console.log(
+      "\n================================================================================"
+    );
     console.log("SELURUH 9 SCREENSHOT VISUAL WALKTHROUGH PHASE 16 BERHASIL TERSIMPAN!");
     console.log("Direktori: " + screenshotDir);
-    console.log("================================================================================\n");
+    console.log(
+      "================================================================================\n"
+    );
   } finally {
     await browser.close();
 

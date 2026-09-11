@@ -31,6 +31,7 @@ import {
   MapPin,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   Link as LinkIcon,
   FileCode,
   AlignLeft,
@@ -39,6 +40,8 @@ import {
   TeacherClassWorkspaceDTO,
   LingkupMateriDTO,
   TujuanPembelajaranDTO,
+  MateriPembelajaranDTO,
+  AdministrasiPembelajaranDTO,
 } from "../domain/learning-types";
 import { Toast, ToastType } from "@/shared/components/ui/toast";
 import { CreateBABModal } from "./create-bab-modal";
@@ -46,8 +49,10 @@ import { EditBABModal } from "./edit-bab-modal";
 import { CreateTPModal } from "./create-tp-modal";
 import { EditTPModal } from "./edit-tp-modal";
 import { CreateMateriModal } from "./create-materi-modal";
+import { EditMateriModal } from "./edit-materi-modal";
 import { CreateTugasModal } from "./create-tugas-modal";
 import { CreateJurnalModal } from "./create-jurnal-modal";
+import { EditJurnalModal } from "./edit-jurnal-modal";
 import {
   deleteAdministrasiAction,
   deleteLingkupMateriAction,
@@ -125,6 +130,18 @@ export function ClassWorkspaceView({
     tp: TujuanPembelajaranDTO;
     babJudul: string;
   } | null>(null);
+  const [editMateriTarget, setEditMateriTarget] = useState<MateriPembelajaranDTO | null>(null);
+  const [editJurnalTarget, setEditJurnalTarget] = useState<AdministrasiPembelajaranDTO | null>(
+    null
+  );
+
+  // Delete Confirmation Modal State (Academic Glass UI)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    type: "TUGAS" | "MATERI" | "BAB" | "TP" | "JURNAL";
+    id: string;
+    title: string;
+    subtitle?: string;
+  } | null>(null);
 
   const {
     penugasan,
@@ -136,67 +153,30 @@ export function ClassWorkspaceView({
     jadwal_list,
   } = workspace;
 
-  const handleDeleteBAB = (id: string) => {
-    if (!confirm("Hapus BAB ini beserta seluruh Tujuan Pembelajaran di dalamnya?")) return;
-    startTransition(async () => {
-      const res = await deleteLingkupMateriAction(id, penugasan.id);
-      if (res.success) {
-        setToast({ message: res.message, type: "success" });
-        router.refresh();
-      } else {
-        setToast({ message: res.message, type: "error" });
-      }
-    });
-  };
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    const { type, id } = deleteTarget;
 
-  const handleDeleteTP = (id: string) => {
-    if (!confirm("Hapus Tujuan Pembelajaran ini?")) return;
     startTransition(async () => {
-      const res = await deleteTujuanPembelajaranAction(id, penugasan.id);
-      if (res.success) {
-        setToast({ message: res.message, type: "success" });
-        router.refresh();
+      let res: { success: boolean; message?: string };
+      if (type === "TUGAS") {
+        res = await deleteTugasAction(id, penugasan.id);
+      } else if (type === "MATERI") {
+        res = await deleteMateriAction(id, penugasan.id);
+      } else if (type === "BAB") {
+        res = await deleteLingkupMateriAction(id, penugasan.id);
+      } else if (type === "TP") {
+        res = await deleteTujuanPembelajaranAction(id, penugasan.id);
       } else {
-        setToast({ message: res.message, type: "error" });
+        res = await deleteAdministrasiAction(id, penugasan.id);
       }
-    });
-  };
 
-  const handleDeleteMateri = (id: string) => {
-    if (!confirm("Hapus materi pembelajaran ini?")) return;
-    startTransition(async () => {
-      const res = await deleteMateriAction(id, penugasan.id);
       if (res.success) {
-        setToast({ message: res.message, type: "success" });
+        setToast({ message: res.message || "Berhasil dihapus.", type: "success" });
+        setDeleteTarget(null);
         router.refresh();
       } else {
-        setToast({ message: res.message, type: "error" });
-      }
-    });
-  };
-
-  const handleDeleteTugas = (id: string) => {
-    if (!confirm("Hapus tugas ini beserta publikasinya?")) return;
-    startTransition(async () => {
-      const res = await deleteTugasAction(id, penugasan.id);
-      if (res.success) {
-        setToast({ message: res.message, type: "success" });
-        router.refresh();
-      } else {
-        setToast({ message: res.message, type: "error" });
-      }
-    });
-  };
-
-  const handleDeleteJurnal = (id: string) => {
-    if (!confirm("Hapus catatan jurnal KBM pertemuan ini?")) return;
-    startTransition(async () => {
-      const res = await deleteAdministrasiAction(id, penugasan.id);
-      if (res.success) {
-        setToast({ message: res.message, type: "success" });
-        router.refresh();
-      } else {
-        setToast({ message: res.message, type: "error" });
+        setToast({ message: res.message || "Gagal menghapus.", type: "error" });
       }
     });
   };
@@ -663,7 +643,14 @@ export function ClassWorkspaceView({
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDeleteBAB(bab.id)}
+                            onClick={() =>
+                              setDeleteTarget({
+                                type: "BAB",
+                                id: bab.id,
+                                title: bab.judul,
+                                subtitle: `${bab.tujuan_pembelajaran.length} Tujuan Pembelajaran`,
+                              })
+                            }
                             title="Hapus BAB"
                             className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                           >
@@ -712,7 +699,14 @@ export function ClassWorkspaceView({
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => handleDeleteTP(tp.id)}
+                                  onClick={() =>
+                                    setDeleteTarget({
+                                      type: "TP",
+                                      id: tp.id,
+                                      title: tp.deskripsi,
+                                      subtitle: `Kode: ${tp.kode || "TP"} (${bab.judul})`,
+                                    })
+                                  }
                                   title="Hapus TP"
                                   className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                                 >
@@ -829,14 +823,31 @@ export function ClassWorkspaceView({
                       })}
                     </span>
                     {canManage && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMateri(m.id)}
-                        title="Hapus Materi"
-                        className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setEditMateriTarget(m)}
+                          title="Edit Materi"
+                          className="p-1 rounded-lg text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 transition-colors cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDeleteTarget({
+                              type: "MATERI",
+                              id: m.id,
+                              title: m.judul,
+                              subtitle: m.lingkup_materi_judul || "Materi Pembelajaran",
+                            })
+                          }
+                          title="Hapus Materi"
+                          className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -882,85 +893,121 @@ export function ClassWorkspaceView({
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {administrasi_list.map((adm) => (
                 <div
                   key={adm.id}
-                  className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3"
+                  className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-3 hover:border-slate-300 transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-2.5">
-                      <span className="px-3 py-1 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-extrabold text-xs">
-                        Pertemuan {adm.pertemuan_ke}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-400">
-                        {new Date(adm.tanggal).toLocaleDateString("id-ID", {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold">
-                        {adm.status_realisasi}
-                      </span>
+                  <div className="space-y-3">
+                    {/* Header bar */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-700 font-extrabold text-xs">
+                          Pertemuan {adm.pertemuan_ke}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                            adm.status_realisasi === "TERLAKSANA"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : adm.status_realisasi === "TERTUNDA"
+                                ? "bg-amber-50 text-amber-700"
+                                : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {adm.status_realisasi}
+                        </span>
+                      </div>
+
+                      {canManage && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setEditJurnalTarget(adm)}
+                            title="Edit Jurnal KBM"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDeleteTarget({
+                                type: "JURNAL",
+                                id: adm.id,
+                                title: `Jurnal Pertemuan Ke-${adm.pertemuan_ke}`,
+                                subtitle: adm.materi_disampaikan || "Catatan Administrasi KBM",
+                              })
+                            }
+                            title="Hapus Jurnal"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    {canManage && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteJurnal(adm.id)}
-                        title="Hapus Jurnal"
-                        className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                    {/* Materi Pokok */}
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                        {adm.materi_disampaikan}
+                      </h4>
+                    </div>
+
+                    {/* TP Terkait */}
+                    {adm.tp_terkait && adm.tp_terkait.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {adm.tp_terkait.slice(0, 3).map((t) => (
+                          <span
+                            key={t.id}
+                            title={t.deskripsi}
+                            className="inline-flex items-center px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-medium border border-purple-100/80 max-w-full truncate"
+                          >
+                            {t.kode ? `${t.kode}: ` : ""}
+                            <span className="truncate">{t.deskripsi}</span>
+                          </span>
+                        ))}
+                        {adm.tp_terkait.length > 3 && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold">
+                            +{adm.tp_terkait.length - 3} TP lagi
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Kegiatan Pembelajaran */}
+                    {adm.kegiatan_pembelajaran && (
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100/80 text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                        {adm.kegiatan_pembelajaran}
+                      </div>
+                    )}
+
+                    {/* Catatan Refleksi */}
+                    {adm.catatan_refleksi && (
+                      <div className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200/60 text-xs text-amber-900 line-clamp-2">
+                        <span className="font-semibold text-amber-800 mr-1">Refleksi:</span>
+                        <span>{adm.catatan_refleksi}</span>
+                      </div>
                     )}
                   </div>
 
-                  <div className="space-y-1">
-                    <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                      Materi Pokok
-                    </div>
-                    <div className="text-sm font-bold text-slate-900">{adm.materi_disampaikan}</div>
+                  {/* Footer date */}
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>
+                      {new Date(adm.tanggal).toLocaleDateString("id-ID", {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                    {adm.guru_nama && (
+                      <span className="truncate max-w-[150px] font-medium text-slate-500">
+                        {adm.guru_nama}
+                      </span>
+                    )}
                   </div>
-
-                  {adm.tp_terkait && adm.tp_terkait.length > 0 && (
-                    <div className="space-y-1">
-                      <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                        TP Terkait
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {adm.tp_terkait.map((t) => (
-                          <span
-                            key={t.id}
-                            className="px-2 py-1 rounded-lg bg-purple-50 border border-purple-100 text-purple-700 text-xs font-semibold"
-                          >
-                            {t.kode ? `${t.kode}: ` : ""}
-                            {t.deskripsi}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {adm.kegiatan_pembelajaran && (
-                    <div className="space-y-1">
-                      <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                        Kegiatan KBM
-                      </div>
-                      <div className="text-xs text-slate-600 leading-relaxed">
-                        {adm.kegiatan_pembelajaran}
-                      </div>
-                    </div>
-                  )}
-
-                  {adm.catatan_refleksi && (
-                    <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200/70 text-xs text-amber-900 space-y-1">
-                      <strong className="block text-amber-800">Catatan Refleksi & Kendala:</strong>
-                      <p>{adm.catatan_refleksi}</p>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -1047,7 +1094,14 @@ export function ClassWorkspaceView({
                     {canManage && (
                       <button
                         type="button"
-                        onClick={() => handleDeleteTugas(t.id)}
+                        onClick={() =>
+                          setDeleteTarget({
+                            type: "TUGAS",
+                            id: t.id,
+                            title: t.judul,
+                            subtitle: `${t.publikasi_aktif?.submission_count || 0} Pengumpulan Siswa`,
+                          })
+                        }
                         title="Hapus Tugas"
                         className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       >
@@ -1196,6 +1250,19 @@ export function ClassWorkspaceView({
         onError={(msg) => setToast({ message: msg, type: "error" })}
       />
 
+      <EditMateriModal
+        penugasanId={penugasan.id}
+        materi={editMateriTarget}
+        lingkupMateriList={lingkup_materi}
+        isOpen={!!editMateriTarget}
+        onClose={() => setEditMateriTarget(null)}
+        onSuccess={(msg) => {
+          setToast({ message: msg, type: "success" });
+          router.refresh();
+        }}
+        onError={(msg) => setToast({ message: msg, type: "error" })}
+      />
+
       <CreateTugasModal
         penugasanId={penugasan.id}
         guruId={penugasan.guru_id}
@@ -1224,6 +1291,19 @@ export function ClassWorkspaceView({
         onError={(msg) => setToast({ message: msg, type: "error" })}
       />
 
+      <EditJurnalModal
+        penugasanId={penugasan.id}
+        administrasi={editJurnalTarget}
+        lingkupMateriList={lingkup_materi}
+        isOpen={!!editJurnalTarget}
+        onClose={() => setEditJurnalTarget(null)}
+        onSuccess={(msg) => {
+          setToast({ message: msg, type: "success" });
+          router.refresh();
+        }}
+        onError={(msg) => setToast({ message: msg, type: "error" })}
+      />
+
       <SessionAttendanceModal
         sesiId={attendanceModalSesiId}
         isOpen={Boolean(attendanceModalSesiId)}
@@ -1234,6 +1314,77 @@ export function ClassWorkspaceView({
         }}
         onError={(msg) => setToast({ message: msg, type: "error" })}
       />
+
+      {/* Modal Konfirmasi Hapus (Academic Glass UI) */}
+      {deleteTarget && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-rose-100 p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 shrink-0">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div className="space-y-1 text-left flex-1">
+                <h3 id="delete-dialog-title" className="text-base font-bold text-slate-900">
+                  {deleteTarget.type === "TUGAS" && "Hapus Tugas Pembelajaran"}
+                  {deleteTarget.type === "MATERI" && "Hapus Materi Pembelajaran"}
+                  {deleteTarget.type === "BAB" && "Hapus Lingkup Materi (BAB)"}
+                  {deleteTarget.type === "TP" && "Hapus Tujuan Pembelajaran (TP)"}
+                  {deleteTarget.type === "JURNAL" && "Hapus Catatan Jurnal KBM"}
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Tindakan ini tidak dapat dibatalkan. Data dan rekaman terkait yang telah tersimpan
+                  akan dihapus secara permanen.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <div className="text-xs font-semibold text-slate-800 line-clamp-2">
+                {deleteTarget.title}
+              </div>
+              {deleteTarget.subtitle && (
+                <div className="text-[11px] font-medium text-slate-500">
+                  {deleteTarget.subtitle}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={handleConfirmDelete}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              >
+                {isPending ? (
+                  <>
+                    <span className="inline-block h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Menghapus...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Ya, Hapus Permanen</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

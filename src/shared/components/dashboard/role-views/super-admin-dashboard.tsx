@@ -199,7 +199,10 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
                 <Megaphone className="h-4 w-4 text-[#2563EB]" />
                 <h3 className="text-sm font-bold text-[#0F172A]">Pengumuman Penting</h3>
               </div>
-              <Link href="#" className="text-xs font-semibold text-[#2563EB] hover:underline">
+              <Link
+                href="/pengumuman"
+                className="text-xs font-semibold text-[#2563EB] hover:underline"
+              >
                 Lihat Semua
               </Link>
             </div>

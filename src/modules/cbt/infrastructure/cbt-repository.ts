@@ -968,9 +968,17 @@ export class CbtRepository {
 
       if (kunci.tipe_soal === "PILIHAN_GANDA" || kunci.tipe_soal === "BENAR_SALAH") {
         const studentChoice = Array.isArray(parsedAns) ? parsedAns[0] : parsedAns;
-        const correctChoice = kunci.kunci_jawaban[0];
+        let correctChoice = "";
+        if (Array.isArray(kunci.kunci_jawaban)) {
+          correctChoice = String(kunci.kunci_jawaban[0] || "");
+        } else if (typeof kunci.kunci_jawaban === "object" && kunci.kunci_jawaban !== null) {
+          correctChoice = String((kunci.kunci_jawaban as any).pilihan_benar || "");
+        } else {
+          correctChoice = String(kunci.kunci_jawaban || "");
+        }
+
         const isCorrect =
-          String(studentChoice).trim().toUpperCase() === String(correctChoice).trim().toUpperCase();
+          String(studentChoice).trim().toUpperCase() === correctChoice.trim().toUpperCase();
 
         if (isCorrect) {
           totalBenar++;
@@ -981,8 +989,24 @@ export class CbtRepository {
           answersToUpdate.push({ id: userAns.id, apakah_benar: false, skor_diperoleh: 0 });
         }
       } else if (kunci.tipe_soal === "PILIHAN_GANDA_KOMPLEKS") {
-        const studentChoices = Array.isArray(parsedAns) ? parsedAns : [parsedAns];
-        const correctChoices = kunci.kunci_jawaban;
+        const studentChoices = (Array.isArray(parsedAns) ? parsedAns : [parsedAns])
+          .map((c: any) => String(c).trim().toUpperCase())
+          .filter(Boolean);
+
+        let correctChoices: string[] = [];
+        if (Array.isArray(kunci.kunci_jawaban)) {
+          correctChoices = kunci.kunci_jawaban.map((c: any) => String(c).trim().toUpperCase());
+        } else if (typeof kunci.kunci_jawaban === "object" && kunci.kunci_jawaban !== null) {
+          const val = (kunci.kunci_jawaban as any).pilihan_benar;
+          correctChoices = (Array.isArray(val) ? val : [val])
+            .map((c: any) => String(c).trim().toUpperCase())
+            .filter(Boolean);
+        } else if (typeof (kunci.kunci_jawaban as any) === "string") {
+          correctChoices = String(kunci.kunci_jawaban)
+            .toUpperCase()
+            .split(/[^A-E]/)
+            .filter(Boolean);
+        }
 
         // Exact match of all selected answers
         const isExactMatch =
@@ -1001,7 +1025,24 @@ export class CbtRepository {
         const studentText = String(Array.isArray(parsedAns) ? parsedAns[0] : parsedAns)
           .trim()
           .toLowerCase();
-        const isCorrect = kunci.kunci_jawaban.some((k) => k.trim().toLowerCase() === studentText);
+
+        let validKeywords: string[] = [];
+        if (Array.isArray(kunci.kunci_jawaban)) {
+          validKeywords = kunci.kunci_jawaban.map((k: any) => String(k).trim().toLowerCase());
+        } else if (typeof kunci.kunci_jawaban === "object" && kunci.kunci_jawaban !== null) {
+          const kw =
+            (kunci.kunci_jawaban as any).kata_kunci || (kunci.kunci_jawaban as any).kunci_jawaban;
+          validKeywords = (Array.isArray(kw) ? kw : [kw])
+            .map((k: any) => String(k).trim().toLowerCase())
+            .filter(Boolean);
+        } else if (typeof (kunci.kunci_jawaban as any) === "string") {
+          validKeywords = String(kunci.kunci_jawaban)
+            .split(",")
+            .map((k: string) => k.trim().toLowerCase())
+            .filter(Boolean);
+        }
+
+        const isCorrect = validKeywords.some((k) => k === studentText);
 
         if (isCorrect) {
           totalBenar++;
@@ -1058,7 +1099,7 @@ export class CbtRepository {
           apakah_benar: matchedCount === totalPairs,
           skor_diperoleh: roundedEarned,
         });
-      } else if (kunci.tipe_soal === "ESAI") {
+      } else if (kunci.tipe_soal === "ESAI" || kunci.tipe_soal === "URAIAN_ESAI") {
         hasEssay = true;
       }
     });

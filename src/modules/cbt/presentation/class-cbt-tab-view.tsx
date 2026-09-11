@@ -65,39 +65,30 @@ export function ClassCbtTabView({
   const [isBankModalOpen, setIsBankModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedResultsExamId, setSelectedResultsExamId] = useState<string | null>(null);
+  const [confirmActionTarget, setConfirmActionTarget] = useState<{
+    type: "PUBLISH" | "ARCHIVE";
+    ujianId: string;
+    judul: string;
+  } | null>(null);
 
-  const handlePublish = (ujianId: string) => {
-    if (
-      !confirm(
-        "Publikasikan ujian ini? Snapshot butir soal akan dibekukan secara permanen (immutable) untuk menjaga konsistensi nilai."
-      )
-    ) {
-      return;
-    }
+  const handleConfirmAction = () => {
+    if (!confirmActionTarget) return;
+    const { type, ujianId } = confirmActionTarget;
 
     startTransition(async () => {
-      const res = await publishExamAction(ujianId, penugasanId);
-      if (res.success) {
-        onShowToast(res.message, "success");
-        onRefresh();
+      let res: { success: boolean; message?: string };
+      if (type === "PUBLISH") {
+        res = await publishExamAction(ujianId, penugasanId);
       } else {
-        onShowToast(res.message, "error");
+        res = await archiveExamAction(ujianId, penugasanId);
       }
-    });
-  };
 
-  const handleArchive = (ujianId: string) => {
-    if (!confirm("Arsipkan ujian ini? Siswa tidak akan dapat mengakses ujian lagi.")) {
-      return;
-    }
-
-    startTransition(async () => {
-      const res = await archiveExamAction(ujianId, penugasanId);
       if (res.success) {
-        onShowToast(res.message, "success");
+        onShowToast(res.message || "Aksi berhasil.", "success");
+        setConfirmActionTarget(null);
         onRefresh();
       } else {
-        onShowToast(res.message, "error");
+        onShowToast(res.message || "Aksi gagal.", "error");
       }
     });
   };
@@ -331,7 +322,13 @@ export function ClassCbtTabView({
                   {canManage && isDraft && (
                     <button
                       type="button"
-                      onClick={() => handlePublish(exam.id)}
+                      onClick={() =>
+                        setConfirmActionTarget({
+                          type: "PUBLISH",
+                          ujianId: exam.id,
+                          judul: exam.judul,
+                        })
+                      }
                       disabled={isPending}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-2xs disabled:opacity-50"
                     >
@@ -357,7 +354,7 @@ export function ClassCbtTabView({
                           window.open(`/cbt/cetak/${exam.id}?penugasanId=${penugasanId}`, "_blank")
                         }
                         title="Cetak Naskah Soal Kertas A4 (Ujian Susulan / Cetak Fisik)"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition shadow-2xs"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition shadow-2xs"
                       >
                         <Printer className="h-3.5 w-3.5 text-slate-600" />
                         <span>Cetak A4</span>
@@ -374,7 +371,13 @@ export function ClassCbtTabView({
 
                       <button
                         type="button"
-                        onClick={() => handleArchive(exam.id)}
+                        onClick={() =>
+                          setConfirmActionTarget({
+                            type: "ARCHIVE",
+                            ujianId: exam.id,
+                            judul: exam.judul,
+                          })
+                        }
                         disabled={isPending}
                         title="Arsipkan Ujian"
                         className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition"
@@ -433,6 +436,91 @@ export function ClassCbtTabView({
           }}
           onError={(msg) => onShowToast(msg, "error")}
         />
+      )}
+
+      {/* Modal Konfirmasi Ujian CBT (Academic Glass UI) */}
+      {confirmActionTarget && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-cbt-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/80 p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div
+                className={`p-3.5 rounded-2xl border shrink-0 ${
+                  confirmActionTarget.type === "PUBLISH"
+                    ? "bg-emerald-50 border-emerald-100 text-emerald-600"
+                    : "bg-amber-50 border-amber-100 text-amber-600"
+                }`}
+              >
+                {confirmActionTarget.type === "PUBLISH" ? (
+                  <Play className="h-6 w-6" />
+                ) : (
+                  <Archive className="h-6 w-6" />
+                )}
+              </div>
+              <div className="space-y-1 text-left flex-1">
+                <h3 id="confirm-cbt-title" className="text-base font-bold text-slate-900">
+                  {confirmActionTarget.type === "PUBLISH"
+                    ? "Publikasikan Ujian CBT"
+                    : "Arsipkan Ujian CBT"}
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {confirmActionTarget.type === "PUBLISH"
+                    ? "Snapshot butir soal akan dibekukan secara permanen (immutable) untuk menjamin konsistensi dan integritas penilaian siswa."
+                    : "Siswa tidak akan dapat lagi mengakses ujian ini. Rekaman nilai dan riwayat pengerjaan tetap aman dan dapat dimonitor."}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <div className="text-xs font-semibold text-slate-800 line-clamp-2">
+                {confirmActionTarget.judul}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => setConfirmActionTarget(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={handleConfirmAction}
+                className={`px-4 py-2.5 rounded-xl text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2 ${
+                  confirmActionTarget.type === "PUBLISH"
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-slate-800 hover:bg-slate-900"
+                }`}
+              >
+                {isPending ? (
+                  <>
+                    <span className="inline-block h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  <>
+                    {confirmActionTarget.type === "PUBLISH" ? (
+                      <Play className="h-3.5 w-3.5" />
+                    ) : (
+                      <Archive className="h-3.5 w-3.5" />
+                    )}
+                    <span>
+                      {confirmActionTarget.type === "PUBLISH" ? "Ya, Publikasikan" : "Ya, Arsipkan"}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

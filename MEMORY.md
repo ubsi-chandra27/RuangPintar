@@ -32,16 +32,16 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 16 — GUARDIAN EXPERIENCE (M15)
+PHASE 18 — STUDENT MONITORING & HOMEROOM (M18)
 
 Current Phase Status:
-READY FOR HUMAN REVIEW
+IN PROGRESS
 
 Last Human-Approved Implementation Phase:
-PHASE 14 — CBT: COMPUTER BASED TEST (M14)
+PHASE 17 — COMMUNICATION & NOTIFICATION (M16 & M17)
 
-Phase 14 Official Human Approval:
-APPROVED BY HUMAN (5 September 2026)
+Phase 17 Official Human Approval:
+APPROVED BY HUMAN (11 September 2026)
 ```
 
 ---
@@ -761,5 +761,59 @@ Catatan implementasi Phase 16 (7 September 2026):
    - Next.js Production Build: 18 static & dynamic route pages compiled successfully.
    - Playwright Visual Walkthrough: 9 screenshot tersimpan di `docs/phases/screenshots/phase-16-walkthrough/`.
 6. **Status:**
-   - `READY FOR HUMAN REVIEW`.
+   - **APPROVED BY HUMAN (10 September 2026)**.
+
+---
+
+# 33. Implementasi Phase 17 — Communication & Notification (M16 & M17)
+
+Catatan penyelesaian Phase 17 (11 September 2026):
+1. **Pondasi Komunikasi & Notifikasi Resmi:** Menghadirkan portal pengumuman resmi (`/pengumuman`) dengan server-side audience filtering (`SEMUA`, `GURU`, `SISWA`, `WALI`, `ROMBEL`) dan notifikasi in-app live di Shell Topbar.
+2. **Kepatuhan Invariant Domain & Otorisasi:**
+   - `Announcement ≠ Notification ≠ Domain Source` diimplementasikan secara tegas.
+   - Fail-safe delivery: kegagalan outbox eksternal tidak membatalkan transaksi domain sumber (`FR-NOT-003`).
+   - Audit trail `recordAuditEvent` pada setiap mutasi pengumuman (buat, edit, arsip, hapus).
+3. **Database Schema & Migrasi:**
+   - Migrasi forward: `20260910190000_add_communication_and_notification`.
+   - 4 Model: `Pengumuman`, `SasaranPengumuman`, `NotifikasiPengguna`, `PreferensiNotifikasi`.
+4. **Presentation Layer (Academic Glass UI v1.2):**
+   - Live `NotificationEntry` popover di Shell Topbar dengan badge counter real-time.
+   - Halaman `/pengumuman` dengan filter kategori instan, kartu disematkan (*pinned*), dan dialog baca lengkap.
+   - Modal pembuatan pengumuman `CreateAnnouncementModal` dengan upload berkas lampiran.
+   - Rute kanonikal `/pengumuman` diaktifkan di `CANONICAL_NAVIGATION_CONFIG`.
+5. **Quality Gates & Bukti Visual:**
+   - Typecheck: 0 errors.
+   - ESLint: 0 errors.
+   - Prettier: 100% compliant.
+   - Vitest: 77 test files, 421 tests passed (100% PASS).
+   - Next.js Build: 19 route pages compiled successfully.
+   - Playwright Walkthrough: 9 screenshot tersimpan di `docs/phases/screenshots/phase-17-walkthrough/`.
+6. **Status:**
+   - **APPROVED BY HUMAN (11 September 2026)**.
+
+---
+
+# 34. Inisiasi PHASE 18 — STUDENT MONITORING & HOMEROOM (M18)
+
+Persetujuan resmi Phase 17 diberikan oleh Human Reviewer pada 11 September 2026. Milestone F (Student & Guardian Experience Ready) dinyatakan **APPROVED & LOCKED**.
+
+Inisiasi Phase 18 — Student Monitoring & Homeroom (M18):
+1. **Target:** Sistem monitoring komprehensif bagi wali kelas terhadap seluruh murid dalam rombel perwaliannya serta pusat perhatian dan tindak lanjut siswa (*Attention Center, Monitoring Notes & Follow-Up*).
+2. **Domain Invariant Wajib:**
+   ```text
+   M18 Student Monitoring ≠ Source of Truth
+   Student Indicator = Derived / Read Model (Attendance, Assignment, Assessment)
+   Monitoring Note & Follow-Up = Persistent M18 Entities
+   Wali Kelas ≠ Pemilik Nilai / Presensi Guru Lain (Wali kelas tidak otomatis dapat mengubah nilai/presensi guru mapel lain)
+   ```
+3. **Komponen Inti Deliverable:**
+   - Database Model: `CatatanMonitoring` & `TindakLanjutMonitoring` pada schema Prisma.
+   - Application & Domain Layer: `MonitoringRepository`, `MonitoringService`, agregasi indikator akademik/presensi/tugas siswa secara dinamis.
+   - Presentation Layer (Academic Glass UI v1.2):
+     - Dashboard Wali Kelas terdedikasi (`/wali-kelas` atau tab terpadu) dengan ringkasan rombel, KPI kehadiran, status tugas lintas mapel, dan distribusi capaian KKTP.
+     - Pusat Perhatian (*Attention Center*): Sorotan otomatis untuk siswa yang memerlukan intervensi (e.g. absensi tinggi, tugas belum selesai, nilai di bawah KKTP).
+     - Fitur Catatan Pembinaan & Tindak Lanjut (*Notes & Follow-Ups*): Form dialog pencatatan kasus, target tindakan, koordinasi BK / Orang Tua, dan status penyelesaian.
+   - Integrasi Navigasi: Rute `/wali-kelas` aktif untuk peran `TEACHER` yang memiliki penugasan wali kelas aktif (`penugasanWaliKelas`) serta Super Admin.
+
+
 

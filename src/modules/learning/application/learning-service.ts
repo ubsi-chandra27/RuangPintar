@@ -16,6 +16,7 @@ import {
   TujuanPembelajaranDTO,
   UpdateAdministrasiInput,
   UpdateLingkupMateriInput,
+  UpdateMateriInput,
   UpdateTujuanPembelajaranInput,
   AdministrasiPembelajaranDTO,
   DefinisiTugasDTO,
@@ -28,6 +29,7 @@ import {
   CreateTujuanPembelajaranSchema,
   UpdateAdministrasiSchema,
   UpdateLingkupMateriSchema,
+  UpdateMateriSchema,
   UpdateTujuanPembelajaranSchema,
 } from "../domain/learning-validation";
 import { LearningRepository, learningRepository } from "../infrastructure/learning-repository";
@@ -237,6 +239,29 @@ export class LearningService {
     return created;
   }
 
+  async updateMateri(
+    actorId: string,
+    actorRole: string,
+    id: string,
+    sekolahId: string,
+    input: UpdateMateriInput
+  ): Promise<MateriPembelajaranDTO> {
+    const validated = UpdateMateriSchema.parse(input);
+    const updated = await this.repository.updateMateri(id, validated);
+
+    await recordAuditEvent({
+      sekolah_id: sekolahId,
+      aktor_id: actorId,
+      aktor_role: actorRole,
+      tipe_sumber: "MATERI_PEMBELAJARAN",
+      id_sumber: id,
+      aksi: "UPDATE_MATERI",
+      payload_sesudah: updated as unknown as Record<string, unknown>,
+    });
+
+    return updated;
+  }
+
   async deleteMateri(
     actorId: string,
     actorRole: string,
@@ -321,6 +346,29 @@ export class LearningService {
     });
 
     return created;
+  }
+
+  async updateAdministrasi(
+    actorId: string,
+    actorRole: string,
+    id: string,
+    sekolahId: string,
+    input: UpdateAdministrasiInput
+  ): Promise<AdministrasiPembelajaranDTO> {
+    const validated = UpdateAdministrasiSchema.parse(input);
+    const updated = await this.repository.updateAdministrasi(id, validated);
+
+    await recordAuditEvent({
+      sekolah_id: sekolahId,
+      aktor_id: actorId,
+      aktor_role: actorRole,
+      tipe_sumber: "ADMINISTRASI_PEMBELAJARAN",
+      id_sumber: id,
+      aksi: "UPDATE_ADMINISTRASI",
+      payload_sesudah: updated as unknown as Record<string, unknown>,
+    });
+
+    return updated;
   }
 
   async deleteAdministrasi(

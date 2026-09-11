@@ -42,6 +42,15 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         iconName: "LayoutDashboard",
         roles: ["SUPER_ADMIN", "SCHOOL_STAFF", "TEACHER", "STUDENT", "GUARDIAN"],
       },
+      {
+        id: "announcements",
+        title: "Pengumuman",
+        href: "/pengumuman",
+        iconName: "Megaphone",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF", "TEACHER", "STUDENT", "GUARDIAN"],
+        requiredPermission: "communication.announcement.view",
+        isPhaseDeferred: false,
+      },
     ],
   },
 

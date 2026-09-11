@@ -6,6 +6,7 @@ import {
   Award,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   Sparkles,
   RotateCcw,
   Save,
@@ -83,6 +84,8 @@ export function InputGradesModal({
     };
   }, [isOpen, asesmenId, loadedAsesmenId, onClose, onError]);
 
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+
   if (!isOpen) return null;
 
   const kktp = asesmen?.kkm_kktp || 75;
@@ -122,10 +125,9 @@ export function InputGradesModal({
   };
 
   // Quick Action: Kosongkan nilai semua siswa
-  const resetAllGrades = () => {
-    if (confirm("Kosongkan seluruh nilai siswa pada lembar asesmen ini?")) {
-      setGrades((prev) => prev.map((g) => ({ ...g, nilai_angka: null, is_tercapai_kktp: null })));
-    }
+  const handleConfirmReset = () => {
+    setGrades((prev) => prev.map((g) => ({ ...g, nilai_angka: null, is_tercapai_kktp: null })));
+    setIsResetConfirmOpen(false);
   };
 
   // Simpan nilai (Draf atau Publish)
@@ -239,7 +241,7 @@ export function InputGradesModal({
             </button>
             <button
               type="button"
-              onClick={resetAllGrades}
+              onClick={() => setIsResetConfirmOpen(true)}
               className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-rose-300 hover:text-rose-600 font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5 text-rose-500" />
@@ -414,6 +416,51 @@ export function InputGradesModal({
           </div>
         </div>
       </div>
+
+      {/* Modal Konfirmasi Kosongkan Nilai (Academic Glass UI) */}
+      {isResetConfirmOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reset-grades-title"
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-rose-100 p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 shrink-0">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div className="space-y-1 text-left flex-1">
+                <h3 id="reset-grades-title" className="text-base font-bold text-slate-900">
+                  Kosongkan Seluruh Nilai
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Apakah Anda yakin ingin mengosongkan seluruh isian nilai siswa pada lembar asesmen
+                  ini? Perubahan belum tersimpan permanen sebelum Anda menekan Simpan.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsResetConfirmOpen(false)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmReset}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center gap-2"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Ya, Kosongkan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,2000 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Hadir Siswa - Kelas X TO 3 (SMK OTOMINDO)</title>
+    <style>
+      :root {
+        --primary: #0284c7;
+        --primary-dark: #0369a1;
+        --navy: #0f172a;
+        --border-color: #cbd5e1;
+        --bg-header: #f1f5f9;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          "Segoe UI",
+          -apple-system,
+          BlinkMacSystemFont,
+          Roboto,
+          sans-serif;
+        color: #1e293b;
+        background: #f8fafc;
+        padding: 24px;
+        font-size: 11px;
+      }
+
+      /* Screen Action Bar */
+      .action-bar {
+        max-width: 1120px;
+        margin: 0 auto 20px auto;
+        background: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .action-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .action-subtitle {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s ease-in-out;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: #0284c7;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0369a1;
+      }
+
+      .btn-outline {
+        background: white;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+      }
+
+      .btn-outline:hover {
+        background: #f1f5f9;
+      }
+
+      /* Sheet Container (A4 Landscape Preview) */
+      .sheet-wrapper {
+        max-width: 1120px;
+        margin: 0 auto;
+        background: white;
+        padding: 28px 32px;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e2e8f0;
+      }
+
+      /* Header Section */
+      .sheet-header {
+        text-align: center;
+        border-bottom: 2px solid #0f172a;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+        position: relative;
+      }
+
+      .school-title {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #0f172a;
+        text-transform: uppercase;
+      }
+
+      .doc-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-top: 4px;
+        color: #1e293b;
+        letter-spacing: 0.3px;
+      }
+
+      .academic-info {
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        margin-top: 2px;
+      }
+
+      /* Meta Details Grid */
+      .meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 6px;
+        column-gap: 24px;
+        margin-bottom: 14px;
+        font-size: 11.5px;
+      }
+
+      .meta-row {
+        display: flex;
+      }
+
+      .meta-label {
+        width: 130px;
+        font-weight: 600;
+        color: #334155;
+      }
+
+      .meta-value {
+        flex: 1;
+        color: #0f172a;
+        font-weight: 500;
+      }
+
+      /* Main Table */
+      .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        table-layout: fixed;
+      }
+
+      .attendance-table th,
+      .attendance-table td {
+        border: 1px solid #475569;
+        padding: 4px 3px;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .attendance-table th {
+        background-color: #f1f5f9;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .col-no {
+        width: 28px;
+      }
+      .col-nis {
+        width: 62px;
+        font-family: monospace;
+        font-size: 9.5px;
+      }
+      .col-nama {
+        width: 195px;
+        text-align: left !important;
+        padding-left: 6px !important;
+      }
+      .col-lp {
+        width: 24px;
+      }
+      .col-day {
+        width: 20px;
+      }
+      .col-rekap {
+        width: 22px;
+      }
+      .col-pct {
+        width: 34px;
+      }
+
+      .attendance-table tbody tr:hover {
+        background-color: #f8fafc;
+      }
+
+      .student-crossed {
+        background-color: #fef2f2 !important;
+        color: #991b1b;
+        text-decoration: line-through;
+      }
+
+      .badge-status {
+        display: inline-block;
+        font-size: 8px;
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: #fee2e2;
+        color: #991b1b;
+        font-weight: 700;
+        text-decoration: none !important;
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+
+      .footer-note {
+        margin-top: 10px;
+        font-size: 10px;
+        color: #64748b;
+        font-style: italic;
+      }
+
+      /* Signatures */
+      .signature-section {
+        margin-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        page-break-inside: avoid;
+        font-size: 11px;
+      }
+
+      .sig-box {
+        text-align: center;
+        width: 220px;
+      }
+
+      .sig-space {
+        height: 55px;
+      }
+
+      .sig-name {
+        font-weight: 700;
+        text-decoration: underline;
+        color: #0f172a;
+      }
+
+      .sig-nip {
+        color: #475569;
+        font-size: 10px;
+        margin-top: 2px;
+      }
+
+      /* Print Optimizations (A4 Landscape) */
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+          margin: 0;
+          font-size: 9.5px;
+        }
+
+        .action-bar {
+          display: none !important;
+        }
+
+        .sheet-wrapper {
+          border: none;
+          box-shadow: none;
+          padding: 0;
+          max-width: 100%;
+          margin: 0;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+          border: 1px solid black !important;
+          padding: 3px 2px;
+        }
+
+        .attendance-table th {
+          background-color: #f0f0f0 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .student-crossed {
+          background-color: #f0f0f0 !important;
+          color: #333 !important;
+          text-decoration: line-through;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        @page {
+          size: A4 landscape;
+          margin: 8mm 10mm;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Screen Action Bar (hidden on print) -->
+    <div class="action-bar">
+      <div>
+        <div class="action-title">Lembar Presensi Peserta Didik — Kelas X TO 3</div>
+        <div class="action-subtitle">
+          SMK OTOMINDO • Semester Ganjil TA 2026/2027 • Roster Sumber Foto
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="toggleCrossedStudents()">
+          👁️ Sembunyikan/Tampilkan Siswa Mutasi
+        </button>
+        <a href="absen-x-to-3.csv" download="absen-x-to-3.csv" class="btn btn-outline">
+          📥 Unduh CSV
+        </a>
+        <button class="btn btn-primary" onclick="window.print()">
+          🖨️ Cetak Lembar Presensi (PDF / Print)
+        </button>
+      </div>
+    </div>
+
+    <!-- Sheet Container -->
+    <div class="sheet-wrapper">
+      <!-- Header -->
+      <div class="sheet-header">
+        <div class="school-title">SMK OTOMINDO JAKARTA</div>
+        <div class="doc-title">DAFTAR HADIR PESERTA DIDIK (PRESENSI KELAS)</div>
+        <div class="academic-info">TAHUN AJARAN 2026/2027 — SEMESTER GANJIL</div>
+      </div>
+
+      <!-- Metadata Information -->
+      <div class="meta-grid">
+        <div>
+          <div class="meta-row">
+            <span class="meta-label">Kelas / Rombel</span>
+            <span class="meta-value">: <strong>X TO 3</strong> (X TKRO 3)</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Program Keahlian</span>
+            <span class="meta-value">: Teknik Otomotif (TKRO)</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Wali Kelas</span>
+            <span class="meta-value">: <strong>Marhanih</strong></span>
+          </div>
+        </div>
+        <div>
+          <div class="meta-row">
+            <span class="meta-label">Mata Pelajaran</span>
+            <span class="meta-value"
+              >: ..............................................................</span
+            >
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Guru Pengampu</span>
+            <span class="meta-value"
+              >: ..............................................................</span
+            >
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Bulan / Periode</span>
+            <span class="meta-value">: ...................................... 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th rowspan="2" class="col-no">No</th>
+            <th rowspan="2" class="col-nis">NIS</th>
+            <th rowspan="2" class="col-nama">Nama Peserta Didik</th>
+            <th rowspan="2" class="col-lp">L/P</th>
+            <th colspan="25">Pertemuan / Tanggal</th>
+            <th colspan="4">Rekapitulasi</th>
+            <th rowspan="2" class="col-pct">%</th>
+          </tr>
+          <tr>
+            <!-- 25 Kolom Pertemuan -->
+            <th class="col-day">1</th>
+            <th class="col-day">2</th>
+            <th class="col-day">3</th>
+            <th class="col-day">4</th>
+            <th class="col-day">5</th>
+            <th class="col-day">6</th>
+            <th class="col-day">7</th>
+            <th class="col-day">8</th>
+            <th class="col-day">9</th>
+            <th class="col-day">10</th>
+            <th class="col-day">11</th>
+            <th class="col-day">12</th>
+            <th class="col-day">13</th>
+            <th class="col-day">14</th>
+            <th class="col-day">15</th>
+            <th class="col-day">16</th>
+            <th class="col-day">17</th>
+            <th class="col-day">18</th>
+            <th class="col-day">19</th>
+            <th class="col-day">20</th>
+            <th class="col-day">21</th>
+            <th class="col-day">22</th>
+            <th class="col-day">23</th>
+            <th class="col-day">24</th>
+            <th class="col-day">25</th>
+            <!-- Rekap -->
+            <th class="col-rekap">S</th>
+            <th class="col-rekap">I</th>
+            <th class="col-rekap">A</th>
+            <th class="col-rekap">H</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="col-nis">20261217</td>
+            <td class="col-nama">Ahmad Fatoni</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="col-nis">20261218</td>
+            <td class="col-nama">Alif Adhitya Dirgantara</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="col-nis">20261219</td>
+            <td class="col-nama">Andika Rizky Ramadhan</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="col-nis">20261220</td>
+            <td class="col-nama">Ayzicho Aulia Supriyanto</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="student-crossed student-row-crossed">
+            <td>5</td>
+            <td class="col-nis">20261221</td>
+            <td class="col-nama">
+              Bayu Adji Setiawan <span class="badge-status">MUTASI / KELUAR</span>
+            </td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td class="col-nis">20261222</td>
+            <td class="col-nama">David Rama Dhani</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td class="col-nis">20261223</td>
+            <td class="col-nama">Dzakky Dwi Putra</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td class="col-nis">20261224</td>
+            <td class="col-nama">Fachry Azka Fauzan</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td class="col-nis">20261225</td>
+            <td class="col-nama">Farel Ardiyansyah</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td class="col-nis">20261226</td>
+            <td class="col-nama">Faris Rafka Alkahfi</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td class="col-nis">20261227</td>
+            <td class="col-nama">Fathir Faturrahman</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td class="col-nis">20261228</td>
+            <td class="col-nama">Galih Linggar Ramadhan</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td class="col-nis">20261229</td>
+            <td class="col-nama">Galuh Sadewo</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td class="col-nis">20261230</td>
+            <td class="col-nama">Herdy Zuan Key</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td class="col-nis">20261231</td>
+            <td class="col-nama">Ibrahim</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td class="col-nis">20261232</td>
+            <td class="col-nama">M Firza Tulloh</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td class="col-nis">20261233</td>
+            <td class="col-nama">Maritza Hamizan Mahkrus</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td class="col-nis">20261234</td>
+            <td class="col-nama">Maulana Ibrahim</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td class="col-nis">20261235</td>
+            <td class="col-nama">Maulana Malik Ibrahim</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td class="col-nis">20261236</td>
+            <td class="col-nama">Mohamad Alfazani</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td class="col-nis">20261237</td>
+            <td class="col-nama">Muhammad Arsya Wijaya</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td class="col-nis">20261238</td>
+            <td class="col-nama">Muhammad Alfa Rizky Aditya</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="student-crossed student-row-crossed">
+            <td>23</td>
+            <td class="col-nis">20261239</td>
+            <td class="col-nama">
+              Muhammad Dimas Pranoto <span class="badge-status">MUTASI / KELUAR</span>
+            </td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td class="col-nis">20261240</td>
+            <td class="col-nama">Muhammad Fahri Amruhu Fathur</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td class="col-nis">20261241</td>
+            <td class="col-nama">Muhammad Kahfi Fadlyansyah</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td class="col-nis">20261242</td>
+            <td class="col-nama">Muhammad Rafa Al Farizi</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td class="col-nis">20261243</td>
+            <td class="col-nama">Muhammad Razka Aryadi</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>28</td>
+            <td class="col-nis">20261244</td>
+            <td class="col-nama">Muhammad Safaat</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>29</td>
+            <td class="col-nis">20261245</td>
+            <td class="col-nama">Naufal Halil Pradipta</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>30</td>
+            <td class="col-nis">20261246</td>
+            <td class="col-nama">Putra Ramadhan</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>31</td>
+            <td class="col-nis">20261247</td>
+            <td class="col-nama">Raffi Aldiansyah</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>32</td>
+            <td class="col-nis">20261248</td>
+            <td class="col-nama">Ridho Pratama</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>33</td>
+            <td class="col-nis">20261249</td>
+            <td class="col-nama">Rizky Jaka Jaladara</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>34</td>
+            <td class="col-nis">20261250</td>
+            <td class="col-nama">Satrio Wicaksono</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>35</td>
+            <td class="col-nis">20261251</td>
+            <td class="col-nama">Tedy Maulana</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>36</td>
+            <td class="col-nis">20261252</td>
+            <td class="col-nama">Yoghi Fauzan Azima</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>37</td>
+            <td class="col-nis">20261253</td>
+            <td class="col-nama">Yudha Rhafa Hidayat</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>38</td>
+            <td class="col-nis">20261254</td>
+            <td class="col-nama">Zulkifli Amin</td>
+            <td>L</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr style="font-weight: 700; background: #f8fafc">
+            <td colspan="4" style="text-align: right; padding-right: 8px">Jumlah Hadir (H)</td>
+            <!-- 25 kolom -->
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="background: #e2e8f0"></td>
+          </tr>
+          <tr style="font-weight: 700; background: #f8fafc">
+            <td colspan="4" style="text-align: right; padding-right: 8px">Jumlah Sakit (S)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="background: #e2e8f0"></td>
+          </tr>
+          <tr style="font-weight: 700; background: #f8fafc">
+            <td colspan="4" style="text-align: right; padding-right: 8px">Jumlah Izin (I)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="background: #e2e8f0"></td>
+          </tr>
+          <tr style="font-weight: 700; background: #f8fafc">
+            <td colspan="4" style="text-align: right; padding-right: 8px">Jumlah Alpa (A)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="background: #e2e8f0"></td>
+          </tr>
+          <tr style="font-weight: 800; background: #f1f5f9">
+            <td colspan="4" style="text-align: right; padding-right: 8px">
+              Persentase Kehadiran (%)
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="background: #cbd5e1"></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="footer-note">
+        * Catatan: Baris No. 5 (Bayu Adji Setiawan) dan No. 23 (Muhammad Dimas Pranoto) ditandai
+        coret (mutasi/pindah) sesuai fisik berkas absen. Total siswa aktif: 36 siswa.
+      </div>
+
+      <!-- Signatures -->
+      <div class="signature-section">
+        <div class="sig-box">
+          <div>Mengetahui,</div>
+          <div>Wali Kelas X TO 3</div>
+          <div class="sig-space"></div>
+          <div class="sig-name">Marhanih</div>
+          <div class="sig-nip">NIP. -</div>
+        </div>
+        <div class="sig-box">
+          <div>Jakarta, .............................. 2026</div>
+          <div>Guru Mata Pelajaran,</div>
+          <div class="sig-space"></div>
+          <div class="sig-name">( ............................................ )</div>
+          <div class="sig-nip">NIP. -</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let hideCrossed = false;
+      function toggleCrossedStudents() {
+        hideCrossed = !hideCrossed;
+        const rows = document.querySelectorAll(".student-row-crossed");
+        rows.forEach((r) => {
+          r.style.display = hideCrossed ? "none" : "";
+        });
+      }
+    </script>
+  </body>
+</html>

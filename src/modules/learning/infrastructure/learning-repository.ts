@@ -564,6 +564,45 @@ export class LearningRepository {
     };
   }
 
+  async updateMateri(id: string, input: UpdateMateriInput): Promise<MateriPembelajaranDTO> {
+    const updated = await prisma.materiPembelajaran.update({
+      where: { id },
+      data: {
+        lingkup_materi_id: input.lingkup_materi_id,
+        judul: input.judul,
+        deskripsi: input.deskripsi,
+        tipe_konten: input.tipe_konten,
+        konten_teks: input.konten_teks,
+        tautan_url: input.tautan_url,
+        berkas_id: input.berkas_id,
+        status: input.status,
+      },
+      include: {
+        lingkup_materi: true,
+        mata_pelajaran: true,
+      },
+    });
+
+    return {
+      id: updated.id,
+      sekolah_id: updated.sekolah_id,
+      guru_id: updated.guru_id,
+      lingkup_materi_id: updated.lingkup_materi_id,
+      lingkup_materi_judul: updated.lingkup_materi?.judul || null,
+      mata_pelajaran_id: updated.mata_pelajaran_id,
+      mata_pelajaran_nama: updated.mata_pelajaran?.nama || null,
+      judul: updated.judul,
+      deskripsi: updated.deskripsi,
+      tipe_konten: updated.tipe_konten as any,
+      konten_teks: updated.konten_teks,
+      tautan_url: updated.tautan_url,
+      berkas_id: updated.berkas_id,
+      status: updated.status as any,
+      created_at: updated.created_at,
+      updated_at: updated.updated_at,
+    };
+  }
+
   async deleteMateri(id: string): Promise<void> {
     await prisma.materiPembelajaran.delete({
       where: { id },
@@ -695,6 +734,66 @@ export class LearningRepository {
       status_realisasi: created.status_realisasi as any,
       created_at: created.created_at,
       updated_at: created.updated_at,
+      tp_ids: input.tp_ids,
+    };
+  }
+
+  async updateAdministrasi(
+    id: string,
+    input: UpdateAdministrasiInput
+  ): Promise<AdministrasiPembelajaranDTO> {
+    const updated = await prisma.$transaction(async (tx) => {
+      const adm = await tx.administrasiPembelajaran.update({
+        where: { id },
+        data: {
+          tanggal: input.tanggal ? new Date(input.tanggal) : undefined,
+          pertemuan_ke: input.pertemuan_ke,
+          materi_disampaikan: input.materi_disampaikan,
+          kegiatan_pembelajaran: input.kegiatan_pembelajaran,
+          catatan_refleksi: input.catatan_refleksi,
+          status_realisasi: input.status_realisasi,
+        },
+        include: {
+          guru: true,
+        },
+      });
+
+      if (input.tp_ids !== undefined) {
+        await tx.administrasiTujuanPembelajaran.deleteMany({
+          where: { administrasi_id: id },
+        });
+
+        if (input.tp_ids && input.tp_ids.length > 0) {
+          for (const tpId of input.tp_ids) {
+            await tx.administrasiTujuanPembelajaran.create({
+              data: {
+                id: generateUlid(),
+                administrasi_id: id,
+                tp_id: tpId,
+              },
+            });
+          }
+        }
+      }
+
+      return adm;
+    });
+
+    return {
+      id: updated.id,
+      sekolah_id: updated.sekolah_id,
+      penugasan_mengajar_id: updated.penugasan_mengajar_id,
+      sesi_kelas_aktual_id: updated.sesi_kelas_aktual_id,
+      guru_id: updated.guru_id,
+      guru_nama: updated.guru.nama_lengkap,
+      tanggal: updated.tanggal,
+      pertemuan_ke: updated.pertemuan_ke,
+      materi_disampaikan: updated.materi_disampaikan,
+      kegiatan_pembelajaran: updated.kegiatan_pembelajaran,
+      catatan_refleksi: updated.catatan_refleksi,
+      status_realisasi: updated.status_realisasi as any,
+      created_at: updated.created_at,
+      updated_at: updated.updated_at,
       tp_ids: input.tp_ids,
     };
   }

@@ -33,6 +33,7 @@ import {
   RefreshCw,
   Eye,
   Key,
+  Copy,
 } from "lucide-react";
 import {
   BankSoalDTO,
@@ -51,6 +52,7 @@ import {
 import {
   parseSpreadsheetText,
   generateCsvTemplate,
+  generateComprehensiveCsvTemplate,
   ParsedBulkQuestion,
 } from "../infrastructure/cbt-bulk-import-parser";
 
@@ -102,6 +104,10 @@ export function QuestionBankModal({
   // Bulk Import State
   const [rawSpreadsheetText, setRawSpreadsheetText] = useState("");
   const [bulkParsedList, setBulkParsedList] = useState<ParsedBulkQuestion[]>([]);
+  const [guideQuestionType, setGuideQuestionType] = useState<
+    "PG" | "PG_KOMPLEKS" | "BENAR_SALAH" | "MENJODOHKAN" | "ISIAN_SINGKAT" | "URAIAN_ESAI"
+  >("PG");
+  const [copiedRowKey, setCopiedRowKey] = useState<string | null>(null);
 
   // AI Generator State
   const [aiTopik, setAiTopik] = useState("");
@@ -392,16 +398,43 @@ export function QuestionBankModal({
     onShowToast(`Berhasil membaca ${parsed.length} butir soal dari spreadsheet.`, "success");
   };
 
-  const handleDownloadTemplate = () => {
-    const csvContent = generateCsvTemplate();
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const handleDownloadTemplate = (
+    formatType: "excel_semicolon" | "standard_csv" | "tsv" = "excel_semicolon"
+  ) => {
+    let delimiter: ";" | "," | "\t" = ";";
+    let filename = "template_bank_soal_cbt_excel.csv";
+    let mime = "text/csv;charset=utf-8;";
+
+    if (formatType === "standard_csv") {
+      delimiter = ",";
+      filename = "template_bank_soal_cbt_standard.csv";
+    } else if (formatType === "tsv") {
+      delimiter = "\t";
+      filename = "template_bank_soal_cbt_paste.txt";
+      mime = "text/plain;charset=utf-8;";
+    }
+
+    const csvContent = generateComprehensiveCsvTemplate(delimiter);
+    // Prepend UTF-8 BOM (\uFEFF) so Microsoft Excel displays characters and splits columns properly!
+    const blob = new Blob(["\uFEFF" + csvContent], { type: mime });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "template_bank_soal_cbt.csv");
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    onShowToast(
+      `Template (${filename}) berhasil diunduh. Siap dibuka di Microsoft Excel!`,
+      "success"
+    );
+  };
+
+  const handleCopySampleRow = (type: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedRowKey(type);
+    onShowToast("Contoh baris format disalin ke clipboard! Siap ditempel di Excel.", "success");
+    setTimeout(() => setCopiedRowKey(null), 2500);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -439,6 +472,26 @@ export function QuestionBankModal({
             urutan: idx + 1,
           }));
           kunciPayload = { pilihan_benar: q.kunci_benar };
+        } else if (q.tipe_soal === "PILIHAN_GANDA_KOMPLEKS") {
+          opsiPayload = q.opsi.map((o, idx) => ({
+            label: o.label,
+            teks: o.teks,
+            urutan: idx + 1,
+          }));
+          const correctLabels = q.opsi.filter((o) => o.isCorrect).map((o) => o.label);
+          kunciPayload = {
+            pilihan_benar:
+              correctLabels.length > 0
+                ? correctLabels
+                : q.kunci_benar.split(/[^A-E]/).filter(Boolean),
+          };
+        } else if (q.tipe_soal === "BENAR_SALAH") {
+          opsiPayload = q.opsi.map((o, idx) => ({
+            label: o.label,
+            teks: o.teks,
+            urutan: idx + 1,
+          }));
+          kunciPayload = { pilihan_benar: q.kunci_benar.startsWith("B") ? "B" : "A" };
         } else if (q.tipe_soal === "MENJODOHKAN") {
           const pairs = q.pasangan_menjodohkan || [
             { id: "1", premis: q.pertanyaan, target: q.kunci_benar },
@@ -454,14 +507,17 @@ export function QuestionBankModal({
             pairMap[p.id || p.premis] = p.target;
           });
           kunciPayload = { pasangan: pairMap, daftar_pasangan: pairs };
-        } else if (q.tipe_soal === "URAIAN_ESAI") {
+        } else if (q.tipe_soal === "URAIAN_ESAI" || q.tipe_soal === "ESAI") {
           kunciPayload = {
             rubrik_penilaian: q.rubrik_esai || q.kunci_benar || "Penilaian manual oleh guru.",
             pedoman_penskoran: `Skor maksimal ${q.bobot || 4}`,
           };
         } else if (q.tipe_soal === "ISIAN_SINGKAT") {
           kunciPayload = {
-            kata_kunci: [q.kunci_benar],
+            kata_kunci: q.kunci_benar
+              .split(",")
+              .map((k) => k.trim())
+              .filter(Boolean),
             case_sensitive: false,
           };
         }
@@ -1159,42 +1215,331 @@ export function QuestionBankModal({
           {activeTab === "EXCEL_IMPORT" && (
             <div className="space-y-6">
               {/* Instructions & Template Download */}
-              <div className="p-4 bg-blue-50/60 border border-blue-200/80 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <FileSpreadsheet className="h-5 w-5 text-blue-600" />
-                    <h3 className="text-xs font-bold text-blue-900">
-                      Format Kolom Spreadsheet Standar
-                    </h3>
+              <div className="p-4 bg-blue-50/60 border border-blue-200/80 rounded-2xl space-y-4">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs">
+                      <FileSpreadsheet className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-blue-950">
+                        Format Kolom & Panduan Import Spreadsheet
+                      </h3>
+                      <p className="text-[11px] text-blue-700">
+                        Mendukung Pilihan Ganda, PG Kompleks, Benar/Salah, Menjodohkan, Isian
+                        Singkat, dan Esai.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-blue-700 leading-relaxed">
-                    Format:{" "}
-                    <code className="font-mono font-bold bg-blue-100 px-1 py-0.5 rounded text-blue-800">
-                      No | Soal | Pilihan A | Pilihan B | Pilihan C | Pilihan D | Pilihan E |
-                      Tingkat Kesulitan | Jawaban Benar
-                    </code>
-                    .
-                    <br />
-                    Tingkat Kesulitan: C1-C2 (Mudah), C3-C4 (Sedang), C5-C6/HOTS (HOTS).
-                  </p>
+
+                  {/* Download Options */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadTemplate("excel_semicolon")}
+                      title="Format titik koma (;) dengan UTF-8 BOM, terbuka otomatis rapi di Microsoft Excel"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-xs hover:bg-blue-700 transition shrink-0"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Unduh CSV (Excel Indonesia)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadTemplate("standard_csv")}
+                      title="Format standar pemisah koma (,) untuk Google Sheets & CSV umum"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-bold transition shrink-0"
+                    >
+                      <Download className="h-3.5 w-3.5 text-blue-500" />
+                      CSV Standar (Koma)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadTemplate("tsv")}
+                      title="Format tab separated untuk langsung copy/paste ke Excel atau Google Sheets"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition shrink-0"
+                    >
+                      <Download className="h-3.5 w-3.5 text-slate-500" />
+                      TSV (Tab)
+                    </button>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleDownloadTemplate}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-bold shadow-2xs shrink-0 transition"
-                >
-                  <Download className="h-4 w-4" />
-                  Unduh Template CSV
-                </button>
+
+                {/* Question Type Interactive Selector */}
+                <div className="pt-2 border-t border-blue-100">
+                  <p className="text-[11px] font-bold text-blue-900 mb-2">
+                    Pilih Jenis Soal untuk Melihat Susunan Kolom & Contoh Format:
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[
+                      { key: "PG", label: "Pilihan Ganda" },
+                      { key: "PG_KOMPLEKS", label: "PG Kompleks" },
+                      { key: "BENAR_SALAH", label: "Benar / Salah" },
+                      { key: "MENJODOHKAN", label: "Menjodohkan" },
+                      { key: "ISIAN_SINGKAT", label: "Isian Singkat" },
+                      { key: "URAIAN_ESAI", label: "Uraian / Esai" },
+                    ].map((tab) => (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => setGuideQuestionType(tab.key as any)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                          guideQuestionType === tab.key
+                            ? "bg-blue-700 text-white shadow-2xs"
+                            : "bg-white/80 border border-blue-200/70 text-blue-800 hover:bg-white"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Format Detail Box */}
+                  <div className="mt-3 p-3 bg-white rounded-xl border border-blue-200/80 space-y-2">
+                    {guideQuestionType === "PG" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Pilihan Ganda Tunggal
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "PG",
+                                "1\tBagian sel yang berfungsi sebagai pusat pengendali kegiatan sel adalah...\tSitoplasma\tNukleus (Inti Sel)\tMitokondria\tRibosom\tBadan Golgi\tC1\tB\t2"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "PG" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-blue-900 bg-blue-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Soal | Pilihan A | Pilihan B | Pilihan C | Pilihan D | Pilihan E |
+                            Tingkat Kesulitan | Jawaban Benar | Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • <strong>Jawaban Benar:</strong> Cukup 1 huruf opsi benar (A, B, C, D,
+                          atau E).
+                          <br />• <strong>Tingkat Kesulitan:</strong> C1-C2 (Mudah), C3-C4 (Sedang),
+                          C5-C6 / HOTS.
+                          <br />• <strong>Opsi:</strong> Minimal 2 opsi (A dan B), maksimal 5 opsi
+                          (A s.d E).
+                        </p>
+                      </>
+                    )}
+
+                    {guideQuestionType === "PG_KOMPLEKS" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Pilihan Ganda Kompleks (Multiple Correct Answers)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "PG_KOMPLEKS",
+                                "1\tManakah pernyataan berikut yang benar mengenai sel prokariotik?\tTidak memiliki membran inti\tMemiliki mitokondria\tMateri genetik berada di nukleoid\tMemiliki dinding sel peptidoglikan\tMemiliki retikulum endoplasma\tC4\tA, C, D\t3"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "PG_KOMPLEKS" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-blue-900 bg-blue-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Soal | Pilihan A | Pilihan B | Pilihan C | Pilihan D | Pilihan E |
+                            Tingkat Kesulitan | Jawaban Benar | Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • <strong>Jawaban Benar:</strong> Tuliskan semua opsi benar dipisahkan
+                          koma (contoh:{" "}
+                          <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">A, C</code>{" "}
+                          atau{" "}
+                          <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">
+                            A, C, D
+                          </code>
+                          ).
+                          <br />• Sistem otomatis menandai butir sebagai Pilihan Ganda Kompleks.
+                        </p>
+                      </>
+                    )}
+
+                    {guideQuestionType === "BENAR_SALAH" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Benar / Salah
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "BENAR_SALAH",
+                                "1\tRibosom berperan dalam proses sintesis protein.\tBENAR\tC1\t1"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "BENAR_SALAH" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-blue-900 bg-blue-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Pernyataan | Jawaban Benar (BENAR / SALAH) | Tingkat Kesulitan |
+                            Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • <strong>Jawaban Benar:</strong> Tuliskan{" "}
+                          <code className="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded font-bold">
+                            BENAR
+                          </code>{" "}
+                          atau{" "}
+                          <code className="bg-rose-100 text-rose-800 px-1 py-0.5 rounded font-bold">
+                            SALAH
+                          </code>{" "}
+                          (bisa juga B / S atau TRUE / FALSE).
+                          <br />• Siswa akan diberikan 2 opsi interaktif di layar ujian: A. Benar,
+                          B. Salah.
+                        </p>
+                      </>
+                    )}
+
+                    {guideQuestionType === "MENJODOHKAN" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Menjodohkan (Matching Pairs)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "MENJODOHKAN",
+                                "1\tFitoplankton & Tumbuhan Hijau\tProdusen Primer (Autotrof)\tKonsumen Tersier\tC2\t2"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "MENJODOHKAN" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-purple-900 bg-purple-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Pertanyaan (Premis Kiri) | Jawaban Benar (Target Kanan) | Pengecoh
+                            (Opsional) | Tingkat Kesulitan | Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • <strong>Kolom Premis:</strong> Konsep/pernyataan di sisi kiri.
+                          <br />• <strong>Kolom Target:</strong> Pasangan yang benar di sisi kanan.
+                          <br />• <strong>Kolom Pengecoh (Opsional):</strong> Pilihan jawaban salah
+                          di sisi kanan sebagai pengacau.
+                          <br />• Sistem CBT secara otomatis mengacak susunan target kanan dan
+                          menilai secara proporsional.
+                        </p>
+                      </>
+                    )}
+
+                    {guideQuestionType === "ISIAN_SINGKAT" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Isian Singkat
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "ISIAN_SINGKAT",
+                                "1\tOrganel yang menghasilkan pigmen klorofil untuk fotosintesis adalah...\tKloroplas, Plastida\tC1\t2"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "ISIAN_SINGKAT" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-blue-900 bg-blue-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Pertanyaan / Soal Isian | Kunci Jawaban (Kata Kunci) | Tingkat
+                            Kesulitan | Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • Siswa mengetikkan jawaban singkat (case-insensitive).
+                          <br />• <strong>Kunci Jawaban:</strong> Tuliskan kata kunci yang benar.
+                          Jika ada variasi ejaan atau sinonim, pisahkan dengan koma (contoh:{" "}
+                          <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">
+                            Fotosintesis, Fotosintesa, Asimilasi Karbon
+                          </code>
+                          ).
+                        </p>
+                      </>
+                    )}
+
+                    {guideQuestionType === "URAIAN_ESAI" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-800">
+                            Format Kolom: Uraian / Esai
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCopySampleRow(
+                                "URAIAN_ESAI",
+                                "1\tJelaskan tahapan utama dalam siklus Calvin pada reaksi gelap fotosintesis!\tFiksasi CO2 oleh RuBP, Reduksi PGA menjadi PGAL, dan Regenerasi RuBP menggunakan ATP & NADPH\tC4\t4"
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            <Copy className="h-3 w-3" />
+                            {copiedRowKey === "URAIAN_ESAI" ? "Tersalin!" : "Salin Baris Contoh"}
+                          </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <code className="text-[11px] font-mono text-amber-900 bg-amber-50/70 px-2 py-1 rounded block whitespace-nowrap">
+                            No | Soal Esai | Pedoman Penilaian / Rubrik Jawaban | Tingkat Kesulitan
+                            | Bobot
+                          </code>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          • <strong>Pedoman Penilaian:</strong> Tuliskan kata kunci esensial atau
+                          rubrik jawaban yang menjadi panduan koreksi manual bagi guru.
+                          <br />• Bobot default esai biasanya 4 atau disesuaikan dengan tingkat
+                          kerumitan soal.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Upload File & Paste Area */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700">
-                    Unggah File CSV atau Tempel Data Spreadsheet
-                  </label>
-                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold cursor-pointer transition">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block">
+                      Unggah File CSV atau Tempel Data Spreadsheet
+                    </label>
+                    <p className="text-[11px] text-slate-400">
+                      Bisa langsung Copy baris dari Microsoft Excel / Google Sheets lalu Paste (Ctrl
+                      + V) di sini.
+                    </p>
+                  </div>
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold cursor-pointer transition shrink-0">
                     <Upload className="h-3.5 w-3.5 text-blue-600" />
                     Pilih File CSV
                     <input
@@ -1216,7 +1561,7 @@ export function QuestionBankModal({
 
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] text-slate-400">
-                    Sistem otomatis mendeteksi pemisah tab/titik koma/koma.
+                    Sistem otomatis mendeteksi pemisah tab / titik koma (;) / koma (,).
                   </p>
                   <button
                     type="button"
@@ -1235,11 +1580,11 @@ export function QuestionBankModal({
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-slate-800 flex items-center gap-2">
                       <span>Hasil Pratinjau Butir Soal</span>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px]">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold">
                         {bulkParsedList.filter((q) => q.isValid).length} Valid
                       </span>
                       {bulkParsedList.filter((q) => !q.isValid).length > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[11px]">
+                        <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold">
                           {bulkParsedList.filter((q) => !q.isValid).length} Bermasalah
                         </span>
                       )}
@@ -1281,14 +1626,26 @@ export function QuestionBankModal({
                                   ? "bg-purple-100 text-purple-700"
                                   : q.tipe_soal === "URAIAN_ESAI"
                                     ? "bg-amber-100 text-amber-800"
-                                    : "bg-blue-100 text-blue-700"
+                                    : q.tipe_soal === "PILIHAN_GANDA_KOMPLEKS"
+                                      ? "bg-indigo-100 text-indigo-700"
+                                      : q.tipe_soal === "BENAR_SALAH"
+                                        ? "bg-emerald-100 text-emerald-800"
+                                        : q.tipe_soal === "ISIAN_SINGKAT"
+                                          ? "bg-cyan-100 text-cyan-800"
+                                          : "bg-blue-100 text-blue-700"
                               }`}
                             >
                               {q.tipe_soal === "MENJODOHKAN"
                                 ? "MENJODOHKAN"
                                 : q.tipe_soal === "URAIAN_ESAI"
                                   ? "ESAI / URAIAN"
-                                  : "PILIHAN GANDA"}
+                                  : q.tipe_soal === "PILIHAN_GANDA_KOMPLEKS"
+                                    ? "PG KOMPLEKS"
+                                    : q.tipe_soal === "BENAR_SALAH"
+                                      ? "BENAR / SALAH"
+                                      : q.tipe_soal === "ISIAN_SINGKAT"
+                                        ? "ISIAN SINGKAT"
+                                        : "PILIHAN GANDA"}
                             </span>
                             <span className="text-[10px] text-slate-400">
                               Bobot: {q.bobot} | {q.tingkat_kesulitan}
@@ -1298,29 +1655,39 @@ export function QuestionBankModal({
                             {q.pertanyaan}
                           </p>
 
-                          {q.tipe_soal === "PILIHAN_GANDA" && q.opsi.length > 0 && (
-                            <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500">
-                              {q.opsi.map((op) => (
-                                <span
-                                  key={op.label}
-                                  className={`px-1.5 py-0.5 rounded ${
-                                    op.isCorrect
-                                      ? "bg-emerald-100 text-emerald-800 font-bold"
-                                      : "bg-slate-100 text-slate-600"
-                                  }`}
-                                >
-                                  {op.label}: {op.teks}
+                          {(q.tipe_soal === "PILIHAN_GANDA" ||
+                            q.tipe_soal === "PILIHAN_GANDA_KOMPLEKS" ||
+                            q.tipe_soal === "BENAR_SALAH") &&
+                            q.opsi.length > 0 && (
+                              <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500">
+                                {q.opsi.map((op) => (
+                                  <span
+                                    key={op.label}
+                                    className={`px-1.5 py-0.5 rounded ${
+                                      op.isCorrect
+                                        ? "bg-emerald-100 text-emerald-800 font-bold"
+                                        : "bg-slate-100 text-slate-600"
+                                    }`}
+                                  >
+                                    {op.label}: {op.teks}
+                                  </span>
+                                ))}
+                                <span className="ml-auto font-bold text-blue-700">
+                                  Kunci: {q.kunci_benar}
                                 </span>
-                              ))}
-                              <span className="ml-auto font-bold text-blue-700">
-                                Kunci: {q.kunci_benar}
-                              </span>
-                            </div>
-                          )}
+                              </div>
+                            )}
 
                           {q.tipe_soal === "MENJODOHKAN" && (
                             <div className="flex items-center gap-2 text-[11px] text-purple-700 bg-purple-50/60 px-2 py-1 rounded-lg border border-purple-200/50">
                               <span className="font-semibold">Pasangan Benar:</span>
+                              <span className="font-bold">{q.kunci_benar}</span>
+                            </div>
+                          )}
+
+                          {q.tipe_soal === "ISIAN_SINGKAT" && (
+                            <div className="flex items-center gap-2 text-[11px] text-cyan-800 bg-cyan-50/60 px-2 py-1 rounded-lg border border-cyan-200/50">
+                              <span className="font-semibold">Kata Kunci:</span>
                               <span className="font-bold">{q.kunci_benar}</span>
                             </div>
                           )}

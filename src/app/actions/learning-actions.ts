@@ -269,6 +269,65 @@ export async function createMateriAction(
   }
 }
 
+export async function updateMateriAction(
+  _prevState: any,
+  formData: FormData
+): Promise<LearningActionResult> {
+  try {
+    const user = await requireAuth();
+    await requirePermission("learning.material.manage");
+    if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
+
+    const id = formData.get("id") as string;
+    const penugasanId = formData.get("penugasan_mengajar_id") as string;
+
+    let berkasId: string | null = (formData.get("existing_berkas_id") as string) || null;
+    const file = formData.get("file") as File | null;
+    if (
+      file &&
+      typeof file === "object" &&
+      file.size > 0 &&
+      typeof file.arrayBuffer === "function"
+    ) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const storage = new LocalStorageAdapter();
+      const metadata = await storage.saveFile({
+        sekolah_id: user.sekolah_id,
+        nama_file_asli: file.name,
+        mime_type: file.type || "application/octet-stream",
+        content: buffer,
+      });
+      berkasId = metadata.id;
+    }
+
+    const updated = await learningService.updateMateri(
+      user.id,
+      user.peran_dasar,
+      id,
+      user.sekolah_id,
+      {
+        lingkup_materi_id: (formData.get("lingkup_materi_id") as string) || null,
+        judul: formData.get("judul") as string,
+        deskripsi: (formData.get("deskripsi") as string) || null,
+        tipe_konten: (formData.get("tipe_konten") as any) || "DOKUMEN",
+        konten_teks: (formData.get("konten_teks") as string) || null,
+        tautan_url: (formData.get("tautan_url") as string) || null,
+        berkas_id: berkasId,
+      }
+    );
+
+    revalidatePath(`/kelas-saya/${penugasanId}`);
+    revalidatePath("/kelas-saya");
+    return {
+      success: true,
+      message: `Materi '${updated.judul}' berhasil diperbarui.`,
+      data: updated,
+    };
+  } catch (err) {
+    return { success: false, message: getSafeErrorMessage(err) };
+  }
+}
+
 export async function deleteMateriAction(
   id: string,
   penugasanId: string
@@ -393,6 +452,47 @@ export async function createAdministrasiAction(
       success: true,
       message: `Jurnal KBM Pertemuan ke-${created.pertemuan_ke} berhasil disimpan.`,
       data: created,
+    };
+  } catch (err) {
+    return { success: false, message: getSafeErrorMessage(err) };
+  }
+}
+
+export async function updateAdministrasiAction(
+  _prevState: any,
+  formData: FormData
+): Promise<LearningActionResult> {
+  try {
+    const user = await requireAuth();
+    await requirePermission("learning.material.manage");
+    if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
+
+    const id = formData.get("id") as string;
+    const penugasanId = formData.get("penugasan_mengajar_id") as string;
+    const tpIdsRaw = formData.getAll("tp_ids") as string[];
+
+    const updated = await learningService.updateAdministrasi(
+      user.id,
+      user.peran_dasar,
+      id,
+      user.sekolah_id,
+      {
+        tanggal: (formData.get("tanggal") as string) || new Date(),
+        pertemuan_ke: Number(formData.get("pertemuan_ke")) || 1,
+        materi_disampaikan: formData.get("materi_disampaikan") as string,
+        kegiatan_pembelajaran: (formData.get("kegiatan_pembelajaran") as string) || null,
+        catatan_refleksi: (formData.get("catatan_refleksi") as string) || null,
+        status_realisasi: (formData.get("status_realisasi") as any) || "TERLAKSANA",
+        tp_ids: tpIdsRaw.filter(Boolean),
+      }
+    );
+
+    revalidatePath(`/kelas-saya/${penugasanId}`);
+    revalidatePath("/kelas-saya");
+    return {
+      success: true,
+      message: `Jurnal KBM Pertemuan ke-${updated.pertemuan_ke} berhasil diperbarui.`,
+      data: updated,
     };
   } catch (err) {
     return { success: false, message: getSafeErrorMessage(err) };

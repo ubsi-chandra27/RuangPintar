@@ -70,6 +70,8 @@ model Sekolah {
   wali_murid                WaliMurid[]
   hubungan_wali_siswa       HubunganWaliSiswa[]
   pengajuan_wali            PengajuanWali[]
+  pengumuman                Pengumuman[]
+  notifikasi_pengguna       NotifikasiPengguna[]
 
   @@map("sekolah")
 }
@@ -237,9 +239,12 @@ model Pengguna {
   sekolah         Sekolah?         @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
   sesi            SesiPengguna[]
   kemampuan_staff KemampuanStaff[]
-  siswa           Siswa?
-  guru            Guru?
-  wali_murid      WaliMurid?
+  siswa                 Siswa?
+  guru                  Guru?
+  wali_murid            WaliMurid?
+  pengumuman_dibuat     Pengumuman[]
+  notifikasi            NotifikasiPengguna[]
+  preferensi_notifikasi PreferensiNotifikasi?
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -436,6 +441,7 @@ model Rombel {
   penugasan_wali     PenugasanWaliKelas[]
   jadwal_pelajaran   JadwalPelajaran[]
   sesi_kelas_aktual  SesiKelasAktual[]
+  pengumuman         Pengumuman[]
 
   @@unique([sekolah_id, tahun_ajaran_id, nama])
   @@index([sekolah_id, tahun_ajaran_id, status])
@@ -1449,6 +1455,93 @@ model PengajuanWali {
   @@index([siswa_id])
   @@map("pengajuan_wali")
 }
+
+/// M16 — Communication: Pengumuman Resmi Sekolah / Rombel
+model Pengumuman {
+  id                  String              @id
+  sekolah_id          String
+  penulis_id          String
+  judul               String
+  konten              String
+  kategori            String              @default("UMUM") // UMUM | AKADEMIK | KEGIATAN | PENTING | DARURAT
+  status              String              @default("DRAFT") // DRAFT | PUBLISHED | ARSIP
+  apakah_disematkan   Boolean             @default(false)
+  lampiran_url        String?
+  target_audiens      String              @default("SEMUA") // SEMUA | GURU | SISWA | WALI | ROMBEL
+  target_rombel_id    String?
+  dipublikasikan_pada DateTime?
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+
+  sekolah       Sekolah             @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  penulis       Pengguna            @relation(fields: [penulis_id], references: [id], onDelete: Cascade)
+  target_rombel Rombel?             @relation(fields: [target_rombel_id], references: [id], onDelete: SetNull)
+  sasaran       SasaranPengumuman[]
+
+  @@index([sekolah_id, status])
+  @@index([sekolah_id, target_audiens])
+  @@index([penulis_id])
+  @@index([target_rombel_id])
+  @@map("pengumuman")
+}
+
+/// M16 — Communication: Target Sasaran Pengumuman Rinci
+model SasaranPengumuman {
+  id            String   @id
+  pengumuman_id String
+  tipe_sasaran  String   // SEMUA | PERAN | ROMBEL
+  nilai_sasaran String?  // null (SEMUA), TEACHER / STUDENT / GUARDIAN / rombel_id
+  created_at    DateTime @default(now())
+
+  pengumuman Pengumuman @relation(fields: [pengumuman_id], references: [id], onDelete: Cascade)
+
+  @@index([pengumuman_id])
+  @@index([tipe_sasaran, nilai_sasaran])
+  @@map("sasaran_pengumuman")
+}
+
+/// M17 — Notification: Pemberitahuan In-App Berbasis Event untuk Pengguna
+model NotifikasiPengguna {
+  id            String    @id
+  sekolah_id    String
+  pengguna_id   String
+  judul         String
+  pesan         String
+  tipe          String    // PENGUMUMAN_BARU | TUGAS_BARU | NILAI_DITERBITKAN | PENGAJUAN_IZIN | JADWAL_BERUBAH | SISTEM
+  tautan_url    String?
+  apakah_dibaca Boolean   @default(false)
+  dibaca_pada   DateTime?
+  data_tambahan String?   // JSON string
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  sekolah  Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+
+  @@index([pengguna_id, apakah_dibaca])
+  @@index([sekolah_id, created_at])
+  @@map("notifikasi_pengguna")
+}
+
+/// M17 — Notification: Preferensi Saluran Notifikasi Pengguna
+model PreferensiNotifikasi {
+  id               String   @id
+  pengguna_id      String   @unique
+  in_app_aktif     Boolean  @default(true)
+  whatsapp_aktif   Boolean  @default(true)
+  email_aktif      Boolean  @default(false)
+  notif_pengumuman Boolean  @default(true)
+  notif_tugas      Boolean  @default(true)
+  notif_nilai      Boolean  @default(true)
+  notif_presensi   Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+
+  @@map("preferensi_notifikasi")
+}
+
 
 
 

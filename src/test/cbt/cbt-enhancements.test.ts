@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   parseSpreadsheetText,
   generateCsvTemplate,
+  generateComprehensiveCsvTemplate,
 } from "@/modules/cbt/infrastructure/cbt-bulk-import-parser";
 import { generateQuestionsWithGemini } from "@/modules/cbt/infrastructure/gemini-cbt-ai-service";
 import { CbtRepository } from "@/modules/cbt/infrastructure/cbt-repository";
@@ -68,6 +69,40 @@ describe("M14 CBT Enhancements — Bulk Import, Menjodohkan, Token & AI Agent", 
       expect(pgItems).toHaveLength(3);
       expect(matchItems).toHaveLength(3);
       expect(essayItems).toHaveLength(2);
+      expect(parsed.every((q) => q.isValid)).toBe(true);
+    });
+
+    it("parses comprehensive template with all 6 question types including UTF-8 BOM and semicolon CSV", () => {
+      const comprehensiveTemplate = "\uFEFF" + generateComprehensiveCsvTemplate(";");
+      const parsed = parseSpreadsheetText(comprehensiveTemplate);
+      expect(parsed.length).toBe(12);
+
+      const pg = parsed.filter((q) => q.tipe_soal === "PILIHAN_GANDA");
+      const pgKompleks = parsed.filter((q) => q.tipe_soal === "PILIHAN_GANDA_KOMPLEKS");
+      const benarSalah = parsed.filter((q) => q.tipe_soal === "BENAR_SALAH");
+      const menjodohkan = parsed.filter((q) => q.tipe_soal === "MENJODOHKAN");
+      const isian = parsed.filter((q) => q.tipe_soal === "ISIAN_SINGKAT");
+      const esai = parsed.filter((q) => q.tipe_soal === "URAIAN_ESAI");
+
+      expect(pg).toHaveLength(2);
+      expect(pgKompleks).toHaveLength(1);
+      expect(benarSalah).toHaveLength(2);
+      expect(menjodohkan).toHaveLength(3);
+      expect(isian).toHaveLength(2);
+      expect(esai).toHaveLength(2);
+
+      // Verify PG Kompleks options and key
+      expect(pgKompleks[0].kunci_benar).toBe("A, C, D");
+      expect(pgKompleks[0].opsi.filter((o) => o.isCorrect)).toHaveLength(3);
+
+      // Verify Benar Salah
+      expect(benarSalah[0].kunci_benar).toContain("B (Salah)");
+      expect(benarSalah[1].kunci_benar).toContain("A (Benar)");
+
+      // Verify Isian Singkat
+      expect(isian[0].kunci_benar).toBe("Kloroplas, Plastida");
+
+      // Verify all valid
       expect(parsed.every((q) => q.isValid)).toBe(true);
     });
   });

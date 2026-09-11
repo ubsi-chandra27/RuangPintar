@@ -6,6 +6,11 @@ import { AcademicShell } from "@/shared/components/shell/academic-shell";
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   usePathname: () => "/dashboard",
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+  }),
 }));
 
 const mockUser = {

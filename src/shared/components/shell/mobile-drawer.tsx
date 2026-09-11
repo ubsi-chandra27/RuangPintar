@@ -22,6 +22,7 @@ import {
   ShieldAlert,
   Building2,
   Sparkles,
+  Megaphone,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -44,6 +45,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   ShieldAlert,
   Building2,
   Sparkles,
+  Megaphone,
 };
 
 export interface MobileDrawerProps {

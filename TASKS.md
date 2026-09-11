@@ -1,78 +1,87 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 6.0  
-**Current Active Phase:** PHASE 16 — GUARDIAN EXPERIENCE (M15)  
-**Status:** READY FOR HUMAN REVIEW  
+**Versi:** 8.0  
+**Current Active Phase:** PHASE 18 — STUDENT MONITORING & HOMEROOM (M18)  
+**Status:** IN PROGRESS  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 16 — GUARDIAN EXPERIENCE (M15) [READY FOR HUMAN REVIEW]
+PHASE 18 — STUDENT MONITORING & HOMEROOM (M18) [IN PROGRESS]
 ```
 
 Tujuan:
-> Membangun portal dan subsistem Guardian Experience (M15 / Milestone F) yang terintegrasi penuh secara data-driven, aman dengan relationship-scope enforcement (`GUARDIAN_RELATIONSHIP`), dan responsif sesuai Academic Glass UI v1.2:
-> 1. Identitas Wali & Relasi Sah Terverifikasi (`WaliMurid` & `HubunganWaliSiswa`): Akses hanya melalui relasi yang sah dan terverifikasi pihak sekolah.
-> 2. Multi-Child Context Switcher: Satu akun wali dapat memiliki lebih dari satu anak dan dapat beralih konteks anak aktif secara mulus di seluruh portal (`ChildSwitcherDropdown`).
-> 3. Dashboard Wali Murid live (`/dashboard`): Profil anak aktif, kontak wali kelas, 4 KPI kehadiran/tugas/ujian, agenda tugas kelas, jadwal CBT, nilai asesmen terpublikasi resmi, dan riwayat permohonan izin.
-> 4. Presensi Anak (`/presensi-anak`): Rekapitulasi kehadiran semester (hadir, sakit, izin, alpa, persentase) dan log absensi sesi KBM terperinci.
-> 5. Perkembangan Nilai & e-Rapor Anak (`/nilai-anak`): Transkrip asesmen terpublikasi resmi (zero draft leakage), buku e-Rapor Kurikulum Merdeka, KKTP, predikat, catatan wali kelas, serta Modal Pratinjau Cetak Lembar Rapor Resmi A4 (`window.print()`).
-> 6. Layanan Pengajuan Izin / Sakit (`PengajuanIzinModal`): Formulir permohonan surat izin sakit atau dispensasi kegiatan oleh orang tua disertai upload berkas surat dokter.
-> 7. Penegakan Domain Invariants wajib:
->    - `Guardian ≠ Student proxy`: Wali murid dilarang bertindak sebagai siswa (tidak mengumpulkan tugas atau mengambil tes CBT atas nama anak).
->    - `GUARDIAN_RELATIONSHIP`: Evaluasi izin berbasis relasi terverifikasi, bukan tebakan id siswa.
->    - `FR-SXP-004 (Strict Non-Leakage of Draft Grades)`: Hanya nilai asesmen berstatus `PUBLISHED` dengan target `WALI` atau `SEMUA` yang tampil.
->    - `Missing Grade != Zero Grade`: Nilai yang belum ada tampil sebagai `-`, bukan `0`.
+> Membangun sistem monitoring komprehensif bagi wali kelas terhadap seluruh siswa dalam rombel perwaliannya serta pusat perhatian dan tindak lanjut siswa (*Attention Center, Monitoring Notes & Follow-Up / M18*) sesuai Academic Glass UI v1.2:
+> 1. Invariant Domain Inti:
+>    - `M18 Student Monitoring ≠ Source of Truth`: Data transaksi utama (kehadiran, tugas, penilaian) tetap berada pada M11, M12, M13. Indikator siswa di M18 merupakan derived/read model yang dapat dihitung ulang kapan saja.
+>    - `Monitoring Note & Follow-Up = Persistent M18 Entities`: Catatan pembinaan dan riwayat tindak lanjut wali kelas/BK disimpan persisten.
+>    - `Wali Kelas ≠ Pemilik Nilai / Presensi Guru Lain`: Wali kelas memantau (*read/monitor*), bukan mengubah (*overwrite/bypass*) nilai atau presensi sesi milik guru mata pelajaran lain.
+>    - `Homeroom Scoping Enforcement`: Wali kelas hanya dapat memantau rombel yang ditugaskan kepadanya secara aktif melalui `PenugasanWaliKelas`. Super Admin memiliki supervisi penuh.
+> 2. Database & Data Architecture:
+>    - Model `CatatanMonitoring` (id, sekolah_id, rombel_id, siswa_id, penulis_id, judul, isi, kategori [AKADEMIK, KEHADIRAN, PERILAKU, LAINNYA], tingkat_urgensi [RENDAH, SEDANG, TINGGI, KRITIS], status)
+>    - Model `TindakLanjutMonitoring` (id, catatan_id, penanggung_jawab_id, tindakan, target_tanggal, status [DIRENCANAKAN, PROSES, SELESAI, DIBATALKAN], hasil)
+>    - Prisma migration forward aman
+> 3. Application & Service Layer:
+>    - `MonitoringRepository` & `MonitoringService`
+>    - Agregasi indikator holistik per siswa: persentase kehadiran (hadir, izin, sakit, alpha), tingkat ketuntasan tugas (dikumpulkan vs total tugas), capaian asesmen (rerata nilai, jumlah asesmen di bawah KKTP), status perhatian (*Normal*, *Perlu Perhatian*, *Kritis*)
+>    - Server Actions: `getHomeroomMonitoringOverviewAction`, `getStudentMonitoringDetailAction`, `createMonitoringNoteAction`, `createFollowUpAction`, `updateFollowUpStatusAction`
+> 4. Presentation Layer (Academic Glass UI v1.2):
+>    - Direktori / Portal Wali Kelas (`/wali-kelas`):
+>      - Tab Ringkasan Rombel & KPI (total siswa, rerata presensi rombel, siswa perlu perhatian, tugas tertunda)
+>      - Tab Roster Siswa & Indikator Holistik: Tabel siswa dengan badge indikator kehadiran, tugas, nilai, dan tombol "Detail & Catatan"
+>      - Tab Pusat Perhatian (*Attention Center*): Sorotan otomatis siswa bermasalah absensi (alpha/terlambat tinggi), tugas belum tuntas, atau nilai anjlok
+>      - Tab Catatan Pembinaan & Tindak Lanjut: Feed catatan pembinaan wali kelas, status koordinasi BK/Orang Tua, riwayat follow-up
+>    - Modal Tambah Catatan Pembinaan (`CreateMonitoringNoteModal`) & Modal Tambah Tindak Lanjut (`CreateFollowUpModal`)
+>    - Modal Rincian Siswa Holistik (`StudentMonitoringDetailModal`)
+>    - Tautan cepat di Dashboard Guru (`/dashboard`) untuk guru yang bertugas sebagai Wali Kelas
+>    - Pengaktifan rute `/wali-kelas` di `CANONICAL_NAVIGATION_CONFIG` untuk guru wali kelas & admin
+> 5. Quality Gates & Verification:
+>    - Unit/integration tests untuk M18
+>    - Quality gates (typecheck, lint, format, vitest, build)
+>    - Playwright automated visual walkthrough
 
 ---
 
-# 2. Checklist Phase 16 — Guardian Experience (M15)
+# 2. Checklist Phase 18 — Student Monitoring & Homeroom (M18)
 
 ## Domain & Invariants
 ```text
-[x] Relationship-Scoped Authorization (GUARDIAN_RELATIONSHIP) strictly enforced
-[x] Invariant Guardian ≠ Student proxy: Tidak ada form pengumpulan tugas atau pengerjaan CBT di portal wali
-[x] Multi-Child & Multi-Guardian: Relasi n-ke-n terverifikasi dan cookie-based context switcher
-[x] FR-SXP-004: Zero draft grade leakage (hanya status PUBLISHED dengan target publikasi WALI/SEMUA)
-[x] Missing Grade != Zero Grade: Nilai asesmen belum dinilai bernilai null dan tampil sebagai "-"
-[x] Audit Logging terintegrasi untuk aksi SUBMIT_PENGAJUAN_IZIN_WALI (recordAuditEvent)
+[ ] Derived Indicator Model: Indikator dihitung dinamis dari M07, M11, M12, M13 tanpa menduplikasi source of truth
+[ ] Homeroom Scoping: Akses data rombel terkunci pada penugasan wali kelas aktif guru (default deny)
+[ ] Read-Only Academic Guard: Wali kelas tidak dapat memanipulasi presensi sesi atau nilai guru lain
+[ ] Persistent Notes & Follow-Up: Catatan monitoring dan tindak lanjut tersimpan aman dengan audit log
 ```
 
 ## Data Layer & Application Services
 ```text
-[x] Prisma Migration: 20260907130000_add_guardian_and_family (wali_murid, hubungan_wali_siswa, pengajuan_wali)
-[x] guardian-types.ts: Model domain profil wali, konteks anak aktif, KPI presensi, nilai, e-rapor, pengajuan izin
-[x] guardian-errors.ts: Domain errors (GuardianNotFoundError, ChildNotLinkedError, UnverifiedRelationshipError)
-[x] guardian-validation.ts: Skema validasi Zod SwitchChildSchema & PengajuanWaliSchema
-[x] guardian-repository.ts: Repository query teroptimasi prisma untuk seluruh fitur wali murid
-[x] guardian-service.ts: Application service terpadu orkestrasi bisnis & audit logger
-[x] guardian-actions.ts: Server actions switchActiveChildAction & submitPengajuanWaliAction
-[x] seed-guardian-experience.ts: Seed data realistis akun wali santoso & nurhayati (multi-child)
+[ ] Prisma Migration: Model catatan_monitoring & tindak_lanjut_monitoring
+[ ] Monitoring Domain & Validation: types, errors, zod schemas
+[ ] MonitoringRepository & MonitoringService (agregasi KPI, indikator holistik, CRUD catatan)
+[ ] Server Actions: monitoring-actions.ts
+[ ] Seed Data: Sampel catatan pembinaan & tindak lanjut untuk pengujian
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[x] GuardianDashboard (/dashboard): Async Server Component live data-driven, child profile, KBM stats, cbt, grades
-[x] ChildSwitcherDropdown: Dropdown interaktif multi-anak terintegrasi di seluruh halaman pemantauan
-[x] PengajuanIzinModal: Form pengajuan izin sakit / dispensasi dengan upload berkas lampiran
-[x] GuardianAttendanceView (/presensi-anak): 6 KPI presensi, filter status, tabel log sesi KBM terperinci
-[x] GuardianGradesView (/nilai-anak): Tab nilai asesmen terpublikasi resmi & Tab buku e-Rapor Kurikulum Merdeka
-[x] GuardianReportPrintModal: Pratinjau cetak lembar rapor resmi A4 print-ready (window.print())
-[x] Canonical Navigation: /presensi-anak dan /nilai-anak diaktifkan resmi (isPhaseDeferred: false)
+[ ] Homeroom Portal (/wali-kelas): Ringkasan KPI rombel, tab roster, tab attention center, tab catatan
+[ ] Attention Center Widget / View: Filter siswa berisiko (absensi rendah, tugas menumpuk, nilai < KKTP)
+[ ] Create/Edit Monitoring Note Modal & Follow-Up Modal
+[ ] Student Holistic Detail Modal: Profil siswa, breakdown presensi, tugas, nilai, dan timeline pembinaan
+[ ] Teacher Dashboard Shortcut: Card status wali kelas dengan tautan langsung ke portal /wali-kelas
+[ ] Navigation Config: Registrasi menu /wali-kelas dengan icon & role/permission guard
 ```
 
 ## Quality Gates & Verification
 ```text
-[x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Lint check: ESLint 0 errors, 4 warnings non-blocking (npm run lint)
-[x] Format check: Prettier 100% clean (npm run format:check)
-[x] Tests: 73 test files, 400 tests passing (100% PASS)
-[x] Regression: Seluruh test Phase 00–15 tetap PASS (100%)
-[x] Build: Next.js production build PASS (18 static & dynamic pages)
-[x] Playwright Visual Walkthrough: 9 screenshot lengkap tersimpan di docs/phases/screenshots/phase-16-walkthrough/
+[ ] Typecheck: TypeScript tsc --noEmit 0 errors
+[ ] Lint check: ESLint 0 errors
+[ ] Format check: Prettier 100% clean
+[ ] Tests: Seluruh test unit & integrasi passing (100% PASS)
+[ ] Build: Next.js production build passing
+[ ] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 18
 ```
 
 ---
@@ -93,26 +102,30 @@ Tujuan:
     ├── [x] Phase 12 — Class Session Attendance [APPROVED BY HUMAN (4 September 2026)]
     └── [x] Phase 13 — Assessment, TP & Gradebook [APPROVED BY HUMAN (4 September 2026)]
 
-[x] Milestone E — Digital Assessment Ready (Phase 14–15) [APPROVED / READY]
+[x] Milestone E — Digital Assessment Ready (Phase 14–15) [APPROVED]
     ├── [x] Phase 14 — CBT: Computer Based Test (M14) [APPROVED BY HUMAN (5 September 2026)]
-    └── [x] Phase 15 — Assessment Compilation & Student Experience (M15) [APPROVED / READY]
+    └── [x] Phase 15 — Assessment Compilation & Student Experience (M15) [APPROVED BY HUMAN (7 September 2026)]
 
-[ ] Milestone F — Student & Guardian Experience Ready (Phase 15–17) [ACTIVE]
-    ├── [x] Phase 15 — Student Experience (M15) [READY]
-    ├── [x] Phase 16 — Guardian Experience (M15) [READY FOR HUMAN REVIEW]
-    └── [ ] Phase 17 — Communication & Notification (M16/M17)
+[x] Milestone F — Student & Guardian Experience Ready (Phase 15–17) [APPROVED BY HUMAN (11 September 2026)]
+    ├── [x] Phase 15 — Student Experience (M15) [APPROVED]
+    ├── [x] Phase 16 — Guardian Experience (M15) [APPROVED BY HUMAN (10 September 2026)]
+    └── [x] Phase 17 — Communication & Notification (M16/M17) [APPROVED BY HUMAN (11 September 2026)]
+
+[ ] Milestone G — Student Monitoring, Leadership & School Operations (Phase 18–19) [ACTIVE]
+    ├── [ ] Phase 18 — Student Monitoring & Homeroom (M18) [ACTIVE]
+    └── [ ] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19)
 ```
 
 ---
 
-# 4. Milestone F Historical Quality Gates (Phase 16)
+# 4. Milestone F Historical Quality Gates (Phase 17)
 
 ```text
-[x] Domain Invariants: Guardian Relationship Scope, Multi-Child Support, Guardian != Student Proxy, FR-SXP-004, Missing Grade != 0
+[x] Domain Invariants: Announcement != Notification != Source Transaction, Server-Side Audience Filter, Fail-safe Outbox
 [x] Format check: Prettier 100% clean (npm run format:check)
 [x] Lint check: 0 errors (npm run lint)
 [x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: 73 test files, 400 tests passing (100% PASS)
-[x] Build: Next.js production compilation 100% PASS (npm run build)
-[x] End-to-End Walkthrough: Playwright automated test & 9 visual screenshots PASS (qa-phase16-visual-walkthrough.mjs)
+[x] Tests: 77 test files, 421 tests passing (100% PASS)
+[x] Build: Next.js production compilation 100% PASS (19 routes generated)
+[x] End-to-End Walkthrough: Playwright automated test & 9 visual screenshots PASS (qa-phase17-visual-walkthrough.mjs)
 ```
