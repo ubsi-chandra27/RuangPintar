@@ -43,28 +43,24 @@ export function ThemeSwitcher() {
 
   return (
     <div className="relative inline-block text-left" ref={containerRef}>
-      {/* Trigger Button: Sleek rounded capsule/circle */}
+      {/* Trigger Button: Ikon bersih tanpa lingkaran, persis seperti ikon notifikasi */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Pilih Mode Tampilan (Siang, Malam, Jam Device)"
-        title="Mode Tampilan (Siang, Malam, Jam Device)"
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-xs hover:shadow-md hover:bg-slate-50 dark:hover:bg-slate-750 transition-all text-slate-600 dark:text-slate-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+        title="Pilih Mode Tampilan (Siang, Malam, Jam Device)"
+        className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
       >
-        {theme === "light" && (
-          <Sun className="h-4 w-4 text-amber-500 animate-in spin-in-180 duration-300" />
-        )}
-        {theme === "dark" && (
-          <Moon className="h-4 w-4 text-indigo-400 animate-in spin-in-180 duration-300" />
-        )}
+        {theme === "light" && <Sun className="h-5 w-5 text-amber-500" />}
+        {theme === "dark" && <Moon className="h-5 w-5 text-indigo-400" />}
         {theme === "auto" && (
           <div className="relative flex items-center justify-center">
             {resolvedTheme === "dark" ? (
-              <Moon className="h-4 w-4 text-blue-400" />
+              <Moon className="h-5 w-5 text-blue-400" />
             ) : (
-              <Sun className="h-4 w-4 text-blue-500" />
+              <Sun className="h-5 w-5 text-amber-500" />
             )}
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-850" />
+            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900" />
           </div>
         )}
       </button>

@@ -68,30 +68,25 @@ export function SystemStatusIndicator({
 
   return (
     <div className={`relative inline-block ${className}`} ref={ref}>
-      {/* Signal Status Trigger Button */}
+      {/* Signal Status Trigger Button: Cukup ikon sinyal kecil tanpa tulisan teks */}
       <button
         type="button"
         onClick={() => setShowTooltip(!showTooltip)}
         aria-label={`Status Operasional: ${current.label}`}
         title={`Status: ${current.label} (${current.desc})`}
-        className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border ${current.borderColor} ${current.bgColor} ${current.glowColor} transition-all duration-300 backdrop-blur-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40`}
+        className={`group flex items-center justify-center gap-1.5 p-1.5 px-2 rounded-full border ${current.borderColor} ${current.bgColor} ${current.glowColor} transition-all duration-300 backdrop-blur-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40`}
       >
         {/* Signal Waves Icon */}
         <Radio
-          className={`h-4 w-4 ${current.textColor} transition-transform group-hover:scale-110`}
+          className={`h-3.5 w-3.5 ${current.textColor} transition-transform group-hover:scale-110`}
         />
 
         {/* Live Pulsing Beacon Dot */}
-        <span className="relative flex h-2.5 w-2.5">
+        <span className="relative flex h-2 w-2">
           <span
             className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${current.pingColor}`}
           />
-          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${current.dotColor}`} />
-        </span>
-
-        {/* Status Label (Visible on sm+, or subtle) */}
-        <span className={`text-xs font-bold ${current.textColor} tracking-tight`}>
-          {current.label}
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${current.dotColor}`} />
         </span>
       </button>
 

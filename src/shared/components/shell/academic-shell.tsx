@@ -48,45 +48,45 @@ export function AcademicShell({
     <ThemeProvider>
       <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC] dark:bg-[#090D16] text-slate-900 dark:text-slate-100 transition-colors duration-200">
         {/* Desktop Sidebar / Rail */}
-      <Sidebar
-        userRole={user.peran_dasar as BaseRole}
-        userCapabilities={userCapabilities}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-      />
-
-      {/* Mobile Drawer */}
-      <MobileDrawer
-        isOpen={isMobileDrawerOpen}
-        onClose={() => setIsMobileDrawerOpen(false)}
-        userRole={user.peran_dasar as BaseRole}
-        userCapabilities={userCapabilities}
-      />
-
-      {/* Main Content Viewport */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Topbar */}
-        <Topbar
-          user={user}
-          breadcrumbItems={breadcrumbItems}
-          onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
-          isSidebarCollapsed={isSidebarCollapsed}
-          onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        <Sidebar
+          userRole={user.peran_dasar as BaseRole}
+          userCapabilities={userCapabilities}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
 
-        {/* Scrollable Page Body with bottom clearance on mobile (< md) for MobileBottomNav */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-24 md:pb-12 pt-2">
-          <div className="w-full">{children}</div>
-        </main>
-      </div>
+        {/* Mobile Drawer */}
+        <MobileDrawer
+          isOpen={isMobileDrawerOpen}
+          onClose={() => setIsMobileDrawerOpen(false)}
+          userRole={user.peran_dasar as BaseRole}
+          userCapabilities={userCapabilities}
+        />
 
-      {/* Mobile Bottom Navigation Bar (< md) */}
-      <MobileBottomNav
-        userRole={user.peran_dasar as BaseRole}
-        userCapabilities={userCapabilities}
-        onOpenMenu={() => setIsMobileDrawerOpen(true)}
-      />
-    </div>
+        {/* Main Content Viewport */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Topbar */}
+          <Topbar
+            user={user}
+            breadcrumbItems={breadcrumbItems}
+            onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
+
+          {/* Scrollable Page Body with bottom clearance on mobile (< md) for MobileBottomNav */}
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-24 md:pb-12 pt-2">
+            <div className="w-full">{children}</div>
+          </main>
+        </div>
+
+        {/* Mobile Bottom Navigation Bar (< md) */}
+        <MobileBottomNav
+          userRole={user.peran_dasar as BaseRole}
+          userCapabilities={userCapabilities}
+          onOpenMenu={() => setIsMobileDrawerOpen(true)}
+        />
+      </div>
     </ThemeProvider>
   );
 }

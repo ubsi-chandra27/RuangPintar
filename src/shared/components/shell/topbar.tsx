@@ -72,19 +72,19 @@ export function Topbar({
         </div>
       </div>
 
-      {/* Right side: Capsule Search Bar + Theme Switcher + Notifications + User Menu */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Capsule Search Bar (Rounded-full seperti kapsul profesional) */}
-        <div className="relative flex items-center h-10 w-32 sm:w-52 md:w-64 lg:w-72 rounded-full bg-white dark:bg-slate-850 border border-slate-200/80 dark:border-slate-750 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/15 pl-3.5 pr-2.5 transition-all duration-200">
-          <Search className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0 mr-2" />
+      {/* Right side: Elongated Pill Search Bar + Theme Switcher + Notifications + User Menu */}
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end max-w-2xl">
+        {/* Elongated Professional Pill Search Bar */}
+        <div className="relative flex items-center justify-between h-10 w-44 sm:w-72 md:w-80 lg:w-[380px] xl:w-[420px] rounded-full bg-white dark:bg-slate-850 border border-slate-200/90 dark:border-slate-750 shadow-xs hover:shadow-sm focus-within:border-blue-500 dark:focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/15 pl-4 pr-3 transition-all duration-200">
           <input
             type="text"
-            placeholder="Cari..."
+            placeholder="Cari siswa, guru, kelas, atau menu..."
             className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none text-xs sm:text-[13px]"
           />
+          <Search className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0 ml-2 pointer-events-none" />
         </div>
 
-        {/* Theme Mode Switcher (Siang, Malam, Jam Device) */}
+        {/* Theme Mode Switcher (Ikon bersih tanpa lingkaran) */}
         <ThemeSwitcher />
 
         {/* Notification Bell */}

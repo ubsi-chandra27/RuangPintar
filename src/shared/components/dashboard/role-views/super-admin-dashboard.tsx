@@ -85,15 +85,15 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
           </p>
         </div>
 
-        {/* Metadata Badges: Neon Pill Tahun Ajaran + Signal Indicator */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Tahun Ajaran: Serounded mungkin (rounded-full) dengan efek glow / neon */}
-          <div className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 dark:bg-cyan-500/15 border border-blue-400/50 dark:border-cyan-400/70 text-xs font-bold text-blue-700 dark:text-cyan-300 shadow-[0_0_14px_rgba(59,130,246,0.32)] dark:shadow-[0_0_20px_rgba(6,182,212,0.45)] backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_22px_rgba(59,130,246,0.5)]">
-            <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-cyan-400" />
-            <span className="tracking-wide">Tahun Ajaran 2026/2027</span>
+        {/* Metadata Badges: Neon Pill Tahun Ajaran (Kecil & Ramping) + Signal Indicator (Kecil Tanpa Teks) */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Tahun Ajaran: Lebih kecil dan ramping (rounded-full) dengan efek glow neon */}
+          <div className="group relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-cyan-500/15 border border-blue-400/50 dark:border-cyan-400/70 text-[11px] font-semibold text-blue-700 dark:text-cyan-300 shadow-[0_0_10px_rgba(59,130,246,0.3)] dark:shadow-[0_0_14px_rgba(6,182,212,0.4)] backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_18px_rgba(59,130,246,0.5)]">
+            <Calendar className="h-3 w-3 text-blue-600 dark:text-cyan-400" />
+            <span className="tracking-tight">Tahun Ajaran 2026/2027</span>
           </div>
 
-          {/* Signal Indicator: Hijau (Normal), Kuning (Pemeliharaan), Merah (Gangguan) */}
+          {/* Signal Indicator: Cukup ikon sinyal kecil tanpa tulisan teks */}
           <SystemStatusIndicator initialStatus="normal" />
         </div>
       </div>
@@ -106,7 +106,10 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
           icon={<School className="h-6 w-6 text-[#2563EB] dark:text-blue-400" />}
           trend={{
             value: `${totalSekolahFreemium} Trial`,
-            label: `• ${totalSekolahInstitusi} Berlangganan`,
+            label:
+              totalSekolahInstitusi > 0
+                ? `• ${totalSekolahInstitusi} Berlangganan`
+                : "• SMK OTOMINDO",
             isPositive: true,
           }}
           watermarkIcon={<School className="h-28 w-28" />}
