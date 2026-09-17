@@ -87,15 +87,15 @@ export function UserMenu({ user }: UserMenuProps) {
       .toUpperCase() || user.username.slice(0, 2).toUpperCase();
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative shrink-0" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Menu Pengguna"
-        className="flex items-center gap-2.5 p-1.5 pl-2 pr-2.5 rounded-2xl hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
+        className="flex items-center gap-2 sm:gap-2.5 p-1 sm:p-1.5 sm:pl-2 sm:pr-2.5 rounded-2xl hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer shrink-0"
       >
-        <div className="flex h-8.5 w-8.5 items-center justify-center rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold shadow-sm overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+        <div className="flex h-8 w-8 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold shadow-xs overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
           {user.foto_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={user.foto_url} alt={user.nama_lengkap} className="size-full object-cover" />
@@ -116,15 +116,15 @@ export function UserMenu({ user }: UserMenuProps) {
         />
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Dropdown Menu (Academic Glass UI selaras dengan ThemeSwitcher) */}
       {isOpen && (
         <>
           {/* Mobile backdrop */}
           <div
-            className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs sm:hidden"
+            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-xs sm:hidden"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed inset-x-4 top-20 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-64 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-2 shadow-xl shadow-slate-900/10 dark:shadow-slate-950/60 border border-slate-200/80 dark:border-slate-800 z-40 animate-in fade-in-0 zoom-in-95 duration-160">
+          <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-1.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
             {/* Identity Header */}
             <div className="p-3 border-b border-slate-100 dark:border-slate-800 mb-1 flex items-center gap-2.5">
               <div className="size-10 rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
@@ -158,19 +158,23 @@ export function UserMenu({ user }: UserMenuProps) {
               <Link
                 href="/profil"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors min-h-[40px]"
+                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
               >
-                <User className="h-4 w-4 text-slate-400" />
-                <span>Profil Saya</span>
+                <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <User className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-semibold">Profil Saya</span>
               </Link>
 
               <Link
                 href="/ganti-password"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors min-h-[40px]"
+                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
               >
-                <KeyRound className="h-4 w-4 text-slate-400" />
-                <span>Ganti Kata Sandi</span>
+                <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <KeyRound className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-semibold">Ganti Kata Sandi</span>
               </Link>
 
               <div className="border-t border-slate-100 dark:border-slate-800 my-1 pt-1" />
@@ -182,10 +186,12 @@ export function UserMenu({ user }: UserMenuProps) {
                   setIsOpen(false);
                   setIsLogoutModalOpen(true);
                 }}
-                className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors min-h-[40px] cursor-pointer"
+                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 group cursor-pointer"
               >
-                <LogOut className="h-4 w-4 text-red-500" />
-                <span>Keluar dari Akun</span>
+                <div className="h-7 w-7 rounded-lg bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 transition-colors">
+                  <LogOut className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-semibold">Keluar dari Akun</span>
               </button>
             </div>
           </div>

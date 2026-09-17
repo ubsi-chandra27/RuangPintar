@@ -72,7 +72,7 @@ export function LoginForm({ status }: { status?: string }) {
           isError={Boolean(errorMessage)}
           placeholder="Masukkan username"
           inputSize="lg"
-          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-[#F8FAFC] sm:bg-white"
+          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs"
         />
         <InputError message={errorMessage} />
       </div>
@@ -91,7 +91,7 @@ export function LoginForm({ status }: { status?: string }) {
           isError={Boolean(errorMessage)}
           placeholder="Masukkan kata sandi"
           inputSize="lg"
-          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-[#F8FAFC] sm:bg-white"
+          className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs"
         />
       </div>
 
@@ -124,16 +124,16 @@ export function LoginForm({ status }: { status?: string }) {
         </Button>
 
         {/* Supporting Footer Text */}
-        <p className="text-center text-[11px] sm:text-xs text-[#64748B] dark:text-slate-400">
+        <p className="text-center text-[11px] sm:text-xs text-[#64748B]">
           Akun sekolah resmi dikelola oleh administrator sekolah.
         </p>
 
-        <div className="text-center pt-3 border-t border-slate-200/60 dark:border-slate-800">
-          <p className="text-[12px] sm:text-[13px] text-slate-600 dark:text-slate-400">
+        <div className="text-center pt-3 border-t border-slate-200/80">
+          <p className="text-[12px] sm:text-[13px] text-slate-600">
             Guru baru?{" "}
             <Link
               href="/register"
-              className="text-sky-600 dark:text-sky-400 font-semibold hover:underline"
+              className="text-[#2563EB] font-semibold hover:underline"
             >
               Coba Gratis 30 Hari (Daftar Mandiri)
             </Link>

@@ -86,7 +86,7 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
         </div>
 
         {/* Metadata Badges: Neon Pill Tahun Ajaran (Kecil & Ramping) + Signal Indicator (Kecil Tanpa Teks) */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-4 sm:gap-5 flex-wrap">
           {/* Tahun Ajaran: Lebih kecil dan ramping (rounded-full) dengan efek glow neon */}
           <div className="group relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-cyan-500/15 border border-blue-400/50 dark:border-cyan-400/70 text-[11px] font-semibold text-blue-700 dark:text-cyan-300 shadow-[0_0_10px_rgba(59,130,246,0.3)] dark:shadow-[0_0_14px_rgba(6,182,212,0.4)] backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_18px_rgba(59,130,246,0.5)]">
             <Calendar className="h-3 w-3 text-blue-600 dark:text-cyan-400" />
@@ -103,7 +103,6 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
         <StatCard
           label="Total Sekolah Pengguna"
           value={totalSekolah.toLocaleString("id-ID")}
-          icon={<School className="h-6 w-6 text-[#2563EB] dark:text-blue-400" />}
           trend={{
             value: `${totalSekolahFreemium} Trial`,
             label:
@@ -117,7 +116,6 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
         <StatCard
           label="Guru Terdaftar (SaaS)"
           value={totalGuru.toLocaleString("id-ID")}
-          icon={<Users className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
           trend={{
             value: totalGuru > 0 ? `${totalGuru} Pendidik` : "0 Pendidik",
             label: "pengguna aktif platform",
@@ -128,7 +126,6 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
         <StatCard
           label="Total Rombel / Kelas"
           value={totalRombel.toLocaleString("id-ID")}
-          icon={<Building2 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />}
           trend={{
             value: totalRombel > 0 ? `${totalRombel} Rombel` : "0 Rombel",
             label: "aktif di database",
@@ -139,7 +136,6 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
         <StatCard
           label="Total Siswa Terdata"
           value={totalSiswa.toLocaleString("id-ID")}
-          icon={<GraduationCap className="h-6 w-6 text-sky-600 dark:text-sky-400" />}
           trend={{
             value: totalSiswa > 0 ? `${totalSiswa} Siswa` : "0 Siswa",
             label: "terdaftar di sistem",

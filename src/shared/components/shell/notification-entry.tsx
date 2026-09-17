@@ -139,12 +139,12 @@ export function NotificationEntry() {
   };
 
   return (
-    <div className="relative" ref={popoverRef}>
+    <div className="relative shrink-0" ref={popoverRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label="Pemberitahuan Sistem"
-        className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
+        className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer shrink-0"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
@@ -158,14 +158,14 @@ export function NotificationEntry() {
         <>
           {/* Mobile backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm sm:hidden"
+            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-xs sm:hidden"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed inset-x-4 top-18 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-96 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 shadow-2xl shadow-slate-900/20 dark:shadow-slate-950/60 border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-160">
+          <div className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
             {/* Popover Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Pemberitahuan</h4>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Pemberitahuan</h4>
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     unreadCount > 0
