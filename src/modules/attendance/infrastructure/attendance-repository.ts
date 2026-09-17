@@ -6,11 +6,14 @@ import { prisma } from "@/shared/infrastructure/database/prisma";
 import { ulid } from "ulidx";
 import {
   AttendanceStatus,
+  ClassAttendanceRecapDTO,
   ClassSessionAttendanceDTO,
+  EvaluationAttendanceStatus,
   SaveSessionAttendanceInput,
   SessionAttendanceHistoryItemDTO,
   SessionAttendanceSummaryDTO,
   StudentAttendanceItemDTO,
+  StudentClassAttendanceRecapItemDTO,
 } from "../domain/attendance-types";
 
 export class AttendanceRepository {
@@ -351,6 +354,159 @@ export class AttendanceRepository {
       total_sesi_selesai,
       total_presensi_diambil,
       rata_rata_kehadiran,
+    };
+  }
+
+  /**
+   * Mengambil rekapitulasi kehadiran seluruh siswa pada satu penugasan mengajar rombel (M12).
+   */
+  async getClassAttendanceRecap(
+    penugasanId: string,
+    sekolahId: string
+  ): Promise<ClassAttendanceRecapDTO> {
+    const assignment = await prisma.penugasanMengajar.findFirst({
+      where: { id: penugasanId, sekolah_id: sekolahId },
+      include: {
+        rombel: {
+          include: {
+            tingkat: true,
+          },
+        },
+        mata_pelajaran: true,
+        guru: true,
+      },
+    });
+
+    if (!assignment) {
+      throw new Error(`Penugasan mengajar dengan ID ${penugasanId} tidak ditemukan.`);
+    }
+
+    // Ambil seluruh sesi KBM aktual untuk penugasan ini
+    const sessions = await prisma.sesiKelasAktual.findMany({
+      where: {
+        sekolah_id: sekolahId,
+        penugasan_mengajar_id: penugasanId,
+      },
+      include: {
+        presensi_siswa: true,
+      },
+      orderBy: {
+        tanggal: "asc",
+      },
+    });
+
+    // Sesi yang sudah tercatat presensinya
+    const sessionsWithAttendance = sessions.filter((s) => s.presensi_siswa.length > 0);
+    const total_sesi_terjadwal = sessions.length;
+    const total_sesi_tercatat = sessionsWithAttendance.length;
+
+    // Ambil seluruh siswa aktif di rombel penugasan ini
+    const activePlacements = await prisma.penempatanRombel.findMany({
+      where: {
+        sekolah_id: sekolahId,
+        rombel_id: assignment.rombel_id,
+        status: "AKTIF",
+      },
+      include: {
+        keikutsertaan: {
+          include: {
+            siswa: true,
+          },
+        },
+      },
+      orderBy: [{ nomor_absen: "asc" }, { keikutsertaan: { siswa: { nama_lengkap: "asc" } } }],
+    });
+
+    // Petakan data presensi per siswa_id
+    const studentAttendanceMap = new Map<string, { status: string }[]>();
+    for (const s of sessionsWithAttendance) {
+      for (const p of s.presensi_siswa) {
+        const list = studentAttendanceMap.get(p.siswa_id) || [];
+        list.push({ status: p.status });
+        studentAttendanceMap.set(p.siswa_id, list);
+      }
+    }
+
+    let sumPercentages = 0;
+    let jumlahPerluPerhatian = 0;
+
+    const daftar_siswa: StudentClassAttendanceRecapItemDTO[] = activePlacements.map((p) => {
+      const siswa = p.keikutsertaan.siswa;
+      const records = studentAttendanceMap.get(siswa.id) || [];
+
+      let hadir = 0;
+      let sakit = 0;
+      let izin = 0;
+      let alpha = 0;
+      let dispensasi = 0;
+      let terlambat = 0;
+
+      for (const r of records) {
+        const s = (r.status || "").toUpperCase();
+        if (s === "HADIR") hadir++;
+        else if (s === "SAKIT") sakit++;
+        else if (s === "IZIN") izin++;
+        else if (s === "ALPHA" || s === "ALPA") alpha++;
+        else if (s === "DISPENSASI") dispensasi++;
+        else if (s === "TERLAMBAT") terlambat++;
+      }
+
+      // Hitung persentase kehadiran: (Hadir + Terlambat + Dispensasi) / Total Sesi Tercatat
+      // Jika belum ada sesi tercatat, default 100%
+      const effectivePresent = hadir + terlambat + dispensasi;
+      const persentase =
+        total_sesi_tercatat > 0 ? Math.round((effectivePresent / total_sesi_tercatat) * 100) : 100;
+
+      sumPercentages += persentase;
+
+      let status_evaluasi: EvaluationAttendanceStatus = "Sangat Baik";
+      if (persentase < 75 || alpha >= 3) {
+        status_evaluasi = "Perlu Perhatian";
+        jumlahPerluPerhatian++;
+      } else if (persentase < 85) {
+        status_evaluasi = "Cukup";
+      } else if (persentase < 95) {
+        status_evaluasi = "Baik";
+      }
+
+      return {
+        siswa_id: siswa.id,
+        nomor_absen: p.nomor_absen,
+        nis: siswa.nis,
+        nisn: siswa.nisn,
+        nama_lengkap: siswa.nama_lengkap,
+        foto_url: siswa.foto_url,
+        hadir,
+        sakit,
+        izin,
+        alpha,
+        dispensasi,
+        terlambat,
+        total_sesi_tercatat,
+        persentase_kehadiran: persentase,
+        status_evaluasi,
+      };
+    });
+
+    const total_siswa = daftar_siswa.length;
+    const rerata_kehadiran_kelas = total_siswa > 0 ? Math.round(sumPercentages / total_siswa) : 100;
+
+    return {
+      penugasan_id: assignment.id,
+      rombel_id: assignment.rombel_id,
+      rombel_nama: assignment.rombel.nama,
+      tingkat_nama: assignment.rombel.tingkat?.nama ?? null,
+      mata_pelajaran_id: assignment.mata_pelajaran_id,
+      mata_pelajaran_nama: assignment.mata_pelajaran.nama,
+      mata_pelajaran_kode: assignment.mata_pelajaran.kode,
+      guru_id: assignment.guru_id,
+      guru_nama: assignment.guru.nama_lengkap,
+      total_sesi_terjadwal,
+      total_sesi_tercatat,
+      total_siswa,
+      rerata_kehadiran_kelas,
+      jumlah_perlu_perhatian: jumlahPerluPerhatian,
+      daftar_siswa,
     };
   }
 }

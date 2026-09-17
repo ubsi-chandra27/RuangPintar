@@ -137,6 +137,7 @@ export const POSITION_PERMISSIONS: Record<PositionCode, ReadonlyArray<Permission
     "report.school.view",
     "report.academic.view",
     "report.attendance.view",
+    "report.export",
     "communication.announcement.view",
     "communication.announcement.manage",
   ],
@@ -160,6 +161,7 @@ export const POSITION_PERMISSIONS: Record<PositionCode, ReadonlyArray<Permission
     "attendance.school.view",
     "assessment.grades.view",
     "report.academic.view",
+    "report.export",
     "communication.announcement.view",
   ],
 
@@ -175,6 +177,7 @@ export const POSITION_PERMISSIONS: Record<PositionCode, ReadonlyArray<Permission
     "communication.announcement.view",
     "communication.announcement.manage",
     "report.attendance.view",
+    "report.export",
   ],
 
   PROGRAM_HEAD: [
@@ -186,6 +189,7 @@ export const POSITION_PERMISSIONS: Record<PositionCode, ReadonlyArray<Permission
     "attendance.session.view",
     "monitoring.student.view",
     "report.academic.view",
+    "report.export",
     "communication.announcement.view",
   ],
 };

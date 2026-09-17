@@ -60,7 +60,10 @@ import {
   deleteTugasAction,
   deleteTujuanPembelajaranAction,
 } from "@/app/actions/learning-actions";
-import { SessionAttendanceHistoryItemDTO } from "@/modules/attendance/domain/attendance-types";
+import {
+  ClassAttendanceRecapDTO,
+  SessionAttendanceHistoryItemDTO,
+} from "@/modules/attendance/domain/attendance-types";
 import { ClassAttendanceTabView } from "@/modules/attendance/presentation/class-attendance-tab-view";
 import { SessionAttendanceModal } from "@/modules/attendance/presentation/session-attendance-modal";
 import {
@@ -92,6 +95,7 @@ interface ClassWorkspaceViewProps {
     total_presensi_diambil: number;
     rata_rata_kehadiran: number;
   };
+  attendanceRecap?: ClassAttendanceRecapDTO | null;
   assessments?: DefinisiAsesmenDTO[];
   gradebook?: ClassGradebookDTO;
   exams?: UjianCbtDTO[];
@@ -108,6 +112,7 @@ export function ClassWorkspaceView({
     total_presensi_diambil: 0,
     rata_rata_kehadiran: 0,
   },
+  attendanceRecap,
   assessments = [],
   gradebook,
   exams = [],
@@ -1124,6 +1129,11 @@ export function ClassWorkspaceView({
           canManage={canManage}
           history={attendanceHistory}
           stats={attendanceStats}
+          recap={attendanceRecap}
+          gradebook={gradebook}
+          assessments={assessments}
+          lingkupMateriList={lingkup_materi}
+          penugasanId={penugasan.id}
           onOpenAttendance={(sesiId) => setAttendanceModalSesiId(sesiId)}
           onOpenNewSession={() => router.push("/sesi-pembelajaran")}
         />
@@ -1159,6 +1169,7 @@ export function ClassWorkspaceView({
             }
           }
           lingkupMateriList={lingkup_materi}
+          attendanceRecap={attendanceRecap}
           onRefresh={() => router.refresh()}
           onShowToast={(message, type) => setToast({ message, type })}
         />

@@ -28,20 +28,13 @@ export class AuthorizationError extends Error {
  * Server guard untuk mewajibkan permission tertentu.
  * Jika tidak berhak, melempar AuthorizationError (403) dan mencatat audit denial.
  */
-export async function requirePermission(
-  permission: PermissionString,
-  resource?: ResourceContext,
+async function buildEvaluationContext(
+  user: AuthenticatedUser,
   context?: EvaluationContext
-): Promise<AuthenticatedUser> {
-  const user = await requireAuth();
+): Promise<EvaluationContext> {
+  let evaluationContext: EvaluationContext = context ? { ...context } : {};
 
-  let capabilities = undefined;
-  if (user.peran_dasar === "SCHOOL_STAFF") {
-    capabilities = await staffCapabilityService.getUserCapabilities(user.id);
-  }
-
-  // Load teacher active teaching assignments from DB if actor is TEACHER and context not provided
-  let evaluationContext: EvaluationContext = context ?? {};
+  // 1. Load teacher active teaching assignments
   if (user.peran_dasar === "TEACHER" && !evaluationContext.teachingAssignments) {
     const guru = await prisma.guru.findFirst({
       where: { pengguna_id: user.id },
@@ -64,20 +57,91 @@ export async function requirePermission(
         },
       });
 
-      evaluationContext = {
-        ...evaluationContext,
-        teachingAssignments: activeAssignments.map((ta) => ({
-          id: ta.id,
-          teacher_id: user.id, // mapped to actor.id (user.id)
-          sekolah_id: ta.sekolah_id,
-          rombel_id: ta.rombel_id,
-          subject_id: ta.mata_pelajaran_id,
-          valid_from: ta.created_at,
-          status: ta.status as any,
-        })),
-      };
+      evaluationContext.teachingAssignments = activeAssignments.map((ta) => ({
+        id: ta.id,
+        teacher_id: user.id,
+        sekolah_id: ta.sekolah_id,
+        rombel_id: ta.rombel_id,
+        subject_id: ta.mata_pelajaran_id,
+        valid_from: ta.created_at,
+        status: ta.status as any,
+      }));
+
+      // Homeroom assignment
+      if (!evaluationContext.homeroomAssignments) {
+        const activeHomerooms = await prisma.penugasanWaliKelas.findMany({
+          where: {
+            guru_id: guru.id,
+            status: "AKTIF",
+          },
+          select: {
+            id: true,
+            sekolah_id: true,
+            rombel_id: true,
+            created_at: true,
+            status: true,
+          },
+        });
+
+        evaluationContext.homeroomAssignments = activeHomerooms.map((ha) => ({
+          id: ha.id,
+          teacher_id: user.id,
+          sekolah_id: ha.sekolah_id,
+          rombel_id: ha.rombel_id,
+          valid_from: ha.created_at,
+          status: ha.status as any,
+        }));
+      }
     }
   }
+
+  // 2. Load active position assignments (Kepala Sekolah, Wakasek, Kaprog, etc.)
+  if (!evaluationContext.positionAssignments) {
+    const activePositions = await prisma.penugasanJabatan.findMany({
+      where: {
+        personil_id: user.id,
+        status: "AKTIF",
+      },
+      include: {
+        jabatan: true,
+      },
+    });
+
+    if (activePositions.length > 0) {
+      evaluationContext.positionAssignments = activePositions.map((pos) => ({
+        id: pos.id,
+        personil_id: pos.personil_id,
+        sekolah_id: pos.sekolah_id,
+        position_code: pos.jabatan.kode_jabatan as any,
+        unit_id: pos.jabatan.unit_id,
+        program_id: null,
+        valid_from: pos.berlaku_mulai,
+        valid_until: pos.berlaku_sampai,
+        status: pos.status as any,
+      }));
+    }
+  }
+
+  return evaluationContext;
+}
+
+/**
+ * Server guard untuk mewajibkan permission tertentu.
+ * Jika tidak berhak, melempar AuthorizationError (403) dan mencatat audit denial.
+ */
+export async function requirePermission(
+  permission: PermissionString,
+  resource?: ResourceContext,
+  context?: EvaluationContext
+): Promise<AuthenticatedUser> {
+  const user = await requireAuth();
+
+  let capabilities = undefined;
+  if (user.peran_dasar === "SCHOOL_STAFF") {
+    capabilities = await staffCapabilityService.getUserCapabilities(user.id);
+  }
+
+  const evaluationContext = await buildEvaluationContext(user, context);
 
   const actor: ActorContext = {
     id: user.id,
@@ -135,6 +199,8 @@ export async function checkPermission(
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
   }
 
+  const evaluationContext = await buildEvaluationContext(user, context);
+
   const actor: ActorContext = {
     id: user.id,
     username: user.username,
@@ -148,7 +214,7 @@ export async function checkPermission(
     actor,
     permission,
     resource,
-    context,
+    context: evaluationContext,
   });
 
   return decision.allowed;

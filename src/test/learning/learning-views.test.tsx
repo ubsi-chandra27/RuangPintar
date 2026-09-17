@@ -175,7 +175,7 @@ describe("M11 Learning Presentation Views", () => {
       expect(screen.getByText("Pemrograman Web")).toBeInTheDocument();
       expect(screen.getByText("X RPL 1")).toBeInTheDocument();
       expect(screen.getByText("WEB")).toBeInTheDocument();
-      expect(screen.getByText("4 JP / Mgg")).toBeInTheDocument();
+      expect(screen.getByText(/4 JP \/ mgg/i)).toBeInTheDocument();
       expect(screen.getByText("36 Siswa")).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /buka workspace/i })).toHaveAttribute(
         "href",

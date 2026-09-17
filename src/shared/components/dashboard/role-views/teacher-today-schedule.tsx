@@ -3,24 +3,26 @@
 /**
  * Ruang Pintar — Daily Teacher Cockpit (TeacherTodaySchedule)
  *
- * Versi Ringkas & Kompak (Low-Scroll / Single-Viewport Ready)
- * Menggabungkan jam pelajaran berurutan, mendeteksi sesi aktif real-time,
- * dan menampilkan baris jadwal berdensitas tinggi yang efisien.
+ * Desain Jordan-Inspired Cockpit:
+ * - Card Utama (Kiri): Sesi Kelas Aktif yang ramping dan minimalis, berganti otomatis
+ *   setiap pergantian jam. Di kanan atas ada icon elipsis titik 3 (...) yang jika diklik
+ *   membuka menu aksi: Buka Sesi (KBM), Presensi / Absensi, Workspace Kelas.
+ * - 3 Card Samping (Kanan): Sesi-sesi lainnya hari ini, murni tanpa elipsis atau icon door.
  */
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Calendar,
-  Clock,
-  MapPin,
+  MoreHorizontal,
   PlayCircle,
-  CheckCircle2,
-  ArrowRight,
-  BookOpen,
   Users,
-  Timer,
+  BookOpen,
+  ArrowRight,
+  Sparkles,
+  Clock,
+  GraduationCap,
 } from "lucide-react";
 import { MergedScheduleBlock } from "@/modules/schedule/domain/schedule-merger";
 import { ClassSessionDTO, ScheduleEntryDTO } from "@/modules/schedule/domain/schedule-types";
@@ -32,6 +34,8 @@ export interface TeacherTodayScheduleProps {
   actualSessions: ClassSessionDTO[];
   todayHari: string;
   totalJamHariIni: number;
+  currentTimeOverride?: string;
+  currentDateOverride?: string;
 }
 
 export function TeacherTodaySchedule({
@@ -39,39 +43,82 @@ export function TeacherTodaySchedule({
   actualSessions,
   todayHari,
   totalJamHariIni,
+  currentTimeOverride,
+  currentDateOverride,
 }: TeacherTodayScheduleProps) {
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [currentTimeStr, setCurrentTimeStr] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [currentTimeStr, setCurrentTimeStr] = useState<string>(currentTimeOverride || "");
+  const [formattedDateStr, setFormattedDateStr] = useState<string>(currentDateOverride || "");
+  const [formattedTimeStr, setFormattedTimeStr] = useState<string>(
+    currentTimeOverride ? `${currentTimeOverride} WIB` : ""
+  );
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
-    const updateTime = () => {
+    if (currentTimeOverride && currentDateOverride) return;
+
+    const updateDateTime = () => {
       const now = new Date();
       const hh = String(now.getHours()).padStart(2, "0");
       const mm = String(now.getMinutes()).padStart(2, "0");
-      setCurrentTimeStr(`${hh}:${mm}`);
+      if (!currentTimeOverride) {
+        setCurrentTimeStr(`${hh}:${mm}`);
+        setFormattedTimeStr(`${hh}:${mm} WIB`);
+      }
+      if (!currentDateOverride) {
+        setFormattedDateStr(
+          now.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        );
+      }
     };
 
-    updateTime();
-    const timer = setInterval(updateTime, 30000);
+    updateDateTime();
+    const timer = setInterval(updateDateTime, 10000);
     return () => clearInterval(timer);
-  }, []);
+  }, [currentTimeOverride, currentDateOverride]);
 
-  const activeCurrentBlock = mergedBlocks.find((b) => {
-    if (!currentTimeStr) return false;
-    return currentTimeStr >= b.jam_mulai && currentTimeStr <= b.jam_selesai;
-  });
+  // Logika Pergantian Jam Otomatis:
+  // 1. Cari sesi yang sedang berlangsung saat ini
+  let activeIndex = 0;
+  if (currentTimeStr && mergedBlocks.length > 0) {
+    const ongoingIdx = mergedBlocks.findIndex(
+      (b) => currentTimeStr >= b.jam_mulai && currentTimeStr <= b.jam_selesai
+    );
+    if (ongoingIdx !== -1) {
+      activeIndex = ongoingIdx;
+    } else {
+      const upcomingIdx = mergedBlocks.findIndex((b) => currentTimeStr < b.jam_mulai);
+      if (upcomingIdx !== -1) {
+        activeIndex = upcomingIdx;
+      } else {
+        // Jika semua sesi telah lewat hari ini, tetap tampilkan sesi pertama atau terakhir
+        activeIndex = 0;
+      }
+    }
+  }
 
-  const nextUpcomingBlock = mergedBlocks.find((b) => {
-    if (!currentTimeStr) return false;
-    return currentTimeStr < b.jam_mulai;
-  });
-
-  const isAllPassed =
-    mergedBlocks.length > 0 &&
-    currentTimeStr !== "" &&
-    mergedBlocks.every((b) => currentTimeStr > b.jam_selesai);
+  const activeBlock = mergedBlocks[activeIndex];
+  const companionBlocks = mergedBlocks.filter((_, idx) => idx !== activeIndex);
 
   const getActualSessionForBlock = (block: MergedScheduleBlock) => {
     return actualSessions.find(
@@ -103,8 +150,34 @@ export function TeacherTodaySchedule({
     });
   };
 
+  const displayDate = formattedDateStr || `Hari ${todayHari}`;
+  const displayTime = formattedTimeStr || (currentTimeStr ? `${currentTimeStr} WIB` : "");
+
+  const isOngoing = Boolean(
+    activeBlock &&
+    currentTimeStr &&
+    currentTimeStr >= activeBlock.jam_mulai &&
+    currentTimeStr <= activeBlock.jam_selesai
+  );
+
+  const formatSlotLabel = (entry: ScheduleEntryDTO, idx: number) => {
+    if (entry.slot_waktu_nama) {
+      const trimmed = entry.slot_waktu_nama.trim();
+      if (trimmed.toUpperCase().includes(`(${todayHari.toUpperCase()})`)) {
+        return trimmed.toUpperCase();
+      }
+      return `${trimmed.toUpperCase()} (${todayHari.toUpperCase()})`;
+    }
+    const jamKe = entry.slot_waktu_urutan
+      ? entry.slot_waktu_urutan > 100
+        ? entry.slot_waktu_urutan % 100
+        : entry.slot_waktu_urutan
+      : idx + 1;
+    return `JAM KE-${jamKe} (${todayHari.toUpperCase()})`;
+  };
+
   return (
-    <div className="rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-2xs space-y-3.5 flex flex-col justify-between">
+    <div className="space-y-3">
       {/* Toast Notifikasi */}
       {toast && (
         <Toast
@@ -115,276 +188,222 @@ export function TeacherTodaySchedule({
         />
       )}
 
-      {/* Header Widget Ringkas */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-50 text-[#2563EB]">
+      {/* Header Widget: Jadwal Hari Ini • Tanggal */}
+      <div className="flex items-center justify-between gap-2 pb-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="p-1.5 rounded-lg bg-blue-50 text-[#2563EB] shrink-0">
             <Calendar className="h-4 w-4" />
           </div>
-          <div>
-            <h2 className="text-sm sm:text-base font-extrabold text-[#0F172A] tracking-tight">
-              Jadwal & Agenda Mengajar Hari Ini
-            </h2>
-            <p className="text-[11px] text-slate-500">
-              Hari <strong className="text-slate-700">{todayHari}</strong> • Sesi tatap muka resmi
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h2 className="text-xs sm:text-sm font-black text-[#0F172A] tracking-tight">
+                Jadwal Hari Ini
+              </h2>
+              <span className="text-slate-300 font-normal hidden sm:inline">•</span>
+              <span className="text-[11px] text-slate-500 font-semibold hidden sm:inline">
+                {displayDate}
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium sm:hidden truncate">
+              {displayDate}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-[#2563EB] text-xs font-bold border border-blue-100">
-            {mergedBlocks.length} Sesi Terpadu ({totalJamHariIni} JP)
-          </span>
+          {mergedBlocks.length > 0 && (
+            <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#2563EB] text-[11px] font-bold border border-blue-100">
+              {mergedBlocks.length} Sesi ({totalJamHariIni} JP)
+            </span>
+          )}
           <Link
             href="/jadwal-saya"
-            className="text-xs font-bold text-slate-500 hover:text-[#2563EB] p-1.5 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1"
+            className="text-xs font-semibold text-slate-500 hover:text-[#2563EB] p-1 rounded-md hover:bg-slate-50 transition-colors flex items-center gap-1"
             title="Lihat Jadwal Mingguan Lengkap"
           >
-            <span className="hidden sm:inline">Mingguan</span>
+            <span className="hidden sm:inline">Jadwal Mingguan</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>
 
-      {/* Hero Banner Kompak (Live Now / Next Class) */}
-      {mergedBlocks.length > 0 && (
-        <div>
-          {activeCurrentBlock ? (
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 p-3.5 text-white shadow-sm">
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="space-y-1 min-w-0">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide uppercase">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    <span>Sedang Berlangsung Sekarang</span>
-                  </div>
-
-                  <div className="truncate">
-                    <h3 className="text-sm sm:text-base font-black tracking-tight truncate">
-                      {activeCurrentBlock.mata_pelajaran_nama}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-blue-100">
-                      <span className="font-bold bg-white/20 px-1.5 py-0.5 rounded">
-                        {activeCurrentBlock.rombel_nama}
-                      </span>
-                      <span>•</span>
-                      <span>
-                        {activeCurrentBlock.jam_mulai} - {activeCurrentBlock.jam_selesai} (
-                        {activeCurrentBlock.total_jp} JP)
-                      </span>
-                      {activeCurrentBlock.ruangan && (
-                        <>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {activeCurrentBlock.ruangan}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleOpenSession(activeCurrentBlock.primary_entry)}
-                  disabled={isPending}
-                  className="px-3.5 py-2 rounded-xl bg-white hover:bg-blue-50 text-blue-700 font-extrabold text-xs shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 self-start sm:self-center"
-                >
-                  <PlayCircle className="h-3.5 w-3.5 text-blue-600" />
-                  <span>Buka Presensi / KBM</span>
-                </button>
-              </div>
-            </div>
-          ) : nextUpcomingBlock ? (
-            <div className="rounded-xl bg-blue-50/60 border border-blue-100 p-2.5 sm:p-3 flex items-center justify-between gap-2.5">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="p-1.5 rounded-lg bg-blue-100 text-[#2563EB] shrink-0">
-                  <Timer className="h-3.5 w-3.5" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-extrabold uppercase text-[#2563EB] tracking-wider">
-                      Sesi Berikutnya
-                    </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-blue-700">
-                      {nextUpcomingBlock.jam_mulai} WIB
-                    </span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-800 truncate">
-                    {nextUpcomingBlock.mata_pelajaran_nama} —{" "}
-                    <span className="text-[#2563EB]">{nextUpcomingBlock.rombel_nama}</span>
-                    {nextUpcomingBlock.ruangan ? ` (${nextUpcomingBlock.ruangan})` : ""}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleOpenSession(nextUpcomingBlock.primary_entry)}
-                disabled={isPending}
-                className="px-2.5 py-1.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-2xs transition-all cursor-pointer shrink-0"
-              >
-                <span>Buka Sekarang</span>
-              </button>
-            </div>
-          ) : isAllPassed ? (
-            <div className="rounded-xl bg-emerald-50/70 border border-emerald-200/60 p-2.5 flex items-center gap-2 text-emerald-900 text-xs">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-              <span>
-                <strong>Semua Sesi Selesai!</strong> Seluruh {mergedBlocks.length} sesi (
-                {totalJamHariIni} JP) hari ini telah tuntas.
-              </span>
-            </div>
-          ) : null}
-        </div>
-      )}
-
-      {/* Daftar Sesi Hari Ini Berdensitas Tinggi (High-Density List) */}
+      {/* State Jika Tidak Ada Jadwal Mengajar */}
       {mergedBlocks.length === 0 ? (
-        <div className="p-6 rounded-xl bg-slate-50/70 border border-dashed border-slate-200 text-center space-y-2">
-          <Calendar className="h-6 w-6 text-slate-300 mx-auto" />
-          <div>
-            <h4 className="text-xs sm:text-sm font-bold text-slate-700">
-              Tidak Ada Jadwal Mengajar Hari {todayHari}
-            </h4>
-            <p className="text-[11px] text-slate-400">
-              Anda tidak memiliki jam tatap muka hari ini.
-            </p>
-          </div>
-          <Link
-            href="/jadwal-saya"
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#2563EB] hover:underline"
-          >
-            <span>Lihat Jadwal Mingguan Lengkap</span>
-            <ArrowRight className="h-3 w-3" />
-          </Link>
+        <div className="py-8 px-4 rounded-2xl bg-white border border-dashed border-slate-200 text-center text-slate-400 space-y-1">
+          <Calendar className="h-6 w-6 text-slate-300 mx-auto mb-1" />
+          <p className="text-xs font-bold text-slate-600">
+            Tidak Ada Jadwal Mengajar Hari Ini ({todayHari})
+          </p>
+          <p className="text-[11px] text-slate-400">
+            Gunakan waktu luang untuk evaluasi tugas murid, persiapan materi, atau bimbingan kelas.
+          </p>
         </div>
       ) : (
-        <div className="space-y-2 max-h-[360px] overflow-y-auto pr-0.5 scrollbar-thin">
-          {mergedBlocks.map((block, idx) => {
-            const actual = getActualSessionForBlock(block);
-            const isOngoing = actual?.status === "DIMULAI";
-            const isFinished = actual?.status === "SELESAI";
-            const isCurrentTimeSlot =
-              currentTimeStr !== "" &&
-              currentTimeStr >= block.jam_mulai &&
-              currentTimeStr <= block.jam_selesai;
+        /* The Jordan-Style 4-Card Cockpit (Card Utama Hero + 3 Card Pendamping Horisontal Sejajar) */
+        <div className="flex flex-col lg:flex-row gap-3.5 items-stretch">
+          {/* 1. CARD UTAMA (KIRI): Sesi Kelas Aktif (Hero Cockpit: Diperbesar Proporsional, Tegas & Profesional) */}
+          <div className="relative overflow-hidden w-full sm:w-[340px] lg:w-[360px] shrink-0 rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs transition-all hover:border-slate-300 flex flex-col justify-between">
+            {/* Watermark / Ghost Ambient Silhouette Icon di Latar Belakang Kanan */}
+            <div className="pointer-events-none absolute -right-3 -top-2 select-none opacity-[0.06] text-slate-800 transition-opacity">
+              <GraduationCap className="h-32 w-32 -rotate-12" />
+            </div>
 
-            return (
-              <div
-                key={block.key || idx}
-                className={`p-2.5 sm:p-3 rounded-xl border transition-all flex items-center justify-between gap-2.5 ${
-                  isOngoing || isCurrentTimeSlot
-                    ? "bg-blue-50/70 border-blue-200 shadow-2xs"
-                    : isFinished
-                      ? "bg-slate-50/60 border-slate-100 opacity-80"
-                      : "bg-white border-slate-200/70 hover:border-blue-200 hover:bg-slate-50/40"
-                }`}
-              >
-                {/* Waktu + Identitas Kelas */}
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  {/* Slot Jam */}
-                  <div
-                    className={`px-2 py-1 rounded-lg text-center shrink-0 min-w-[68px] ${
-                      isOngoing || isCurrentTimeSlot
-                        ? "bg-[#2563EB] text-white shadow-2xs"
-                        : "bg-slate-100 text-slate-800"
-                    }`}
-                  >
-                    <span className="text-[11px] font-black block leading-none">
-                      {block.jam_mulai}
-                    </span>
-                    <span
-                      className={`text-[9px] font-medium leading-none ${
-                        isOngoing || isCurrentTimeSlot ? "text-blue-100" : "text-slate-400"
-                      }`}
-                    >
-                      {block.jam_selesai}
-                    </span>
-                  </div>
-
-                  {/* Detail Mapel & Rombel */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-[#2563EB]">
-                        {block.mata_pelajaran_kode}
-                      </span>
-                      <h4 className="text-xs font-bold text-slate-900 truncate">
-                        {block.mata_pelajaran_nama}
-                      </h4>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
-                      <span className="font-bold text-slate-700 bg-slate-100 px-1.5 py-0.2 rounded text-[10px]">
-                        {block.rombel_nama}
-                      </span>
-                      <span>•</span>
-                      <span>{block.total_jp} JP</span>
-                      {block.ruangan && (
-                        <>
-                          <span>•</span>
-                          <span className="text-blue-600 font-medium truncate">
-                            {block.ruangan}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status & Tombol Aksi */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {isOngoing ? (
-                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>Sesi Berlangsung</span>
-                    </span>
-                  ) : isFinished ? (
-                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold">
-                      <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                      <span>Selesai</span>
-                    </span>
+            {/* Header Card Utama: Rombel Besar & Titik 3 Elipsis */}
+            <div className="relative z-10 flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                {/* XII RPL: Font BOLD dan BESAR UTAMA (Hero Size) */}
+                <h2 className="text-3xl sm:text-[32px] font-black text-[#0B1527] tracking-tight leading-none">
+                  {activeBlock.rombel_nama}
+                </h2>
+                {/* Nama Mapel: Tidak bold, abu-abu (slate-500), ukuran proporsional (text-sm) */}
+                <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1.5 leading-tight truncate">
+                  {activeBlock.mata_pelajaran_nama}
+                  {activeBlock.ruangan ? (
+                    <span className="text-slate-400 text-xs"> • {activeBlock.ruangan}</span>
                   ) : null}
+                </p>
+              </div>
 
-                  {isOngoing ? (
-                    <Link
-                      href="/sesi-pembelajaran"
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-all"
-                    >
-                      <Users className="h-3 w-3" />
-                      <span>Presensi / KBM</span>
-                    </Link>
-                  ) : isFinished ? (
-                    <Link
-                      href="/sesi-pembelajaran"
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-semibold"
-                    >
-                      <span>Lihat Riwayat Sesi</span>
-                    </Link>
-                  ) : (
+              {/* Titik 3 Elipsis (Action Menu) */}
+              <div className="relative shrink-0 -mr-1.5 -mt-1" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                  title="Pilihan Aksi Sesi Ini"
+                  aria-label="Menu Aksi Sesi"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </button>
+
+                {/* Dropdown Popover */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-1.5 w-52 rounded-xl bg-white border border-slate-200/90 shadow-xl py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150">
                     <button
                       type="button"
-                      onClick={() => handleOpenSession(block.primary_entry)}
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleOpenSession(activeBlock.primary_entry);
+                      }}
                       disabled={isPending}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs shadow-2xs transition-all cursor-pointer"
-                      title="Buka sesi kelas ini"
+                      className="w-full px-3.5 py-2 text-left text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#2563EB] flex items-center gap-2 transition-colors cursor-pointer"
                     >
-                      <PlayCircle className="h-3 w-3" />
-                      <span>Buka Kelas (KBM)</span>
+                      <PlayCircle className="h-4 w-4 text-[#2563EB]" />
+                      <span>Buka Sesi (KBM)</span>
                     </button>
-                  )}
 
-                  <Link
-                    href={`/kelas-saya/${block.penugasan_mengajar_id}`}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
-                    title="Buka Workspace Kelas"
-                  >
-                    <BookOpen className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
+                    <Link
+                      href="/sesi-pembelajaran"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="w-full px-3.5 py-2 text-left text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition-colors"
+                    >
+                      <Users className="h-4 w-4 text-emerald-600" />
+                      <span>Presensi / Absensi</span>
+                    </Link>
+
+                    <Link
+                      href={`/kelas-saya/${activeBlock.penugasan_mengajar_id}`}
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="w-full px-3.5 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-2 transition-colors border-t border-slate-100 mt-1 pt-1.5"
+                    >
+                      <BookOpen className="h-4 w-4 text-slate-400" />
+                      <span>Workspace Kelas</span>
+                    </Link>
+                  </div>
+                )}
               </div>
-            );
-          })}
+            </div>
+
+            {/* Garis Pemisah (Divider Halus) */}
+            <div className="my-3.5 border-t border-slate-200/60" />
+
+            {/* Rincian Jam Pelajaran (Sub-kolom Diperbesar Proporsional & Jelas) */}
+            <div className="flex items-start gap-6 sm:gap-7">
+              {activeBlock.entries.slice(0, 2).map((entry, idx) => (
+                <div key={entry.id || idx} className="min-w-0">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block leading-none">
+                    {formatSlotLabel(entry, idx)}
+                  </span>
+                  <span className="text-sm sm:text-base font-black text-[#0B1527] font-mono block mt-1.5 leading-none">
+                    {entry.slot_waktu_jam_mulai}–{entry.slot_waktu_jam_selesai}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 2. CARD PENDAMPING (KANAN): Grid Horisontal yang Ramping, Sejajar Rata & Menyesuaikan Jumlah Sesi */}
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 ${
+              companionBlocks.length >= 3
+                ? "lg:grid-cols-3"
+                : companionBlocks.length === 2
+                  ? "lg:grid-cols-2"
+                  : "lg:grid-cols-1 max-w-md"
+            } gap-3 flex-1 min-w-0`}
+          >
+            {companionBlocks.length === 0 ? (
+              <div className="col-span-full h-full py-8 px-4 rounded-2xl bg-white border border-dashed border-slate-200 flex flex-col items-center justify-center text-center text-slate-400">
+                <Sparkles className="h-5 w-5 text-slate-300 mb-1" />
+                <p className="text-xs font-bold text-slate-600">Satu-Satunya Sesi Hari Ini</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Tidak ada sesi mengajar lain yang terjadwal untuk hari ini.
+                </p>
+              </div>
+            ) : (
+              companionBlocks.slice(0, 3).map((block) => (
+                <div
+                  key={block.key}
+                  className="relative overflow-hidden rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Header Card Pendamping: Rombel & Badge Waktu */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <h4 className="text-base font-black text-[#0B1527] tracking-tight leading-none truncate">
+                          {block.rombel_nama}
+                        </h4>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 leading-none shrink-0">
+                          {block.total_jp} JP
+                        </span>
+                      </div>
+
+                      {/* Badge Waktu Bersih */}
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-blue-50 text-[#2563EB] text-xs font-bold border border-blue-100/80 font-mono tracking-tight shrink-0">
+                        {block.jam_mulai}–{block.jam_selesai}
+                      </span>
+                    </div>
+
+                    {/* Mapel Abu-abu Lembut di Bawahnya */}
+                    <p
+                      className="text-xs font-normal text-slate-500 mt-1.5 leading-tight line-clamp-1"
+                      title={block.mata_pelajaran_nama}
+                    >
+                      {block.mata_pelajaran_nama}
+                    </p>
+                  </div>
+
+                  {/* Divider Halus */}
+                  <div className="my-2.5 border-t border-slate-100" />
+
+                  {/* Footer: Detail Slot & Ruangan */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 gap-2">
+                    <span className="font-medium truncate">
+                      {block.entries.length > 1
+                        ? `${block.entries[0]?.slot_waktu_nama || `Jam Ke-${block.entries[0]?.slot_waktu_urutan > 100 ? block.entries[0]?.slot_waktu_urutan % 100 : block.entries[0]?.slot_waktu_urutan}`} s/d ${block.entries[block.entries.length - 1]?.slot_waktu_nama || `Jam Ke-${block.entries[block.entries.length - 1]?.slot_waktu_urutan > 100 ? block.entries[block.entries.length - 1]?.slot_waktu_urutan % 100 : block.entries[block.entries.length - 1]?.slot_waktu_urutan}`}`
+                        : block.entries[0]?.slot_waktu_nama ||
+                          `Jam Ke-${block.entries[0]?.slot_waktu_urutan > 100 ? block.entries[0]?.slot_waktu_urutan % 100 : block.entries[0]?.slot_waktu_urutan}`}
+                    </span>
+                    {block.ruangan && (
+                      <span className="font-semibold text-slate-500 shrink-0 truncate max-w-[120px]">
+                        {block.ruangan}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>

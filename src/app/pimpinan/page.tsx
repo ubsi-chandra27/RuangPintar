@@ -1,0 +1,102 @@
+import { Metadata } from "next";
+import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
+import { staffCapabilityService } from "@/shared/infrastructure/authorization/staff-capability-service";
+import { AcademicShell } from "@/shared/components/shell/academic-shell";
+import { leadershipAnalyticsService } from "@/modules/reporting/application/leadership-analytics-service";
+import { LeadershipPortalView } from "@/modules/reporting/presentation/leadership-portal-view";
+import {
+  UserLeadershipContext,
+  HeadmasterOverviewDTO,
+  CurriculumOverviewDTO,
+  StudentAffairsOverviewDTO,
+  ProgramHeadOverviewDTO,
+  RiwayatEksporItemDTO,
+} from "@/modules/reporting/domain/reporting-types";
+import { ShieldAlert } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Portal Kepemimpinan & Laporan — Ruang Pintar",
+  description:
+    "Dashboard pimpinan sekolah, evaluasi kurikulum, kesiswaan, dan pusat ekspor laporan.",
+};
+
+export default async function LeadershipPage() {
+  const user = await requireAuth();
+
+  let capabilities: any[] = [];
+  if (user.peran_dasar === "SCHOOL_STAFF") {
+    capabilities = await staffCapabilityService.getUserCapabilities(user.id);
+  }
+
+  const breadcrumbItems = [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Portal Kepemimpinan & Laporan", href: "/pimpinan", isCurrent: true },
+  ];
+
+  let leadershipContext: UserLeadershipContext | null = null;
+  let initialHeadmasterData: HeadmasterOverviewDTO | null = null;
+  let initialCurriculumData: CurriculumOverviewDTO | null = null;
+  let initialStudentAffairsData: StudentAffairsOverviewDTO | null = null;
+  let initialProgramHeadData: ProgramHeadOverviewDTO | null = null;
+  let initialExportHistory: RiwayatEksporItemDTO[] = [];
+  let authError: string | null = null;
+
+  try {
+    leadershipContext = await leadershipAnalyticsService.resolveLeadershipContext(user);
+
+    // Prefetch data awal sesuai active_role
+    if (leadershipContext.active_role === "HEADMASTER") {
+      const res = await leadershipAnalyticsService.getHeadmasterOverview(user);
+      initialHeadmasterData = res.data;
+    } else if (leadershipContext.active_role === "VICE_PRINCIPAL_CURRICULUM") {
+      const res = await leadershipAnalyticsService.getCurriculumOverview(user);
+      initialCurriculumData = res.data;
+    } else if (leadershipContext.active_role === "VICE_PRINCIPAL_STUDENT_AFFAIRS") {
+      const res = await leadershipAnalyticsService.getStudentAffairsOverview(user);
+      initialStudentAffairsData = res.data;
+    } else if (leadershipContext.active_role === "PROGRAM_HEAD") {
+      const res = await leadershipAnalyticsService.getProgramHeadOverview(user);
+      initialProgramHeadData = res.data;
+    }
+
+    initialExportHistory = await leadershipAnalyticsService.getExportHistory(user);
+  } catch (err: any) {
+    authError =
+      err.message ||
+      "Akses ditolak. Anda tidak memiliki penugasan jabatan struktural aktif pada sistem.";
+  }
+
+  return (
+    <AcademicShell user={user} userCapabilities={capabilities} breadcrumbItems={breadcrumbItems}>
+      {authError || !leadershipContext ? (
+        <div className="rounded-2xl bg-white border border-rose-200/80 p-8 text-center max-w-xl mx-auto my-12 shadow-sm">
+          <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4">
+            <ShieldAlert className="h-6 w-6" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">
+            Akses Kepemimpinan Ditolak (403 Forbidden)
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+            {authError ??
+              "Halaman ini hanya dapat diakses oleh personil yang memegang Penugasan Jabatan struktural aktif (Kepala Sekolah, Wakasek, atau Kepala Program Keahlian) dan Super Admin."}
+          </p>
+          <a
+            href="/dashboard"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-colors"
+          >
+            Kembali ke Dashboard Utama
+          </a>
+        </div>
+      ) : (
+        <LeadershipPortalView
+          initialContext={leadershipContext}
+          initialHeadmasterData={initialHeadmasterData}
+          initialCurriculumData={initialCurriculumData}
+          initialStudentAffairsData={initialStudentAffairsData}
+          initialProgramHeadData={initialProgramHeadData}
+          initialExportHistory={initialExportHistory}
+        />
+      )}
+    </AcademicShell>
+  );
+}

@@ -54,6 +54,7 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     expect(allItemIds).toContain("staff-school");
     expect(allItemIds).toContain("staff-academic");
     expect(allItemIds).toContain("staff-students");
+    expect(allItemIds).toContain("staff-attendance");
     expect(allItemIds).toContain("staff-reports");
   });
 
@@ -65,6 +66,7 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     expect(allItemIds).toContain("staff-school");
     expect(allItemIds).not.toContain("staff-academic");
     expect(allItemIds).not.toContain("staff-students");
+    expect(allItemIds).not.toContain("staff-attendance");
     expect(allItemIds).not.toContain("staff-reports");
   });
 
@@ -75,6 +77,7 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     expect(allItemIds).toContain("dashboard");
     expect(allItemIds).toContain("staff-school");
     expect(allItemIds).toContain("staff-academic");
+    expect(allItemIds).toContain("staff-attendance");
     expect(allItemIds).not.toContain("staff-students");
   });
 

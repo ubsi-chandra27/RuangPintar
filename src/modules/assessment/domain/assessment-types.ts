@@ -86,8 +86,10 @@ export interface GradebookColumnDTO {
   id: string; // asesmen_id
   judul: string;
   kategori: AssessmentCategory;
+  tp_id?: string | null;
   tp_kode?: string | null;
   tp_deskripsi?: string | null;
+  lingkup_materi_id?: string | null;
   lingkup_materi_judul?: string | null;
   bobot: number;
   kkm_kktp: number;
@@ -103,6 +105,7 @@ export interface GradebookStudentRowDTO {
   siswa_id: string;
   penempatan_rombel_id?: string | null;
   nis: string;
+  nisn?: string | null;
   nama_lengkap: string;
   nomor_absen?: number | null;
   // Map asesmen_id ke nilai angka (atau null jika belum dinilai)

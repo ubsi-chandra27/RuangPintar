@@ -73,6 +73,7 @@ model Sekolah {
   pengumuman                Pengumuman[]
   notifikasi_pengguna       NotifikasiPengguna[]
   catatan_monitoring        CatatanMonitoring[]
+  riwayat_ekspor_laporan    RiwayatEksporLaporan[]
 
   @@map("sekolah")
 }
@@ -248,6 +249,7 @@ model Pengguna {
   preferensi_notifikasi      PreferensiNotifikasi?
   catatan_monitoring_ditulis CatatanMonitoring[]      @relation("PenulisCatatan")
   tindak_lanjut_ditugaskan   TindakLanjutMonitoring[] @relation("PenanggungJawabTindakLanjut")
+  ekspor_laporan             RiwayatEksporLaporan[]   @relation("PembuatEksporLaporan")
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -1592,6 +1594,27 @@ model TindakLanjutMonitoring {
 
   @@index([catatan_id, status])
   @@map("tindak_lanjut_monitoring")
+}
+
+/// M19 — Reporting & Analytics: Riwayat dan metadata ekspor laporan resmi sekolah
+model RiwayatEksporLaporan {
+  id                    String   @id
+  sekolah_id            String
+  tipe_laporan          String   // PRESENSI | NILAI_AKADEMIK | KURIKULUM | KESISWAAN | EKSEKUTIF
+  judul                 String
+  format                String   // CSV | PRINT_A4 | PDF
+  parameter_filter_json String?
+  total_baris           Int      @default(0)
+  dibuat_oleh_id        String
+  berkas_url            String?
+  created_at            DateTime @default(now())
+
+  sekolah     Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+  dibuat_oleh Pengguna @relation("PembuatEksporLaporan", fields: [dibuat_oleh_id], references: [id], onDelete: Restrict)
+
+  @@index([sekolah_id, tipe_laporan])
+  @@index([dibuat_oleh_id])
+  @@map("riwayat_ekspor_laporan")
 }
 
 

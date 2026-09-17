@@ -15,6 +15,7 @@ import * as attendanceActions from "@/app/actions/attendance-actions";
 vi.mock("@/app/actions/attendance-actions", () => ({
   getSessionAttendanceAction: vi.fn(),
   saveSessionAttendanceAction: vi.fn(),
+  getClassAttendanceRecapAction: vi.fn(),
 }));
 
 describe("ClassAttendanceTabView", () => {
@@ -100,6 +101,83 @@ describe("ClassAttendanceTabView", () => {
 
     fireEvent.click(buttons[0]);
     expect(handleOpen).toHaveBeenCalledWith("sesi-1");
+  });
+
+  it("renders student attendance recap table by default when recap prop is provided", () => {
+    const sampleRecap: any = {
+      penugasan_id: "penugasan-1",
+      rombel_id: "rombel-1",
+      rombel_nama: "X RPL 1",
+      mata_pelajaran_id: "mapel-1",
+      mata_pelajaran_nama: "Aljabar Boolean",
+      mata_pelajaran_kode: "MAT-01",
+      guru_id: "guru-1",
+      guru_nama: "Budi Santoso",
+      total_sesi_terjadwal: 5,
+      total_sesi_tercatat: 4,
+      total_siswa: 2,
+      rerata_kehadiran_kelas: 95,
+      jumlah_perlu_perhatian: 0,
+      daftar_siswa: [
+        {
+          siswa_id: "siswa-1",
+          nomor_absen: 1,
+          nis: "1001",
+          nisn: "0012345678",
+          nama_lengkap: "Ahmad Rizky",
+          foto_url: null,
+          hadir: 4,
+          sakit: 0,
+          izin: 0,
+          alpha: 0,
+          dispensasi: 0,
+          terlambat: 0,
+          total_sesi_tercatat: 4,
+          persentase_kehadiran: 100,
+          status_evaluasi: "Sangat Baik",
+        },
+        {
+          siswa_id: "siswa-2",
+          nomor_absen: 2,
+          nis: "1002",
+          nisn: "0012345679",
+          nama_lengkap: "Dewi Safitri",
+          foto_url: null,
+          hadir: 3,
+          sakit: 1,
+          izin: 0,
+          alpha: 0,
+          dispensasi: 0,
+          terlambat: 0,
+          total_sesi_tercatat: 4,
+          persentase_kehadiran: 75,
+          status_evaluasi: "Cukup",
+        },
+      ],
+    };
+
+    render(
+      <ClassAttendanceTabView
+        canManage={true}
+        history={sampleHistory}
+        stats={sampleStats}
+        recap={sampleRecap}
+        onOpenAttendance={vi.fn()}
+      />
+    );
+
+    // Verifikasi sub-tab Rekapitulasi Siswa aktif dan menampilkan data siswa
+    expect(screen.getByText("Ahmad Rizky")).toBeInTheDocument();
+    expect(screen.getByText("Dewi Safitri")).toBeInTheDocument();
+    expect(screen.getByText("Sangat Baik")).toBeInTheDocument();
+    expect(screen.getByText("Ekspor CSV")).toBeInTheDocument();
+
+    // Beralih ke sub-tab Riwayat Sesi KBM
+    const historySubTab = screen.getByRole("button", { name: /Riwayat Sesi KBM/i });
+    fireEvent.click(historySubTab);
+
+    expect(screen.getByText("Aljabar Boolean")).toBeInTheDocument();
+    expect(screen.getByText("28 Hadir (93%)")).toBeInTheDocument();
   });
 });
 
@@ -333,6 +411,67 @@ describe("ClassAttendanceOverview (/presensi-kelas)", () => {
     fireEvent.click(rekapTab);
 
     expect(screen.getByText("95% Kehadiran")).toBeInTheDocument();
-    expect(screen.getByText("Buka Lembar Presensi Kelas")).toBeInTheDocument();
+    expect(screen.getByText("Lihat Rekap Siswa")).toBeInTheDocument();
+  });
+
+  it("membuka modal rekapitulasi siswa saat tombol Lihat Rekap Siswa diklik", async () => {
+    vi.mocked(attendanceActions.getClassAttendanceRecapAction).mockResolvedValue({
+      success: true,
+      message: "OK",
+      data: {
+        penugasan_id: "penugasan-1",
+        rombel_id: "rombel-1",
+        rombel_nama: "X RPL 1",
+        mata_pelajaran_id: "mapel-1",
+        mata_pelajaran_nama: "Pemrograman Dasar",
+        mata_pelajaran_kode: "PBO",
+        guru_id: "guru-1",
+        guru_nama: "Budi Santoso",
+        total_sesi_terjadwal: 10,
+        total_sesi_tercatat: 5,
+        total_siswa: 1,
+        rerata_kehadiran_kelas: 100,
+        jumlah_perlu_perhatian: 0,
+        daftar_siswa: [
+          {
+            siswa_id: "s-1",
+            nomor_absen: 1,
+            nis: "1001",
+            nisn: "0012345678",
+            nama_lengkap: "Siswa Teladan",
+            foto_url: null,
+            hadir: 5,
+            sakit: 0,
+            izin: 0,
+            alpha: 0,
+            dispensasi: 0,
+            terlambat: 0,
+            total_sesi_tercatat: 5,
+            persentase_kehadiran: 100,
+            status_evaluasi: "Sangat Baik",
+          },
+        ],
+      },
+    });
+
+    render(
+      <ClassAttendanceOverview
+        sessions={sampleSessions}
+        classes={sampleClasses}
+        schoolName="SMK Negeri 1 Jakarta"
+        canManage={true}
+        isAdmin={false}
+      />
+    );
+
+    const rekapTab = screen.getByRole("button", { name: /Rekapitulasi per Rombel/i });
+    fireEvent.click(rekapTab);
+
+    const lihatRekapBtn = screen.getByRole("button", { name: /Lihat Rekap Siswa/i });
+    fireEvent.click(lihatRekapBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Siswa Teladan")).toBeInTheDocument();
+    });
   });
 });

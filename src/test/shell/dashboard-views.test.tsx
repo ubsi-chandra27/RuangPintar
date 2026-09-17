@@ -124,12 +124,83 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     });
     render(jsx);
 
-    expect(screen.getByText(/Selamat Datang, Ahmad Dahlan, S.Pd./i)).toBeInTheDocument();
-    expect(screen.getByText("Guru Pengajar")).toBeInTheDocument();
-    expect(screen.getByText("Penugasan Mengajar & Kelas Saya")).toBeInTheDocument();
-    expect(screen.getByText("1 Penugasan")).toBeInTheDocument();
-    expect(screen.getByText("Pemrograman Web & Mobile")).toBeInTheDocument();
+    expect(screen.getByText("Ahmad Dahlan, S.Pd.")).toBeInTheDocument();
+    expect(screen.queryByText("Guru Pengajar")).not.toBeInTheDocument();
+    expect(screen.getByText("Jam Digital & Kalender")).toBeInTheDocument();
+    expect(screen.getByText("Jadwal Hari Ini")).toBeInTheDocument();
     expect(screen.getByText("Aksi Cepat Guru")).toBeInTheDocument();
+  });
+
+  it("renders TeacherDashboard with pending tasks to-do list and official announcements", async () => {
+    const jsx = await TeacherDashboard({
+      user: mockTeacher,
+      initialData: {
+        hasProfile: true,
+        teacher: {
+          id: "01J00000000000000000000001",
+          sekolah_id: "01J00000000000000000000001",
+          nama_lengkap: "Ahmad Dahlan",
+          nama_dengan_gelar: "Ahmad Dahlan, S.Pd.",
+          nip: "198501012010011001",
+          status_kepegawaian: "TETAP",
+          status_aktif: true,
+          status_lifecycle: "AKTIF",
+          jenis_kelamin: "L",
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        activeAssignments: [],
+        activeHomeroom: null,
+        totalJamMinggu: 0,
+        totalRombel: 0,
+        totalSiswaBinaan: 0,
+        pendingTasks: [
+          {
+            publikasi_id: "PUB_01",
+            penugasan_mengajar_id: "PENUGASAN_01",
+            tugas_id: "TUG_01",
+            judul_tugas: "Tugas 1: Algoritma Pencarian Linear",
+            rombel_nama: "X RPL 1",
+            mata_pelajaran_kode: "PBO",
+            total_dikumpulkan: 28,
+            belum_dinilai: 5,
+            batas_waktu: new Date("2026-09-20"),
+          },
+        ],
+        totalTugasPerluDiperiksa: 1,
+      },
+      initialAnnouncements: [
+        {
+          id: "ANN_01",
+          sekolah_id: "01J00000000000000000000001",
+          penulis_id: "ADMIN_01",
+          penulis: { id: "ADMIN_01", nama_lengkap: "Kepala Sekolah", peran_dasar: "SUPER_ADMIN" },
+          judul: "Sosialisasi Implementasi Asesmen Kurikulum Merdeka",
+          konten: "Diharapkan seluruh dewan guru hadir di ruang rapat utama.",
+          kategori: "AKADEMIK",
+          status: "PUBLISHED",
+          apakah_disematkan: true,
+          lampiran_url: null,
+          target_audiens: "GURU",
+          target_rombel_id: null,
+          dipublikasikan_pada: new Date("2026-09-12"),
+          created_at: new Date("2026-09-12"),
+          updated_at: new Date("2026-09-12"),
+        },
+      ],
+    });
+    render(jsx);
+
+    expect(screen.getByText("Tugas Menunggu Periksa")).toBeInTheDocument();
+    expect(screen.getByText("1 Tugas Perlu Dinilai")).toBeInTheDocument();
+    expect(screen.getByText("Perlu Diperiksa & Dinilai")).toBeInTheDocument();
+    expect(screen.getByText("Tugas 1: Algoritma Pencarian Linear")).toBeInTheDocument();
+    expect(screen.getByText("28 Siswa Mengumpulkan")).toBeInTheDocument();
+    expect(screen.getByText("5 Belum Dinilai")).toBeInTheDocument();
+    expect(screen.getByText("Pengumuman Resmi Sekolah")).toBeInTheDocument();
+    expect(
+      screen.getByText("Sosialisasi Implementasi Asesmen Kurikulum Merdeka")
+    ).toBeInTheDocument();
   });
 
   it("renders StudentDashboard with student self-scope items and CBT cards", async () => {

@@ -18,6 +18,9 @@ interface CreateAssessmentModalProps {
       deskripsi: string;
     }>;
   }>;
+  initialBabId?: string;
+  initialTpId?: string;
+  initialKategori?: AssessmentCategory;
   onSuccess: (msg: string) => void;
   onError: (msg: string) => void;
 }
@@ -27,6 +30,9 @@ export function CreateAssessmentModal({
   onClose,
   penugasanId,
   lingkupMateriList,
+  initialBabId,
+  initialTpId,
+  initialKategori,
   onSuccess,
   onError,
 }: CreateAssessmentModalProps) {
@@ -34,15 +40,25 @@ export function CreateAssessmentModal({
 
   const [judul, setJudul] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
-  const [kategori, setKategori] = useState<AssessmentCategory>("FORMATIF");
+  const [kategori, setKategori] = useState<AssessmentCategory>(initialKategori || "FORMATIF");
   const [teknikPenilaian, setTeknikPenilaian] = useState<AssessmentTechnique>("TES_TERTULIS");
-  const [selectedBabId, setSelectedBabId] = useState("");
-  const [selectedTpId, setSelectedTpId] = useState("");
+  const [selectedBabId, setSelectedBabId] = useState(initialBabId || "");
+  const [selectedTpId, setSelectedTpId] = useState(initialTpId || "");
   const [bobot, setBobot] = useState(1);
   const [kkmKktp, setKkmKktp] = useState(75);
   const [tanggalPelaksanaan, setTanggalPelaksanaan] = useState(
     new Date().toISOString().split("T")[0]
   );
+
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      if (initialBabId) setSelectedBabId(initialBabId);
+      if (initialTpId) setSelectedTpId(initialTpId);
+      if (initialKategori) setKategori(initialKategori);
+    }
+  }
 
   if (!isOpen) return null;
 

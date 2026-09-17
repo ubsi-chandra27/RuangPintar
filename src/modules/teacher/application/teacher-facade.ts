@@ -33,6 +33,18 @@ export interface TeacherManagementPageData {
   }>;
 }
 
+export interface TeacherPendingTaskItem {
+  publikasi_id: string;
+  penugasan_mengajar_id: string;
+  tugas_id: string;
+  judul_tugas: string;
+  rombel_nama: string;
+  mata_pelajaran_kode: string;
+  total_dikumpulkan: number;
+  belum_dinilai: number;
+  batas_waktu: Date | null;
+}
+
 export interface TeacherDashboardData {
   hasProfile: boolean;
   teacher: TeacherProfileDTO | null;
@@ -40,7 +52,10 @@ export interface TeacherDashboardData {
   activeHomeroom: HomeroomAssignmentDTO | null;
   totalJamMinggu: number;
   totalRombel: number;
+  totalMataPelajaran?: number;
   totalSiswaBinaan: number;
+  pendingTasks?: TeacherPendingTaskItem[];
+  totalTugasPerluDiperiksa?: number;
 }
 
 export class TeacherFacade {
@@ -128,6 +143,7 @@ export class TeacherFacade {
 
     const activeHomeroom = homerooms.length > 0 ? homerooms[0] : null;
     const uniqueRombelIds = Array.from(new Set(assignments.map((a) => a.rombel_id)));
+    const uniqueMapelIds = Array.from(new Set(assignments.map((a) => a.mata_pelajaran_id)));
     const totalJam = assignments.reduce((acc, a) => acc + a.jumlah_jam_minggu, 0);
 
     // Count students across unique taught rombels
@@ -141,6 +157,66 @@ export class TeacherFacade {
       });
     }
 
+    // Ambil tugas pembelajaran aktif yang memerlukan atensi guru
+    const assignmentIds = assignments.map((a) => a.id);
+    let pendingTasks: TeacherPendingTaskItem[] = [];
+    let totalTugasPerluDiperiksa = 0;
+
+    if (assignmentIds.length > 0) {
+      const publikasiList = await prisma.publikasiTugas.findMany({
+        where: {
+          penugasan_mengajar_id: { in: assignmentIds },
+          status: "DITERBITKAN",
+        },
+        include: {
+          tugas: {
+            select: {
+              id: true,
+              judul: true,
+            },
+          },
+          penugasan_mengajar: {
+            select: {
+              id: true,
+              rombel: { select: { nama: true } },
+              mata_pelajaran: { select: { kode: true } },
+            },
+          },
+          pengumpulan: {
+            select: {
+              id: true,
+              catatan_guru: true,
+            },
+          },
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+        take: 5,
+      });
+
+      pendingTasks = publikasiList.map((p) => {
+        const totalDikumpulkan = p.pengumpulan.length;
+        const belumDinilai = p.pengumpulan.filter((item) => !item.catatan_guru).length;
+        return {
+          publikasi_id: p.id,
+          penugasan_mengajar_id: p.penugasan_mengajar_id,
+          tugas_id: p.tugas.id,
+          judul_tugas: p.tugas.judul,
+          rombel_nama: p.penugasan_mengajar.rombel.nama,
+          mata_pelajaran_kode: p.penugasan_mengajar.mata_pelajaran.kode,
+          total_dikumpulkan: totalDikumpulkan,
+          belum_dinilai: belumDinilai,
+          batas_waktu: p.batas_waktu,
+        };
+      });
+
+      totalTugasPerluDiperiksa = pendingTasks.reduce(
+        (acc, t) => acc + (t.belum_dinilai > 0 ? 1 : 0),
+        0
+      );
+    }
+
     return {
       hasProfile: true,
       teacher,
@@ -148,7 +224,10 @@ export class TeacherFacade {
       activeHomeroom,
       totalJamMinggu: totalJam,
       totalRombel: uniqueRombelIds.length,
+      totalMataPelajaran: uniqueMapelIds.length,
       totalSiswaBinaan: totalSiswa,
+      pendingTasks,
+      totalTugasPerluDiperiksa,
     };
   }
 }

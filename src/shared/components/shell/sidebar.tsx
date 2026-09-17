@@ -24,6 +24,12 @@ import {
   HelpCircle,
   Sparkles,
   Megaphone,
+  School,
+  Presentation,
+  PlayCircle,
+  CalendarDays,
+  FileSpreadsheet,
+  MonitorPlay,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -47,6 +53,12 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Building2,
   Sparkles,
   Megaphone,
+  School,
+  Presentation,
+  PlayCircle,
+  CalendarDays,
+  FileSpreadsheet,
+  MonitorPlay,
 };
 
 export interface SidebarProps {
@@ -134,7 +146,7 @@ export function Sidebar({
                         isActive
                           ? isCollapsed
                             ? "ml-3 mr-0 pl-0 pr-0 justify-center bg-[#F8FAFC] text-[#2563EB] font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)]"
-                            : "ml-3 xl:ml-3.5 mr-0 pl-0 xl:pl-4 pr-0 xl:pr-3 justify-center xl:justify-start bg-[#F8FAFC] text-[#0F172A] font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)] gap-0 xl:gap-3"
+                            : "ml-3 xl:ml-3.5 mr-0 pl-0 xl:pl-3.5 pr-0 xl:pr-3.5 justify-center xl:justify-start bg-[#F8FAFC] text-[#0F172A] font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)] gap-0 xl:gap-3"
                           : isCollapsed
                             ? "mx-3 p-3 justify-center rounded-xl text-blue-100/90 hover:bg-white/10 hover:text-white font-medium"
                             : "mx-3 xl:mx-3.5 px-0 xl:px-3.5 py-3 justify-center xl:justify-start rounded-xl text-blue-100/90 hover:bg-white/10 hover:text-white font-medium gap-0 xl:gap-3"

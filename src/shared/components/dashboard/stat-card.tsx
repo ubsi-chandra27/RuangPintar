@@ -32,7 +32,7 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-white border border-slate-100/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(37,99,235,0.08)] hover:border-blue-100 transition-all duration-200 p-5 flex flex-col justify-between ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-white border border-slate-200/80 shadow-xs hover:shadow-sm hover:border-blue-200 transition-all duration-200 p-5 flex flex-col justify-between ${className}`}
     >
       {/* Background Watermark Icon if provided */}
       {watermarkIcon && (
@@ -44,7 +44,7 @@ export function StatCard({
       <div>
         <div className="flex items-start justify-between gap-3">
           {icon && (
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-[#2563EB] shadow-sm border border-blue-100/60 flex-shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-[#2563EB] shadow-xs border border-blue-100/60 flex-shrink-0">
               {icon}
             </div>
           )}

@@ -9,6 +9,7 @@ import { recordAuditEvent } from "@/shared/infrastructure/audit/audit-logger";
 import { prisma } from "@/shared/infrastructure/database/prisma";
 import { AttendanceNotAllowedError, SessionNotFoundError } from "../domain/attendance-errors";
 import {
+  ClassAttendanceRecapDTO,
   ClassSessionAttendanceDTO,
   SaveSessionAttendanceInput,
   SessionAttendanceHistoryItemDTO,
@@ -127,6 +128,29 @@ export class AttendanceService {
     rata_rata_kehadiran: number;
   }> {
     return this.repository.getOverallAttendanceStats(penugasanId, sekolahId);
+  }
+
+  /**
+   * Mengambil rekapitulasi kehadiran per siswa untuk penugasan mengajar rombel tertentu.
+   */
+  async getClassAttendanceRecap(
+    penugasanId: string,
+    sekolahId: string,
+    guruId?: string | null,
+    isSuperAdmin: boolean = false
+  ): Promise<ClassAttendanceRecapDTO> {
+    if (!isSuperAdmin && guruId) {
+      const assignment = await prisma.penugasanMengajar.findFirst({
+        where: { id: penugasanId, sekolah_id: sekolahId },
+      });
+      if (assignment && assignment.guru_id !== guruId) {
+        throw new AttendanceNotAllowedError(
+          "Akses ditolak: Anda bukan guru pengampu pada penugasan ini."
+        );
+      }
+    }
+
+    return this.repository.getClassAttendanceRecap(penugasanId, sekolahId);
   }
 }
 

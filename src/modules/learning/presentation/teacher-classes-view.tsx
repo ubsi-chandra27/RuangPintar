@@ -124,6 +124,7 @@ export function TeacherClassesView({
   const totalSiswa = filtered.reduce((sum, c) => sum + c.total_siswa, 0);
   const totalBAB = filtered.reduce((sum, c) => sum + c.total_bab, 0);
   const uniqueRombelsCount = new Set(filtered.map((c) => c.rombel_id)).size;
+  const uniqueMapelsCount = new Set(filtered.map((c) => c.mata_pelajaran_id)).size;
   const uniqueTeachersCount = new Set(filtered.map((c) => c.guru_id)).size;
 
   // Data Paginasi
@@ -224,7 +225,7 @@ export function TeacherClassesView({
         <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 group cursor-default">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-600 transition-colors truncate">
-              Total Kelas
+              Total Rombel / Kelas
             </span>
             <div className="p-1.5 rounded-xl bg-blue-50 text-[#2563EB] group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-2xs shrink-0">
               <Layers className="h-4 w-4 group-hover:scale-110 transition-transform" />
@@ -232,11 +233,13 @@ export function TeacherClassesView({
           </div>
           <div className="mt-1.5 flex items-baseline gap-1">
             <span className="text-xl sm:text-2xl font-black text-slate-800 group-hover:text-[#2563EB] transition-colors">
-              {filtered.length}
+              {uniqueRombelsCount}
             </span>
             <span className="text-xs font-bold text-slate-500">Kelas</span>
           </div>
-          <span className="text-[11px] text-slate-400 block mt-0.5 truncate">Penugasan aktif</span>
+          <span className="text-[11px] text-slate-400 block mt-0.5 truncate">
+            {uniqueMapelsCount} Mapel • {filtered.length} Penugasan
+          </span>
         </div>
 
         <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-indigo-300 hover:-translate-y-1 transition-all duration-300 group cursor-default">
@@ -307,42 +310,41 @@ export function TeacherClassesView({
       </div>
 
       {/* 2. Bilah Tab Perspektif & Toggle Tampilan */}
-      {/* 2. Bilah Tab Perspektif (Khusus Supervisi Admin) */}
-      {isAdmin && (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 p-1.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs">
-          {/* Tab Perspektif */}
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
-            <button
-              type="button"
-              onClick={() => {
-                setPerspective("ALL");
-                setCurrentPage(1);
-              }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                perspective === "ALL"
-                  ? "bg-[#2563EB] text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-              }`}
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span>Semua Kelas</span>
-              <span className="text-[10px] opacity-80">({filtered.length})</span>
-            </button>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 p-1.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs">
+        {/* Tab Perspektif */}
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            onClick={() => {
+              setPerspective("ALL");
+              setCurrentPage(1);
+            }}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              perspective === "ALL"
+                ? "bg-[#2563EB] text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            <span>Semua Penugasan</span>
+            <span className="text-[10px] opacity-80">({filtered.length})</span>
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setPerspective("ROMBEL")}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                perspective === "ROMBEL"
-                  ? "bg-[#2563EB] text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-              }`}
-            >
-              <School className="h-3.5 w-3.5" />
-              <span>Per Rombel</span>
-              <span className="text-[10px] opacity-80">({rombelGroups.length})</span>
-            </button>
+          <button
+            type="button"
+            onClick={() => setPerspective("ROMBEL")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+              perspective === "ROMBEL"
+                ? "bg-[#2563EB] text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <School className="h-3.5 w-3.5" />
+            <span>Per Rombel</span>
+            <span className="text-[10px] opacity-80">({rombelGroups.length} Kelas)</span>
+          </button>
 
+          {isAdmin && (
             <button
               type="button"
               onClick={() => setPerspective("GURU")}
@@ -356,42 +358,42 @@ export function TeacherClassesView({
               <span>Per Guru</span>
               <span className="text-[10px] opacity-80">({guruGroups.length})</span>
             </button>
-          </div>
-
-          {/* Toggle Mode Grid vs Tabel di mode Supervisi */}
-          {perspective === "ALL" && (
-            <div className="flex items-center gap-1 self-end md:self-auto bg-slate-100 p-1 rounded-xl">
-              <button
-                type="button"
-                onClick={() => setViewMode("GRID")}
-                className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  viewMode === "GRID"
-                    ? "bg-white text-[#2563EB] shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                title="Tampilan Kartu Grid"
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Grid Kartu</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setViewMode("TABLE")}
-                className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  viewMode === "TABLE"
-                    ? "bg-white text-[#2563EB] shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                title="Tampilan Tabel Ringkas"
-              >
-                <Table2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Tabel Ringkas</span>
-              </button>
-            </div>
           )}
         </div>
-      )}
+
+        {/* Toggle Mode Grid vs Tabel */}
+        {perspective === "ALL" && (
+          <div className="flex items-center gap-1 self-end md:self-auto bg-slate-100 p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setViewMode("GRID")}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === "GRID"
+                  ? "bg-white text-[#2563EB] shadow-2xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+              title="Tampilan Kartu Grid"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Grid Kartu</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("TABLE")}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === "TABLE"
+                  ? "bg-white text-[#2563EB] shadow-2xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+              title="Tampilan Tabel Ringkas"
+            >
+              <Table2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Tabel Ringkas</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* 3. Toolbar Filter & Pencarian Terpadu */}
       <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs space-y-2.5 sm:space-y-3">
@@ -414,39 +416,6 @@ export function TeacherClassesView({
               className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all"
             />
           </div>
-
-          {/* Mode Switcher untuk Guru di dalam Toolbar */}
-          {!isAdmin && (
-            <div className="flex items-center gap-0.5 bg-slate-100 p-1 rounded-xl shrink-0">
-              <button
-                type="button"
-                onClick={() => setViewMode("GRID")}
-                className={`p-1.5 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  viewMode === "GRID"
-                    ? "bg-white text-[#2563EB] shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                title="Tampilan Kartu Grid"
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-                <span className="text-xs">Grid</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setViewMode("TABLE")}
-                className={`p-1.5 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  viewMode === "TABLE"
-                    ? "bg-white text-[#2563EB] shadow-2xs"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-                title="Tampilan Tabel Ringkas"
-              >
-                <Table2 className="h-3.5 w-3.5" />
-                <span className="text-xs">Tabel</span>
-              </button>
-            </div>
-          )}
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Filter Guru (Admin) */}
@@ -556,22 +525,21 @@ export function TeacherClassesView({
           {rombelGroups.map((rg) => (
             <div
               key={rg.rombel_id}
-              className="group relative rounded-3xl bg-white border border-slate-200/80 p-5 shadow-2xs hover:shadow-[0_16px_36px_rgba(37,99,235,0.10)] hover:border-blue-300 hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden"
+              className="group relative rounded-xl bg-white border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col justify-between overflow-hidden"
             >
-              {/* Animated Top Accent Bar */}
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-xl bg-blue-50 text-[#2563EB] font-black text-sm border border-blue-200/80 group-hover:bg-[#2563EB] group-hover:text-white transition-colors duration-300">
+                  <h3 className="text-lg font-black text-[#0F172A] tracking-tight group-hover:text-[#2563EB] transition-colors">
                     {rg.rombel_nama}
-                  </span>
+                  </h3>
                   {rg.tingkat_nama && (
-                    <span className="text-xs font-bold text-slate-400">{rg.tingkat_nama}</span>
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-xs font-bold">
+                      {rg.tingkat_nama}
+                    </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 text-center group-hover:bg-blue-50/40 transition-colors">
+                <div className="grid grid-cols-3 gap-2 p-2 rounded-lg bg-slate-50/70 border border-slate-100 text-center">
                   <div>
                     <span className="text-[10px] text-slate-400 block font-semibold">Mapel</span>
                     <span className="text-sm font-black text-slate-800">{rg.classes.length}</span>
@@ -587,12 +555,14 @@ export function TeacherClassesView({
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-slate-400 block">Contoh Mapel:</span>
+                  <span className="text-[11px] font-bold text-slate-400 block">
+                    Daftar Mata Pelajaran:
+                  </span>
                   <div className="flex flex-wrap gap-1">
                     {rg.classes.slice(0, 4).map((c) => (
                       <span
                         key={c.id}
-                        className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium group-hover:border group-hover:border-slate-200 transition-all"
+                        className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200/60"
                       >
                         {c.mata_pelajaran_nama}
                       </span>
@@ -610,7 +580,7 @@ export function TeacherClassesView({
                 <button
                   type="button"
                   onClick={() => handleSelectRombel(rg.rombel_id)}
-                  className="px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-[#2563EB] text-[#2563EB] hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-2xs group-hover:shadow-blue-500/20"
+                  className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-[#2563EB] text-[#2563EB] hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>Buka Kelas Rombel ({rg.classes.length})</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
@@ -627,15 +597,12 @@ export function TeacherClassesView({
           {guruGroups.map((gg) => (
             <div
               key={gg.guru_id}
-              className="group relative rounded-3xl bg-white border border-slate-200/80 p-5 shadow-2xs hover:shadow-[0_16px_36px_rgba(37,99,235,0.10)] hover:border-blue-300 hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden"
+              className="group relative rounded-xl bg-white border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col justify-between overflow-hidden"
             >
-              {/* Animated Top Accent Bar */}
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-50 border border-blue-100 text-[#2563EB] flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-blue-600 group-hover:text-white group-hover:scale-105 transition-all duration-300 shadow-2xs">
-                    <GraduationCap className="h-5 w-5" />
+                  <div className="h-9 w-9 rounded-full bg-blue-50 border border-blue-100 text-[#2563EB] flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                    <GraduationCap className="h-4 w-4" />
                   </div>
                   <div className="overflow-hidden">
                     <h4
@@ -650,7 +617,7 @@ export function TeacherClassesView({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 text-center group-hover:bg-blue-50/40 transition-colors">
+                <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-slate-50/70 border border-slate-100 text-center">
                   <div>
                     <span className="text-[10px] text-slate-400 block font-semibold">
                       Kelas Diampu
@@ -671,7 +638,7 @@ export function TeacherClassesView({
                     {Array.from(gg.unique_rombels).map((r) => (
                       <span
                         key={r}
-                        className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-bold group-hover:border group-hover:border-slate-200 transition-all"
+                        className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-bold border border-slate-200/60"
                       >
                         {r}
                       </span>
@@ -684,7 +651,7 @@ export function TeacherClassesView({
                 <button
                   type="button"
                   onClick={() => handleSelectGuru(gg.guru_id)}
-                  className="px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-[#2563EB] text-[#2563EB] hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-2xs group-hover:shadow-blue-500/20"
+                  className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-[#2563EB] text-[#2563EB] hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>Lihat {gg.classes.length} Kelas Guru</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
@@ -699,7 +666,7 @@ export function TeacherClassesView({
       {perspective === "ALL" && (
         <>
           {filtered.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-white/80 backdrop-blur-md border border-slate-200/80">
+            <div className="p-10 text-center rounded-xl bg-white border border-slate-200/80 shadow-xs">
               <BookOpen className="h-10 w-10 text-slate-300 mx-auto mb-3" />
               <h4 className="text-sm font-bold text-slate-700">Tidak ada kelas yang ditemukan</h4>
               <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
@@ -721,47 +688,47 @@ export function TeacherClassesView({
               {pagedClasses.map((c) => (
                 <div
                   key={c.id}
-                  className="group relative rounded-3xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-[0_18px_40px_rgba(37,99,235,0.12)] hover:border-blue-400 hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden"
+                  className="group relative rounded-xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col justify-between overflow-hidden"
                 >
-                  {/* Animated Top Accent Bar on Hover */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
                   <div className="p-4 sm:p-5 space-y-3 sm:space-y-3.5">
-                    {/* Header Kartu: Kode Mapel + Badge JP */}
+                    {/* Header Kartu: Kode Mapel + Tingkat + Badge JP */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 sm:gap-2">
-                        <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl bg-blue-50 border border-blue-200/80 text-[#2563EB] font-bold text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                        <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200/80 text-[#2563EB] font-black text-xs">
                           {c.mata_pelajaran_kode}
                         </span>
-                        <span className="text-[11px] sm:text-xs font-semibold text-slate-400">
+                        {c.tingkat_nama && (
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[11px]">
+                            {c.tingkat_nama}
+                          </span>
+                        )}
+                        <span className="text-[11px] font-medium text-slate-400">
                           {c.tahun_ajaran_nama}
                         </span>
                       </div>
 
-                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
-                        {c.jumlah_jam_minggu} JP / Mgg
+                      <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold">
+                        {c.jumlah_jam_minggu} JP / mgg
                       </span>
                     </div>
 
-                    {/* Info Utama: Nama Mapel & Rombel */}
-                    <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#0F172A] leading-snug group-hover:text-[#2563EB] transition-colors duration-200">
-                        {c.mata_pelajaran_nama}
+                    {/* Info Utama: NAMA KELAS SEBAGAI JUDUL UTAMA + Mapel sebagai Subtitle Terbaca */}
+                    <div className="space-y-1">
+                      <h3 className="text-lg sm:text-xl font-black text-[#0F172A] tracking-tight group-hover:text-[#2563EB] transition-colors leading-tight">
+                        {c.rombel_nama}
                       </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-800 text-xs font-extrabold group-hover:bg-blue-100 group-hover:text-blue-900 transition-colors">
-                          {c.rombel_nama}
-                        </span>
-                        {c.tingkat_nama && (
-                          <span className="text-xs text-slate-400">({c.tingkat_nama})</span>
-                        )}
-                      </div>
+                      <p
+                        className="text-xs sm:text-[13px] font-semibold text-slate-600 line-clamp-1"
+                        title={c.mata_pelajaran_nama}
+                      >
+                        {c.mata_pelajaran_nama}
+                      </p>
                     </div>
 
                     {/* Info Guru Pengampu — Hanya Ditampilkan Saat Supervisi Admin */}
                     {isAdmin && (
-                      <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100/90 text-xs group-hover:bg-blue-50/50 group-hover:border-blue-100 transition-colors">
-                        <GraduationCap className="h-3.5 w-3.5 text-[#2563EB] shrink-0 group-hover:scale-110 transition-transform" />
+                      <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100 text-xs">
+                        <GraduationCap className="h-3.5 w-3.5 text-[#2563EB] shrink-0" />
                         <span className="text-slate-600 truncate">
                           Guru: <strong className="text-slate-800 font-bold">{c.guru_nama}</strong>
                         </span>
@@ -770,33 +737,33 @@ export function TeacherClassesView({
 
                     {/* Ringkasan Konten Kelas (BAB, Materi, Tugas, Jurnal) */}
                     <div className="grid grid-cols-4 gap-1 sm:gap-1.5 pt-2 border-t border-slate-100 text-center">
-                      <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50/80 group-hover:bg-slate-50 transition-colors">
+                      <div className="p-1.5 sm:p-2 rounded-lg bg-slate-50/70 border border-slate-100">
                         <span className="text-[10px] text-slate-400 block font-semibold">BAB</span>
-                        <span className="text-xs font-black text-slate-700">{c.total_bab}</span>
+                        <span className="text-xs font-bold text-slate-700">{c.total_bab}</span>
                       </div>
-                      <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50/80 group-hover:bg-slate-50 transition-colors">
+                      <div className="p-1.5 sm:p-2 rounded-lg bg-slate-50/70 border border-slate-100">
                         <span className="text-[10px] text-slate-400 block font-semibold">
                           Materi
                         </span>
-                        <span className="text-xs font-black text-slate-700">{c.total_materi}</span>
+                        <span className="text-xs font-bold text-slate-700">{c.total_materi}</span>
                       </div>
-                      <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50/80 group-hover:bg-slate-50 transition-colors">
+                      <div className="p-1.5 sm:p-2 rounded-lg bg-slate-50/70 border border-slate-100">
                         <span className="text-[10px] text-slate-400 block font-semibold">
                           Tugas
                         </span>
-                        <span className="text-xs font-black text-slate-700">{c.total_tugas}</span>
+                        <span className="text-xs font-bold text-slate-700">{c.total_tugas}</span>
                       </div>
-                      <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50/80 group-hover:bg-slate-50 transition-colors">
+                      <div className="p-1.5 sm:p-2 rounded-lg bg-slate-50/70 border border-slate-100">
                         <span className="text-[10px] text-slate-400 block font-semibold">
                           Jurnal
                         </span>
-                        <span className="text-xs font-black text-slate-700">{c.total_jurnal}</span>
+                        <span className="text-xs font-bold text-slate-700">{c.total_jurnal}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Footer Aksi — Ringkas, Elegan, dan Selalu 1 Baris Sejajar */}
-                  <div className="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 shrink-0">
                       <Users className="h-3.5 w-3.5 text-slate-400" />
                       <span>{c.total_siswa} Siswa</span>
@@ -804,10 +771,10 @@ export function TeacherClassesView({
 
                     <Link
                       href={`/kelas-saya/${c.id}`}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs shadow-xs transition-all duration-200 cursor-pointer group-hover:shadow-md group-hover:shadow-blue-500/25 group/btn active:scale-[0.98]"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs shadow-2xs transition-all duration-200 cursor-pointer"
                     >
                       <span>Buka Workspace</span>
-                      <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform duration-200" />
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
                 </div>
@@ -815,7 +782,7 @@ export function TeacherClassesView({
             </div>
           ) : (
             /* Mode 2: TABEL RINGKAS (COMPACT DATA TABLE) */
-            <div className="overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-2xs">
+            <div className="overflow-hidden rounded-xl bg-white border border-slate-200/80 shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-500 font-bold tracking-wider uppercase text-[11px]">
@@ -876,7 +843,7 @@ export function TeacherClassesView({
                         <td className="py-3 px-4 text-right">
                           <Link
                             href={`/kelas-saya/${c.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-2xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
                           >
                             <span>Buka</span>
                             <ArrowRight className="h-3 w-3" />
@@ -892,7 +859,7 @@ export function TeacherClassesView({
 
           {/* 5. Kontrol Paginasi Cerdas */}
           {filtered.length > 0 && (
-            <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="text-slate-500 font-semibold">
                 Menampilkan <strong className="text-slate-800">{startIndex + 1}</strong> –{" "}
                 <strong className="text-slate-800">

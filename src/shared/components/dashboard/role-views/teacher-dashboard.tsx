@@ -2,7 +2,6 @@ import * as React from "react";
 import Link from "next/link";
 import {
   Calendar,
-  Users,
   GraduationCap,
   BookOpen,
   Clock,
@@ -17,25 +16,42 @@ import {
   MonitorPlay,
   Briefcase,
   ChevronRight,
+  School,
+  ClipboardCheck,
+  CheckCircle2,
+  CheckSquare,
+  Bell,
 } from "lucide-react";
 import { AuthenticatedUser } from "@/shared/infrastructure/auth/auth-service";
+import { BaseRole } from "@/shared/infrastructure/authorization/types";
 import { TeacherDashboardData, TeacherFacade } from "@/modules/teacher/application/teacher-facade";
 import { scheduleService } from "@/modules/schedule/application/schedule-service";
 import { classSessionService } from "@/modules/schedule/application/class-session-service";
+import { CommunicationService } from "@/modules/communication/application/communication-service";
+import { AnnouncementItem } from "@/modules/communication/domain/communication-types";
 import {
   ClassSessionDTO,
   HariBelajar,
   ScheduleEntryDTO,
 } from "@/modules/schedule/domain/schedule-types";
-import { mergeConsecutiveScheduleEntries } from "@/modules/schedule/domain/schedule-merger";
+import {
+  mergeConsecutiveScheduleEntries,
+  MergedScheduleBlock,
+} from "@/modules/schedule/domain/schedule-merger";
 import { TeacherTodaySchedule } from "./teacher-today-schedule";
+import { TeacherDigitalClockCalendar } from "./teacher-digital-clock-calendar";
 
 export interface TeacherDashboardProps {
   user: AuthenticatedUser;
   initialData?: TeacherDashboardData;
+  initialAnnouncements?: AnnouncementItem[];
 }
 
-export async function TeacherDashboard({ user, initialData }: TeacherDashboardProps) {
+export async function TeacherDashboard({
+  user,
+  initialData,
+  initialAnnouncements,
+}: TeacherDashboardProps) {
   const dashboardData =
     initialData || (await TeacherFacade.getTeacherDashboardData(user.id, user.sekolah_id));
 
@@ -46,8 +62,13 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
     activeHomeroom,
     totalJamMinggu,
     totalRombel,
-    totalSiswaBinaan,
+    pendingTasks = [],
+    totalTugasPerluDiperiksa = 0,
   } = dashboardData;
+  const uniqueRombelCount = totalRombel ?? new Set(activeAssignments.map((a) => a.rombel_id)).size;
+  const uniqueMapelCount =
+    dashboardData.totalMataPelajaran ??
+    new Set(activeAssignments.map((a) => a.mata_pelajaran_id)).size;
 
   const namaGelar = teacher?.nama_dengan_gelar || user.nama_lengkap;
 
@@ -65,23 +86,48 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
   let teacherSchedules: ScheduleEntryDTO[] = [];
   let todaySchedules: ScheduleEntryDTO[] = [];
   let actualSessions: ClassSessionDTO[] = [];
+  let announcements: AnnouncementItem[] = initialAnnouncements || [];
 
-  if (teacher && user.sekolah_id) {
+  if (user.sekolah_id) {
     try {
-      const [schedulesRes, sessionsRes] = await Promise.all([
-        scheduleService.listTeacherSchedule(teacher.id, user.sekolah_id, true),
-        classSessionService.listSessions(user.sekolah_id, {
-          guru_id: teacher.id,
-          tanggal: new Date(),
-        }),
-      ]);
-      teacherSchedules = schedulesRes;
-      todaySchedules = teacherSchedules.filter((s) => s.hari === todayHari);
-      actualSessions = sessionsRes;
+      const promises: Promise<unknown>[] = [];
+
+      if (teacher) {
+        promises.push(
+          scheduleService.listTeacherSchedule(teacher.id, user.sekolah_id, true).then((res) => {
+            teacherSchedules = res;
+            todaySchedules = teacherSchedules.filter((s) => s.hari === todayHari);
+          })
+        );
+        promises.push(
+          classSessionService
+            .listSessions(user.sekolah_id, {
+              guru_id: teacher.id,
+              tanggal: new Date(),
+            })
+            .then((res) => {
+              actualSessions = res;
+            })
+        );
+      }
+
+      if (!initialAnnouncements) {
+        const comms = new CommunicationService();
+        promises.push(
+          comms
+            .getAnnouncementsForUser(user.sekolah_id, {
+              id: user.id,
+              peran_dasar: user.peran_dasar as BaseRole,
+            })
+            .then((res: AnnouncementItem[]) => {
+              announcements = res;
+            })
+        );
+      }
+
+      await Promise.all(promises);
     } catch {
-      teacherSchedules = [];
-      todaySchedules = [];
-      actualSessions = [];
+      // Graceful fallback for partial or disconnected data
     }
   }
 
@@ -89,23 +135,21 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
   const mergedTodayBlocks = mergeConsecutiveScheduleEntries(todaySchedules);
   const totalJamHariIni = todaySchedules.length;
 
-  // Preview 4 penugasan mengajar di samping jadwal hari ini
+  // Preview penugasan & pengumuman
   const previewAssignments = activeAssignments.slice(0, 4);
+  const latestAnnouncements = announcements.slice(0, 3);
 
   return (
     <div className="space-y-4 pb-8">
-      {/* 1. Header Ringkas (Compact Header) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
+      {/* 1. Header Ringkas Guru */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-0.5">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0F172A]">
-              Selamat Datang, {namaGelar}
+              {namaGelar}
             </h1>
-            <span className="px-2 py-0.5 rounded-lg bg-blue-50 text-[#2563EB] text-xs font-bold border border-blue-100">
-              Guru Pengajar
-            </span>
             {activeHomeroom && (
-              <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+              <span className="px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200/80">
                 Wali Kelas {activeHomeroom.rombel_nama}
               </span>
             )}
@@ -117,119 +161,125 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
 
         <div className="flex items-center gap-2 flex-wrap shrink-0">
           {teacher?.nip && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs text-xs font-semibold text-slate-700">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-700">
               <ShieldCheck className="h-3.5 w-3.5 text-[#2563EB]" />
               <span>NIP: {teacher.nip}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/70 text-xs font-bold text-emerald-700 shadow-2xs">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/70 text-xs font-bold text-emerald-700 shadow-xs">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Tahun Ajaran Aktif</span>
           </div>
         </div>
       </div>
 
-      {/* 2. Slim KPI Bar (4 Kolom Ramping & Efisien) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-        {/* Metric 1: Jadwal Hari Ini */}
-        <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-blue-50 text-[#2563EB] shrink-0">
-            <Calendar className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
-              Jadwal Hari Ini
-            </span>
-            <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
-              {mergedTodayBlocks.length > 0
-                ? `${mergedTodayBlocks.length} Sesi (${totalJamHariIni} JP)`
-                : "0 Sesi"}
-            </span>
-          </div>
-        </div>
+      {/* 2. Cockpit Sesi Mengajar Hari Ini (Card Utama Ramping + 3 Card Sesi Berikutnya) */}
+      <TeacherTodaySchedule
+        mergedBlocks={mergedTodayBlocks}
+        actualSessions={actualSessions}
+        todayHari={todayHari}
+        totalJamHariIni={totalJamHariIni}
+      />
 
-        {/* Metric 2: Penugasan Mengajar */}
-        <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 shrink-0">
-            <Layers className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
-              Penugasan Mengajar
-            </span>
-            <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
-              {activeAssignments.length} Penugasan
-            </span>
-          </div>
-        </div>
-
-        {/* Metric 3: Rombel Diampu */}
-        <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-purple-50 text-purple-600 shrink-0">
-            <Users className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
-              Kelas / Rombel Diampu
-            </span>
-            <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
-              {totalRombel} Rombel ({totalSiswaBinaan} Siswa)
-            </span>
-          </div>
-        </div>
-
-        {/* Metric 4: Status Wali Kelas */}
-        {activeHomeroom ? (
-          <Link
-            href="/wali-kelas"
-            className="p-2.5 sm:p-3 rounded-2xl bg-white hover:bg-emerald-50/40 border border-slate-200/80 hover:border-emerald-200 shadow-2xs flex items-center gap-3 transition-all group"
-          >
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform shrink-0">
-              <GraduationCap className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate group-hover:text-emerald-700">
-                Wali Kelas (Buka Portal →)
-              </span>
-              <span className="text-xs sm:text-sm font-black text-slate-900 block truncate">
-                {activeHomeroom.rombel_nama}
+      {/* 3. Operasional & Informasi Akademik (2 Kolom Seimbang: Kiri = Tugas & Aksi, Kanan = Pengumuman & Kalender) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start pt-1">
+        {/* Kolom Kiri: Perlu Diperiksa & Dinilai + Aksi Cepat Guru */}
+        <div className="space-y-4">
+          {/* Companion Card: Perlu Diperiksa & Dinilai (To-Do List Guru) */}
+          <div className="rounded-xl bg-white border border-slate-200/80 p-3.5 sm:p-4 shadow-xs space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <div className="p-1 rounded-md bg-amber-50 text-amber-600 shrink-0">
+                  <ClipboardCheck className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-[#0F172A] truncate">
+                    Perlu Diperiksa & Dinilai
+                  </h3>
+                  <span className="text-[10px] text-slate-400 block font-medium">
+                    Tugas Menunggu Periksa
+                  </span>
+                </div>
+              </div>
+              <span
+                className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold border shrink-0 ${
+                  totalTugasPerluDiperiksa > 0
+                    ? "bg-amber-50 text-amber-700 border-amber-200/80"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                }`}
+              >
+                {totalTugasPerluDiperiksa > 0
+                  ? `${totalTugasPerluDiperiksa} Tugas Perlu Dinilai`
+                  : "Semua Selesai Diperiksa"}
               </span>
             </div>
-          </Link>
-        ) : (
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-slate-50 text-slate-400 shrink-0">
-              <GraduationCap className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-400 block truncate">
-                Status Wali Kelas
-              </span>
-              <span className="text-xs sm:text-sm font-black text-slate-500 block truncate">
-                Guru Mandiri
-              </span>
-            </div>
+
+            {pendingTasks.length === 0 ? (
+              <div className="py-4 px-3 rounded-lg bg-slate-50/50 border border-dashed border-slate-200 text-center">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 mx-auto mb-1 opacity-80" />
+                <p className="text-xs font-bold text-slate-700">Semua Tugas Terkendali</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  Belum ada pengumpulan tugas baru yang menunggu penilaian Anda.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {pendingTasks.map((t) => (
+                  <div
+                    key={t.publikasi_id}
+                    className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-amber-50/40 border border-slate-200/70 hover:border-amber-200 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-blue-100 text-[#2563EB]">
+                          {t.mata_pelajaran_kode}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-600 bg-white px-1.5 py-0.2 rounded-md border border-slate-200/80 shadow-2xs">
+                          Kelas {t.rombel_nama}
+                        </span>
+                        {t.batas_waktu && (
+                          <span className="text-[10px] text-slate-400">
+                            Deadline:{" "}
+                            {new Date(t.batas_waktu).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 mt-1 truncate">
+                        {t.judul_tugas}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                        <span>{t.total_dikumpulkan} Siswa Mengumpulkan</span>
+                        {t.belum_dinilai > 0 ? (
+                          <span className="font-bold text-amber-700 bg-amber-100/70 px-1.5 py-0.2 rounded-md text-[10px]">
+                            {t.belum_dinilai} Belum Dinilai
+                          </span>
+                        ) : (
+                          <span className="font-bold text-emerald-700 bg-emerald-100/70 px-1.5 py-0.2 rounded-md text-[10px]">
+                            Semua Dinilai
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <Link
+                      href={`/kelas-saya/${t.penugasan_mengajar_id}`}
+                      className="px-2.5 py-1.5 rounded-md bg-white hover:bg-[#2563EB] text-slate-700 hover:text-white border border-slate-200 hover:border-[#2563EB] text-xs font-bold shadow-2xs transition-all flex items-center justify-center gap-1 shrink-0 self-start sm:self-center"
+                    >
+                      <span>Periksa Tugas</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* 3. Command Center Grid: Berdampingan Kiri & Kanan (Pas 1 Layar / Zero-Scroll Design) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        {/* Kolom Kiri (7 Kolom): Kokpit Jadwal Mengajar Hari Ini */}
-        <div className="lg:col-span-7">
-          <TeacherTodaySchedule
-            mergedBlocks={mergedTodayBlocks}
-            actualSessions={actualSessions}
-            todayHari={todayHari}
-            totalJamHariIni={totalJamHariIni}
-          />
-        </div>
-
-        {/* Kolom Kanan (5 Kolom): Aksi Cepat & Kelas Saya */}
-        <div className="lg:col-span-5 space-y-4">
-          {/* Card A: Aksi Cepat Guru (6 Modul Utama dalam 3 Kolom Ringkas) */}
-          <div className="rounded-2xl bg-white border border-slate-200/90 p-3.5 sm:p-4 shadow-2xs space-y-2.5">
+          {/* Card: Aksi Cepat Guru (6 Modul Utama dalam 3 Kolom Ringkas) */}
+          <div className="rounded-xl bg-white border border-slate-200/80 p-3.5 sm:p-4 shadow-xs space-y-2.5">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-1.5">
                 <Sparkles className="h-4 w-4 text-[#2563EB]" />
@@ -243,89 +293,94 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
             <div className="grid grid-cols-3 gap-2">
               <Link
                 href="/jadwal-saya"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-blue-100/70 text-[#2563EB] group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <Calendar className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <Calendar className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Jadwal Saya
                 </span>
               </Link>
 
               <Link
                 href="/sesi-pembelajaran"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-emerald-100/70 text-emerald-600 group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <PlayCircle className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <PlayCircle className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Sesi KBM
                 </span>
               </Link>
 
               <Link
                 href="/kelas-saya"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-indigo-100/70 text-indigo-600 group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <BookOpen className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <School className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Kelas Saya
                 </span>
               </Link>
 
               <Link
                 href="/penilaian"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-amber-50 border border-slate-100 hover:border-amber-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-amber-100/70 text-amber-600 group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <FileSpreadsheet className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <FileSpreadsheet className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Buku Nilai
                 </span>
               </Link>
 
               <Link
                 href="/cbt-ujian"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-violet-50 border border-slate-100 hover:border-violet-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-violet-100/70 text-violet-600 group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <MonitorPlay className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <MonitorPlay className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Ujian CBT
                 </span>
               </Link>
 
               <Link
                 href="/kalender-akademik"
-                className="p-2 rounded-xl bg-slate-50/70 hover:bg-purple-50 border border-slate-100 hover:border-purple-200 transition-all flex flex-col items-center text-center gap-1 group"
+                className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/70 hover:border-blue-200 transition-all flex flex-col items-center text-center gap-1.5 group"
               >
-                <div className="h-7 w-7 rounded-lg bg-purple-100/70 text-purple-600 group-hover:scale-105 transition-transform flex items-center justify-center">
-                  <CalendarDays className="h-3.5 w-3.5" />
+                <div className="h-8 w-8 rounded-md bg-white border border-slate-200/80 text-slate-600 group-hover:text-[#2563EB] group-hover:border-blue-200 group-hover:bg-blue-50/50 shadow-2xs group-hover:scale-105 transition-all flex items-center justify-center">
+                  <CalendarDays className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-slate-800 block leading-tight">
+                <span className="text-[11px] font-bold text-slate-700 group-hover:text-[#2563EB] block leading-tight transition-colors">
                   Kalender
                 </span>
               </Link>
             </div>
           </div>
+        </div>
 
-          {/* Card B: Penugasan Mengajar & Kelas Saya (Workspace Hub Ringkas) */}
-          <div className="rounded-2xl bg-white border border-slate-200/90 p-3.5 sm:p-4 shadow-2xs space-y-2.5">
+        {/* Kolom Kanan: Pengumuman Resmi Sekolah + Jam Digital & Kalender */}
+        <div className="space-y-4">
+          {/* Card: Pengumuman Resmi Sekolah */}
+          <div className="rounded-xl bg-white border border-slate-200/80 p-3.5 sm:p-4 shadow-xs space-y-2.5">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-1.5 min-w-0">
-                <Layers className="h-4 w-4 text-[#2563EB] shrink-0" />
+                <div className="p-1 rounded-md bg-blue-50 text-[#2563EB] shrink-0">
+                  <Bell className="h-4 w-4" />
+                </div>
                 <h3 className="text-xs sm:text-sm font-extrabold text-[#0F172A] truncate">
-                  Penugasan Mengajar & Kelas Saya
+                  Pengumuman Resmi Sekolah
                 </h3>
               </div>
               <Link
-                href="/kelas-saya"
+                href="/pengumuman"
                 className="text-[11px] font-bold text-[#2563EB] hover:underline shrink-0 flex items-center gap-0.5"
               >
                 <span>Lihat Semua</span>
@@ -333,76 +388,77 @@ export async function TeacherDashboard({ user, initialData }: TeacherDashboardPr
               </Link>
             </div>
 
-            {!hasProfile ? (
-              <div className="p-3 rounded-xl bg-amber-50 text-amber-900 text-xs">
-                Profil pendidik belum ditautkan. Hubungi operator kurikulum sekolah.
-              </div>
-            ) : activeAssignments.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400">
-                Belum ada penugasan mengajar aktif.
+            {latestAnnouncements.length === 0 ? (
+              <div className="py-4 text-center text-xs text-slate-400">
+                Tidak ada pengumuman baru saat ini.
               </div>
             ) : (
-              <div className="space-y-1.5">
-                {previewAssignments.map((a) => (
-                  <div
-                    key={a.id}
-                    className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 transition-all flex items-center justify-between gap-2"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-[#2563EB] shrink-0">
-                        {a.mata_pelajaran_kode}
-                      </span>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-slate-900 truncate">
-                          {a.mata_pelajaran_nama}
-                        </h4>
-                        <p className="text-[10px] text-slate-500">
-                          {a.rombel_nama} • {a.jumlah_jam_minggu} JP
-                        </p>
-                      </div>
-                    </div>
-
-                    <Link
-                      href={`/kelas-saya/${a.id}`}
-                      className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#2563EB] text-slate-700 hover:text-white border border-slate-200 hover:border-[#2563EB] text-[11px] font-bold shadow-2xs transition-all shrink-0 flex items-center gap-1"
-                    >
-                      <span>Workspace</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  </div>
-                ))}
-
-                {activeAssignments.length > 4 && (
+              <div className="space-y-2">
+                {latestAnnouncements.map((ann) => (
                   <Link
-                    href="/kelas-saya"
-                    className="p-2 rounded-xl bg-blue-50/60 hover:bg-blue-50 border border-blue-100 text-center block text-[11px] font-bold text-[#2563EB] transition-colors"
+                    key={ann.id}
+                    href="/pengumuman"
+                    className="p-2.5 rounded-lg bg-slate-50/60 hover:bg-blue-50/50 border border-slate-200/60 hover:border-blue-200 transition-all block group"
                   >
-                    Buka Direktori Lengkap ({activeAssignments.length} Kelas • {totalJamMinggu} JP)
-                    →
+                    <div className="flex items-center justify-between gap-1.5 mb-1">
+                      <span
+                        className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md ${
+                          ann.kategori === "PENTING" || ann.kategori === "DARURAT"
+                            ? "bg-rose-100 text-rose-700"
+                            : ann.kategori === "AKADEMIK"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-slate-200/80 text-slate-700"
+                        }`}
+                      >
+                        {ann.kategori}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {ann.dipublikasikan_pada
+                          ? new Date(ann.dipublikasikan_pada).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                            })
+                          : new Date(ann.created_at).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                      </span>
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-800 group-hover:text-[#2563EB] line-clamp-1 transition-colors">
+                      {ann.judul}
+                    </h4>
                   </Link>
-                )}
+                ))}
               </div>
             )}
           </div>
 
-          {/* Card C: Mini Bar Wali Kelas & Beban Kerja (Tipis & Elegan) */}
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 flex items-center justify-between text-xs text-slate-600">
-            <div className="flex items-center gap-1.5">
-              <Briefcase className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-[11px]">
-                Beban: <strong>{totalJamMinggu} JP / minggu</strong> (Standar Penuh)
-              </span>
+          {/* Card: Jam Digital & Mini Kalender Bulanan */}
+          <TeacherDigitalClockCalendar />
+
+          {/* Mini Bar: Status Wali Kelas & Beban Kerja */}
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/70 flex items-center justify-between text-xs text-slate-600">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Briefcase className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+              <Link
+                href="/kelas-saya"
+                className="text-[11px] hover:text-[#2563EB] hover:underline transition-colors truncate"
+                title="Buka Daftar Kelas Saya"
+              >
+                Beban: <strong>{totalJamMinggu} JP / minggu</strong> ({uniqueRombelCount} Kelas •{" "}
+                {uniqueMapelCount} Mapel)
+              </Link>
             </div>
             {activeHomeroom ? (
               <Link
                 href="/wali-kelas"
-                className="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-colors"
+                className="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-2 py-0.5 rounded-md flex items-center gap-1 transition-colors shrink-0"
               >
                 <span>Wali {activeHomeroom.rombel_nama}</span>
                 <ChevronRight className="h-3 w-3" />
               </Link>
             ) : (
-              <span className="text-[10px] text-slate-400">Guru Mandiri</span>
+              <span className="text-[10px] text-slate-400 shrink-0">Guru Mandiri</span>
             )}
           </div>
         </div>

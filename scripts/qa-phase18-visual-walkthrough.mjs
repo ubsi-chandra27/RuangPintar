@@ -34,7 +34,9 @@ function checkServerReady(url, timeoutMs = 30000) {
 
 async function main() {
   console.log("================================================================================");
-  console.log("RUANG PINTAR — PLAYWRIGHT VISUAL WALKTHROUGH: PHASE 18 STUDENT MONITORING & HOMEROOM");
+  console.log(
+    "RUANG PINTAR — PLAYWRIGHT VISUAL WALKTHROUGH: PHASE 18 STUDENT MONITORING & HOMEROOM"
+  );
   console.log("================================================================================\n");
 
   let serverProcess = null;
@@ -117,7 +119,9 @@ async function main() {
     // ============================================================================
     // 3. Roster Table: Holistic Indicators & Status Badges
     // ============================================================================
-    console.log("5. Mengambil screenshot tabel roster siswa dengan indikator presensi, tugas, nilai...");
+    console.log(
+      "5. Mengambil screenshot tabel roster siswa dengan indikator presensi, tugas, nilai..."
+    );
     await page.screenshot({
       path: `${screenshotDir}/03-roster-student-indicators.png`,
       fullPage: true,
@@ -159,7 +163,7 @@ async function main() {
     // ============================================================================
     console.log("8. Melihat tab Tugas dan Nilai Asesmen di dalam modal detail...");
     const modalTugasBtn = page.locator('div.fixed button:has-text("Tugas")');
-    if (await modalTugasBtn.count() > 0) {
+    if ((await modalTugasBtn.count()) > 0) {
       await modalTugasBtn.click();
       await page.waitForTimeout(600);
     }
@@ -172,8 +176,8 @@ async function main() {
     console.log("✓ Screenshot 06 tersimpan.");
 
     // Tutup modal detail
-    const closeDetailModalBtn = page.locator('div.fixed button.p-1\\.5:has(svg.lucide-x)').first();
-    if (await closeDetailModalBtn.count() > 0) {
+    const closeDetailModalBtn = page.locator("div.fixed button.p-1\\.5:has(svg.lucide-x)").first();
+    if ((await closeDetailModalBtn.count()) > 0) {
       await closeDetailModalBtn.click();
       await page.waitForTimeout(500);
     }
@@ -194,8 +198,8 @@ async function main() {
     console.log("✓ Screenshot 07 tersimpan.");
 
     // Tutup modal catatan
-    const closeNoteModalBtn = page.locator('div.fixed button.p-1\\.5:has(svg.lucide-x)').first();
-    if (await closeNoteModalBtn.count() > 0) {
+    const closeNoteModalBtn = page.locator("div.fixed button.p-1\\.5:has(svg.lucide-x)").first();
+    if ((await closeNoteModalBtn.count()) > 0) {
       await closeNoteModalBtn.click();
       await page.waitForTimeout(500);
     }
@@ -250,10 +254,14 @@ async function main() {
     });
     console.log("✓ Screenshot 10 tersimpan.");
 
-    console.log("\n================================================================================");
+    console.log(
+      "\n================================================================================"
+    );
     console.log("✓ PLAYWRIGHT VISUAL WALKTHROUGH PHASE 18 SELESAI DENGAN SUKSES!");
     console.log(`✓ 10 screenshot tersimpan di: ${screenshotDir}`);
-    console.log("================================================================================\n");
+    console.log(
+      "================================================================================\n"
+    );
   } finally {
     await browser.close();
 

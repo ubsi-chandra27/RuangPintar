@@ -22,6 +22,9 @@ vi.mock("@/shared/infrastructure/database/prisma", () => ({
     guru: {
       findFirst: vi.fn(),
     },
+    penugasanMengajar: {
+      findFirst: vi.fn(),
+    },
     penempatanRombel: {
       findMany: vi.fn(),
       count: vi.fn(),
@@ -211,6 +214,63 @@ describe("AttendanceService", () => {
 
       expect(history.length).toBe(1);
       expect(history[0].persentase_kehadiran).toBe(93);
+    });
+  });
+
+  describe("getClassAttendanceRecap", () => {
+    it("returns attendance recap for super admin without teacher check", async () => {
+      const mockRecap: any = {
+        penugasan_id: "penugasan-1",
+        rombel_nama: "X RPL 1",
+        mata_pelajaran_nama: "Pemrograman Web",
+        total_siswa: 25,
+        total_sesi_terjadwal: 10,
+        total_sesi_tercatat: 8,
+        rerata_kehadiran_kelas: 95,
+        jumlah_perlu_perhatian: 1,
+        daftar_siswa: [
+          {
+            siswa_id: "s-1",
+            nama_lengkap: "Budi",
+            hadir: 8,
+            sakit: 0,
+            izin: 0,
+            alpha: 0,
+            persentase_kehadiran: 100,
+            status_evaluasi: "Sangat Baik",
+          },
+        ],
+      };
+
+      vi.spyOn(repository, "getClassAttendanceRecap").mockResolvedValue(mockRecap);
+
+      const recap = await service.getClassAttendanceRecap(
+        "penugasan-1",
+        "sekolah-1",
+        null,
+        true // isSuperAdmin
+      );
+
+      expect(recap.rombel_nama).toBe("X RPL 1");
+      expect(recap.total_siswa).toBe(25);
+      expect(recap.daftar_siswa[0].status_evaluasi).toBe("Sangat Baik");
+    });
+
+    it("throws AttendanceNotAllowedError when teacher tries to access another teacher assignment", async () => {
+      vi.mocked(prisma.penugasanMengajar.findFirst).mockResolvedValue({
+        id: "penugasan-1",
+        guru_id: "guru-asli",
+        sekolah_id: "sekolah-1",
+      } as any);
+
+      await expect(
+        service.getClassAttendanceRecap(
+          "penugasan-1",
+          "sekolah-1",
+          "guru-lain", // different teacher
+          false
+        )
+      ).rejects.toThrow(AttendanceNotAllowedError);
     });
   });
 });

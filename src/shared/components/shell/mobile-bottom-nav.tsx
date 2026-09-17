@@ -16,6 +16,7 @@ import {
   GraduationCap,
   Building2,
   Menu,
+  School,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -43,7 +44,7 @@ export function getMobileBottomNavItems(
       return [
         { id: "home", label: "Beranda", href: "/dashboard", icon: LayoutDashboard },
         { id: "schedule", label: "Jadwal", href: "/jadwal-saya", icon: Calendar },
-        { id: "classes", label: "Kelas", href: "/kelas-saya", icon: BookOpen },
+        { id: "classes", label: "Kelas", href: "/kelas-saya", icon: School },
         { id: "sessions", label: "Sesi KBM", href: "/sesi-pembelajaran", icon: PlayCircle },
       ];
 
@@ -113,8 +114,8 @@ export function MobileBottomNav({
   return (
     <nav
       aria-label="Navigasi Bawah Mobile"
-      className={`fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around bg-white/90 backdrop-blur-xl border-t border-slate-200/80 px-2 py-1 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] ${className}`}
-      style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
+      className={`fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around bg-white/95 backdrop-blur-xl border-t border-slate-200/90 px-1 py-1.5 shadow-[0_-2px_12px_rgba(0,0,0,0.04)] ${className}`}
+      style={{ paddingBottom: "max(0.45rem, env(safe-area-inset-bottom))" }}
     >
       {items.map((item) => {
         const Icon = item.icon;
@@ -128,25 +129,31 @@ export function MobileBottomNav({
             key={item.id}
             href={item.href}
             aria-current={isActive ? "page" : undefined}
-            className={`group flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-200 min-h-[48px] ${
-              isActive
-                ? "text-[#2563EB] font-semibold"
-                : "text-slate-500 hover:text-slate-800 font-medium"
+            className={`group relative flex flex-1 flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 min-h-[48px] ${
+              isActive ? "text-[#2563EB]" : "text-slate-400 hover:text-slate-700"
             }`}
           >
+            {/* Active Pill Container around Icon */}
             <div
-              className={`relative flex items-center justify-center p-1 rounded-lg transition-all duration-200 ${
+              className={`flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-50 text-[#2563EB] scale-105"
-                  : "group-hover:bg-slate-100 text-slate-500"
+                  ? "bg-blue-50/90 text-[#2563EB]"
+                  : "group-hover:bg-slate-50 text-slate-400 group-hover:text-slate-600"
               }`}
             >
-              <Icon className="h-5 w-5 transition-transform group-active:scale-95" />
-              {isActive && (
-                <span className="absolute -bottom-1 h-1 w-1 rounded-full bg-[#2563EB]" />
-              )}
+              <Icon
+                className={`h-5 w-5 transition-transform group-active:scale-95 ${
+                  isActive ? "stroke-[2.25]" : "stroke-[1.75]"
+                }`}
+              />
             </div>
-            <span className="mt-0.5 text-[10px] leading-tight tracking-tight text-center truncate max-w-[64px]">
+            <span
+              className={`mt-1 text-[10px] tracking-tight text-center truncate max-w-[64px] leading-tight transition-colors ${
+                isActive
+                  ? "font-bold text-[#2563EB]"
+                  : "font-medium text-slate-500 group-hover:text-slate-700"
+              }`}
+            >
               {item.label}
             </span>
           </Link>
@@ -159,12 +166,12 @@ export function MobileBottomNav({
         type="button"
         onClick={onOpenMenu}
         aria-label="Buka Menu Lainnya"
-        className="group flex flex-1 flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-200 min-h-[48px] text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
+        className="group relative flex flex-1 flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 min-h-[48px] text-slate-400 hover:text-slate-700 cursor-pointer"
       >
-        <div className="flex items-center justify-center p-1 rounded-lg transition-all duration-200 group-hover:bg-slate-100 text-slate-500">
-          <Menu className="h-5 w-5 transition-transform group-active:scale-95" />
+        <div className="flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 group-hover:bg-slate-50 text-slate-400 group-hover:text-slate-600">
+          <Menu className="h-5 w-5 stroke-[1.75] transition-transform group-active:scale-95" />
         </div>
-        <span className="mt-0.5 text-[10px] leading-tight tracking-tight text-center truncate max-w-[64px]">
+        <span className="mt-1 text-[10px] tracking-tight text-center truncate max-w-[64px] leading-tight font-medium text-slate-500 group-hover:text-slate-700 transition-colors">
           Menu
         </span>
       </button>

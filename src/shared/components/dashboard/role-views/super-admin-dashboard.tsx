@@ -450,7 +450,7 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/data-siswa"
               className="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-emerald-50/70 border border-slate-100 hover:border-emerald-200 transition-all flex flex-col items-center text-center gap-2 group"
             >
               <div className="h-10 w-10 rounded-xl bg-emerald-100/60 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-colors">
@@ -463,7 +463,7 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/jadwal-sekolah"
               className="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-purple-50/70 border border-slate-100 hover:border-purple-200 transition-all flex flex-col items-center text-center gap-2 group"
             >
               <div className="h-10 w-10 rounded-xl bg-purple-100/60 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition-colors">
@@ -476,15 +476,15 @@ export function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
             </Link>
 
             <Link
-              href="#"
+              href="/pimpinan"
               className="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-amber-50/70 border border-slate-100 hover:border-amber-200 transition-all flex flex-col items-center text-center gap-2 group"
             >
               <div className="h-10 w-10 rounded-xl bg-amber-100/60 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition-colors">
                 <BarChart3 className="h-5 w-5" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-800 block">Laporan</span>
-                <span className="text-[10px] text-slate-500">Lihat laporan</span>
+                <span className="text-xs font-bold text-slate-800 block">Laporan & Pimpinan</span>
+                <span className="text-[10px] text-slate-500">Portal analitik sekolah</span>
               </div>
             </Link>
           </div>

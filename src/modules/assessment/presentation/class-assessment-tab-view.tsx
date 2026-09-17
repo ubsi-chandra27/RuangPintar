@@ -36,9 +36,11 @@ import {
   ClassGradebookDTO,
   AssessmentCategory,
 } from "../domain/assessment-types";
+import { ClassAttendanceRecapDTO } from "@/modules/attendance/domain/attendance-types";
 import { CreateAssessmentModal } from "./create-assessment-modal";
 import { InputGradesModal } from "./input-grades-modal";
 import { PublishAssessmentModal } from "./publish-assessment-modal";
+import { UnifiedAcademicLedgerTable } from "./unified-academic-ledger-table";
 import { deleteAssessmentAction } from "@/app/actions/assessment-actions";
 
 interface ClassAssessmentTabViewProps {
@@ -55,6 +57,7 @@ interface ClassAssessmentTabViewProps {
       deskripsi: string;
     }>;
   }>;
+  attendanceRecap?: ClassAttendanceRecapDTO | null;
   onRefresh: () => void;
   onShowToast: (message: string, type: "success" | "error" | "info") => void;
 }
@@ -65,16 +68,19 @@ export function ClassAssessmentTabView({
   assessments,
   gradebook,
   lingkupMateriList,
+  attendanceRecap,
   onRefresh,
   onShowToast,
 }: ClassAssessmentTabViewProps) {
   const [isPending, startTransition] = useTransition();
-  const [activeSubTab, setActiveSubTab] = useState<"ASESMEN" | "GRADEBOOK">("ASESMEN");
+  const [activeSubTab, setActiveSubTab] = useState<"GRADEBOOK" | "ASESMEN">("GRADEBOOK");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createInitialBabId, setCreateInitialBabId] = useState<string | undefined>(undefined);
+  const [createInitialTpId, setCreateInitialTpId] = useState<string | undefined>(undefined);
   const [inputGradesTargetId, setInputGradesTargetId] = useState<string | null>(null);
   const [publishTarget, setPublishTarget] = useState<DefinisiAsesmenDTO | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -175,6 +181,18 @@ export function ClassAssessmentTabView({
         <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 text-xs font-semibold">
           <button
             type="button"
+            onClick={() => setActiveSubTab("GRADEBOOK")}
+            className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSubTab === "GRADEBOOK"
+                ? "bg-white text-[#2563EB] shadow-xs font-bold"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            Buku Nilai & Presensi (Leger Terpadu)
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveSubTab("ASESMEN")}
             className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               activeSubTab === "ASESMEN"
@@ -184,18 +202,6 @@ export function ClassAssessmentTabView({
           >
             <Target className="h-3.5 w-3.5" />
             Daftar Asesmen
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSubTab("GRADEBOOK")}
-            className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeSubTab === "GRADEBOOK"
-                ? "bg-white text-[#2563EB] shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5" />
-            Buku Nilai (Gradebook Matrix)
           </button>
         </div>
 
@@ -420,173 +426,34 @@ export function ClassAssessmentTabView({
       {/* SUB-TAB 2: BUKU NILAI (GRADEBOOK MATRIX)   */}
       {/* ========================================== */}
       {activeSubTab === "GRADEBOOK" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <div>
-              Matriks Rekapitulasi Nilai Siswa Rombel{" "}
-              <strong className="text-slate-800">{gradebook.rombel_nama}</strong> • Mapel{" "}
-              <strong className="text-slate-800">{gradebook.mata_pelajaran_nama}</strong>
-            </div>
-
-            <div className="text-[11px]">
-              * Nilai kosong (<span className="font-semibold">-</span>) = Belum Dinilai (
-              <em>Missing Grade ≠ 0</em>)
-            </div>
-          </div>
-
-          {gradebook.rows.length === 0 ? (
-            <div className="p-10 text-center rounded-3xl bg-white border border-slate-200 text-slate-400 text-xs">
-              Belum ada data siswa terdaftar pada rombel ini.
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    {/* Level 1: Category Header */}
-                    <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-bold">
-                      <th colSpan={3} className="py-2.5 px-4 text-center border-r border-slate-200">
-                        Identitas Siswa
-                      </th>
-                      {gradebook.columns.map((col) => (
-                        <th
-                          key={col.id}
-                          className="py-2 px-3 text-center border-r border-slate-200 min-w-[110px]"
-                        >
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                              col.kategori === "FORMATIF"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-indigo-100 text-indigo-800"
-                            }`}
-                          >
-                            {col.kategori}
-                          </span>
-                        </th>
-                      ))}
-                      <th colSpan={4} className="py-2.5 px-4 text-center bg-slate-200/60">
-                        Rekapitulasi Nilai Akhir
-                      </th>
-                    </tr>
-
-                    {/* Level 2: Assessment Details */}
-                    <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] text-slate-600 font-semibold">
-                      <th className="py-2.5 px-3 w-12 text-center">Abs</th>
-                      <th className="py-2.5 px-3 w-24">NIS</th>
-                      <th className="py-2.5 px-4 border-r border-slate-200 min-w-[180px]">
-                        Nama Lengkap
-                      </th>
-                      {gradebook.columns.map((col) => (
-                        <th
-                          key={col.id}
-                          className="py-2 px-2.5 text-center border-r border-slate-200 font-medium"
-                        >
-                          <div
-                            className="truncate max-w-[100px] mx-auto font-bold text-slate-800"
-                            title={col.judul}
-                          >
-                            {col.judul}
-                          </div>
-                          <div className="text-[10px] text-slate-400">
-                            KKTP: {col.kkm_kktp} | {col.bobot}x
-                          </div>
-                        </th>
-                      ))}
-                      <th className="py-2 px-3 text-center w-20 bg-slate-50">Rerata Formatif</th>
-                      <th className="py-2 px-3 text-center w-20 bg-slate-50">Rerata Sumatif</th>
-                      <th className="py-2 px-3 text-center w-24 font-bold text-slate-900 bg-blue-50/60 border-x border-blue-200/50">
-                        Nilai Akhir
-                      </th>
-                      <th className="py-2 px-3 text-center w-24 bg-slate-50">Ketuntasan</th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {gradebook.rows.map((row, idx) => {
-                      const isLulus =
-                        row.nilai_akhir !== null && row.nilai_akhir >= gradebook.kkm_default;
-
-                      return (
-                        <tr key={row.siswa_id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="py-2.5 px-3 text-center text-slate-400 font-medium">
-                            {row.nomor_absen || idx + 1}
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-slate-600 text-[11px]">
-                            {row.nis}
-                          </td>
-                          <td className="py-2.5 px-4 font-bold text-slate-800 border-r border-slate-200">
-                            {row.nama_lengkap}
-                          </td>
-
-                          {/* Dynamic Grades Columns */}
-                          {gradebook.columns.map((col) => {
-                            const gradeData = row.grades[col.id];
-                            const score = gradeData?.nilai_angka;
-                            const hasScore = score !== null && score !== undefined;
-                            const isAboveKktp = hasScore && score >= col.kkm_kktp;
-
-                            return (
-                              <td
-                                key={col.id}
-                                className="py-2.5 px-2.5 text-center border-r border-slate-200 font-mono"
-                              >
-                                {hasScore ? (
-                                  <span
-                                    className={`inline-block px-1.5 py-0.5 rounded-md font-bold text-xs ${
-                                      isAboveKktp
-                                        ? "text-emerald-700 bg-emerald-50"
-                                        : "text-rose-700 bg-rose-50"
-                                    }`}
-                                  >
-                                    {score}
-                                  </span>
-                                ) : (
-                                  <span className="text-slate-300">-</span>
-                                )}
-                              </td>
-                            );
-                          })}
-
-                          {/* Rekapitulasi Akhir */}
-                          <td className="py-2.5 px-3 text-center font-mono text-slate-600 bg-slate-50/30">
-                            {row.rata_rata_formatif !== null ? row.rata_rata_formatif : "-"}
-                          </td>
-                          <td className="py-2.5 px-3 text-center font-mono text-slate-600 bg-slate-50/30">
-                            {row.rata_rata_sumatif !== null ? row.rata_rata_sumatif : "-"}
-                          </td>
-                          <td className="py-2.5 px-3 text-center font-mono font-bold text-sm bg-blue-50/40 border-x border-blue-200/50 text-[#2563EB]">
-                            {row.nilai_akhir !== null ? row.nilai_akhir : "-"}
-                          </td>
-                          <td className="py-2.5 px-3 text-center bg-slate-50/30">
-                            {row.nilai_akhir === null ? (
-                              <span className="text-slate-300 text-[10px]">-</span>
-                            ) : isLulus ? (
-                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
-                                Tuntas
-                              </span>
-                            ) : (
-                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">
-                                Remedial
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
+        <UnifiedAcademicLedgerTable
+          penugasanId={penugasanId}
+          canManage={canManage}
+          gradebook={gradebook}
+          lingkupMateriList={lingkupMateriList}
+          assessments={assessments}
+          attendanceRecap={attendanceRecap}
+          onOpenInputGrades={(id) => setInputGradesTargetId(id)}
+          onOpenCreateAssessment={(tpId, lmId) => {
+            setCreateInitialTpId(tpId);
+            setCreateInitialBabId(lmId);
+            setIsCreateModalOpen(true);
+          }}
+        />
       )}
 
       {/* Modals */}
       <CreateAssessmentModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setCreateInitialBabId(undefined);
+          setCreateInitialTpId(undefined);
+        }}
         penugasanId={penugasanId}
         lingkupMateriList={lingkupMateriList}
+        initialBabId={createInitialBabId}
+        initialTpId={createInitialTpId}
         onSuccess={(msg) => {
           onShowToast(msg, "success");
           onRefresh();

@@ -88,3 +88,41 @@ export interface SessionAttendanceHistoryItemDTO {
   persentase_kehadiran: number;
   sudah_diabsen: boolean;
 }
+
+export type EvaluationAttendanceStatus = "Sangat Baik" | "Baik" | "Cukup" | "Perlu Perhatian";
+
+export interface StudentClassAttendanceRecapItemDTO {
+  siswa_id: string;
+  nomor_absen: number | null;
+  nis: string | null;
+  nisn: string | null;
+  nama_lengkap: string;
+  foto_url: string | null;
+  hadir: number;
+  sakit: number;
+  izin: number;
+  alpha: number;
+  dispensasi: number;
+  terlambat: number;
+  total_sesi_tercatat: number;
+  persentase_kehadiran: number;
+  status_evaluasi: EvaluationAttendanceStatus;
+}
+
+export interface ClassAttendanceRecapDTO {
+  penugasan_id: string;
+  rombel_id: string;
+  rombel_nama: string;
+  tingkat_nama?: string | null;
+  mata_pelajaran_id: string;
+  mata_pelajaran_nama: string;
+  mata_pelajaran_kode: string;
+  guru_id: string;
+  guru_nama: string;
+  total_sesi_terjadwal: number;
+  total_sesi_tercatat: number;
+  total_siswa: number;
+  rerata_kehadiran_kelas: number;
+  jumlah_perlu_perhatian: number;
+  daftar_siswa: StudentClassAttendanceRecapItemDTO[];
+}

@@ -32,16 +32,16 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
+PHASE 20 — INTEGRATION FOUNDATION (M20)
 
 Current Phase Status:
 IN PROGRESS
 
 Last Human-Approved Implementation Phase:
-PHASE 18 — STUDENT MONITORING & HOMEROOM (M18)
+PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
 
-Phase 18 Official Human Approval:
-APPROVED BY HUMAN (11 September 2026)
+Phase 19 Official Human Approval:
+APPROVED BY HUMAN (17 September 2026)
 ```
 
 ---
@@ -826,30 +826,96 @@ Catatan penyelesaian Phase 18 (11 September 2026):
 
 ---
 
-# 35. Inisiasi PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
+# 35. Implementasi PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
 
-Persetujuan resmi Phase 18 diberikan oleh Human Reviewer pada 11 September 2026. Phase 18 dinyatakan **APPROVED & LOCKED**.
+Catatan penyelesaian Phase 19 (12 September 2026):
+1. **Pondasi Leadership Dashboard & Analytics (Milestone G):**
+   - Menghadirkan portal kepemimpinan terpadu `/pimpinan` untuk pejabat struktural sekolah (Kepala Sekolah, Wakasek Kurikulum, Wakasek Kesiswaan, Kepala Program Keahlian) dan Super Admin.
+   - Menyajikan derived read models lintas modul (M01, M06, M07, M08, M10, M11, M12, M13, M18).
+2. **Kepatuhan Invariant Domain & Otorisasi:**
+   - `Report ≠ Source of Truth`: Seluruh analitik dan laporan merupakan read projection dari transaksi sumber.
+   - `Leadership Monitoring ≠ Full Administrative Write Access`: Pimpinan memantau performa evaluatif tanpa wewenang mengubah nilai asesmen maupun presensi KBM guru.
+   - Otorisasi server-side berbasis `PenugasanJabatan` aktif (`HEADMASTER`, `VICE_PRINCIPAL_CURRICULUM`, `VICE_PRINCIPAL_STUDENT_AFFAIRS`, `PROGRAM_HEAD`, `SUPER_ADMIN`) dengan aturan *default deny* bagi peran non-pimpinan.
+   - `Export & Audit Trail`: Seluruh proses pembuatan berkas ekspor CSV dan pratinjau cetak A4 tercatat persisten pada tabel `riwayat_ekspor_laporan`.
+3. **Database Schema & Migrasi:**
+   - Migrasi forward: `20260911230000_add_reporting_and_analytics_m19`.
+   - Model: `RiwayatEksporLaporan` (`id`, `sekolah_id`, `tipe_laporan`, `judul`, `format`, `parameter_filter_json`, `total_baris`, `dibuat_oleh_id`, `berkas_url`, `created_at`).
+4. **Presentation Layer (Academic Glass UI v1.2):**
+   - Portal `/pimpinan` dengan 5 sub-tab terpadu:
+     - `HeadmasterView`: KPI strategis, rasio guru-siswa, kehadiran global, ketuntasan KKTP, alert perhatian kepemimpinan, distribusi per tingkat, dan tren mingguan.
+     - `CurriculumAnalyticsView`: Beban mengajar JP per guru, kepatuhan jurnal KBM guru, dan ketuntasan KKTP per mapel.
+     - `StudentAffairsView`: Matriks kehadiran per rombel, deteksi siswa alpha tinggi, dan agregasi pembinaan siswa.
+     - `ProgramHeadView`: Cohort jurusan kejuruan, utilisasi jam bengkel/praktik, dan ketuntasan capaian kompetensi.
+     - `ReportExportCenter`: Ekspor CSV presensi dan nilai akademik instan, serta tabel riwayat ekspor laporan.
+   - `ExecutivePrintModal`: Lembar ringkasan eksekutif format A4 siap cetak (`window.print()`) lengkap dengan kop surat resmi sekolah dan lembar tanda tangan.
+   - Dropdown *Role Switcher* bagi Super Admin dan personil dengan multi-jabatan.
+5. **Quality Gates & Bukti Visual:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors.
+   - Prettier: 100% compliant.
+   - Vitest: 81 test files, 462 tests passing (100% PASS).
+   - Next.js Production Build: 22 static & dynamic routes compiled successfully.
+   - Playwright Visual Walkthrough: 8 screenshot tersimpan di `docs/phases/screenshots/phase-19-walkthrough/`.
+6. **Status:**
+   - `READY FOR HUMAN REVIEW`.
 
-Inisiasi Phase 19 — Leadership Dashboard, Reporting & Analytics (M19):
-1. **Target:** Sistem dashboard eksekutif kepemimpinan sekolah (*Leadership Dashboard*), analitik akademik lintas rombel (*Academic Analytics*), rekapitulasi presensi sekolah (*Attendance Analytics*), serta pusat pelaporan dan ekspor dokumen pimpinan (*Executive Reporting & Export*).
-2. **Domain Invariant Wajib:**
-   ```text
-   Report ≠ Source of Truth (Laporan dan analitik adalah proyeksi baca dari data transaksi M01, M07-M13, M18)
-   Leadership Monitoring ≠ Full Administrative Write Access (Pimpinan memantau & evaluasi, bukan manipulasi nilai/presensi guru)
-   Position-Scoped Visibility (Akses terkunci pada PenugasanJabatan aktif: HEADMASTER, VICE_PRINCIPAL_CURRICULUM, VICE_PRINCIPAL_STUDENT_AFFAIRS, PROGRAM_HEAD, SUPER_ADMIN)
-   Export & Audit Trail (Setiap pembuatan dan unduhan laporan formal tercatat dengan riwayat ekspor)
-   ```
-3. **Komponen Inti Deliverable:**
-   - Database Model: `RiwayatEksporLaporan` pada schema Prisma untuk log pembuatan laporan.
-   - Application & Domain Layer: `ReportingRepository`, `LeadershipAnalyticsService`, engine agregasi data pimpinan lintas modul.
-   - Presentation Layer (Academic Glass UI v1.2):
-     - Portal Kepemimpinan (`/pimpinan`):
-       - View Kepala Sekolah (`HEADMASTER`): Ringkasan strategis sekolah, metrik kehadiran global, distribusi ketuntasan KKTP, daftar anomali perhatian sekolah, status KBM aktif.
-       - View Wakasek Kurikulum (`VICE_PRINCIPAL_CURRICULUM`): Analitik kurikulum, capaian TP, status administrasi guru, penyelesaian penilaian tugas & asesmen, beban mengajar.
-       - View Wakasek Kesiswaan (`VICE_PRINCIPAL_STUDENT_AFFAIRS`): Rekapitulasi kehadiran siswa, pola absensi (alpha/terlambat), agregasi attention center lintas rombel, statistik pembinaan.
-       - View Ketua Program Keahlian (`PROGRAM_HEAD`): Cohort per jurusan/program keahlian, performa mapel kejuruan, kehadiran rombel program.
-       - Pusat Ekspor Laporan (*Reporting & Export Center*): Filter periode/tingkat/rombel, ekspor CSV terstruktur, dan format cetak eksekutif print-ready A4.
-     - Role Switcher / Navigation: Akses rute `/pimpinan` aktif di `CANONICAL_NAVIGATION_CONFIG` untuk personil dengan jabatan struktural aktif dan Super Admin.
+---
+
+# 36. Implementasi Rekapitulasi Presensi Siswa Terpadu (M12 / M19 Enhancement — 12 September 2026)
+
+Menindaklanjuti masukan Human Review mengenai ketiadaan tabel rekap absen siswa pada antarmuka kelas dan presensi:
+1. **Domain & Data Layer (`M12` & `M19`):**
+   - DTO baru `StudentClassAttendanceRecapItemDTO` dan `ClassAttendanceRecapDTO` pada `src/modules/attendance/domain/attendance-types.ts`.
+   - Method `getClassAttendanceRecap` pada `AttendanceRepository` & `AttendanceService` yang mengagregasi kehadiran seluruh siswa rombel aktif per penugasan mengajar (Hadir, Sakit, Izin, Alpha, Dispensasi, Terlambat, Total Pertemuan, Persentase, dan Status Evaluasi: *Sangat Baik*, *Baik*, *Cukup*, *Perlu Perhatian*).
+   - Server Action `getClassAttendanceRecapAction` dengan otorisasi berbasis hak akses `attendance.session.view` dan teacher assignment scoping.
+2. **Presentation Layer (Academic Glass UI v1.2):**
+   - Komponen baru `StudentAttendanceRecapTable`: Menampilkan tabel matriks presensi siswa lengkap dengan pencarian nama/NISN, filter status perhatian/baik, indikator visual progres kehadiran, serta tombol unduh berkas CSV instan dan tombol cetak format A4.
+   - Pembaruan `ClassAttendanceTabView` pada Workspace Kelas (`/kelas-saya/[id]?tab=presensi`): Dilengkapi sub-tab interaktif **Rekapitulasi Siswa** (default) dan **Riwayat Sesi KBM**.
+   - Modal baru `ClassAttendanceRecapModal` dan tombol **Lihat Rekap Siswa** pada kartu rombel di Pusat Presensi (`/presensi-kelas`) untuk pratinjau cepat tanpa harus pindah halaman.
+   - Navigasi Shell: Penambahan menu **Presensi Kehadiran** (`/presensi-kelas`) pada grup navigasi staf/admin (`SUPER_ADMIN` & `SCHOOL_STAFF` dengan kapabilitas `ACADEMIC_OPERATOR`).
+3. **Quality Gates:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors.
+   - Prettier: 100% compliant.
+   - Vitest: 81 test files, 462 tests passing (100% PASS).
+   - Next.js Production Build: 22 rute terkompilasi optimal (100% PASS).
+
+---
+
+# 37. Implementasi Buku Nilai & Presensi Terpadu Kurikulum Merdeka (Leger Kelas Nyata — 12 September 2026)
+
+Menindaklanjuti masukan guru / human reviewer terkait format buku daftar nilai dan presensi realistis (Buku Leger Kurikulum Merdeka):
+1. **Domain & Data Modeling (`M12` & `M13`):**
+   - Penambahan relasi dinamis pada `GradebookColumnDTO` (`tp_id`, `lingkup_materi_id`).
+   - Penambahan `nisn` pada baris siswa `GradebookStudentRowDTO` sehingga identitas siswa menampilkan NIS & NISN lengkap.
+   - Pemetaan multi-tier domain:
+     - **Kehadiran**: `H` (Hadir), `S` (Sakit), `I` (Izin), `A` (Alpha), `%` (Persentase).
+     - **Formatif**: Dikelompokkan per Lingkup Materi dengan kolom TP dinamis (tidak statis 5 TP, mengikuti jumlah TP aktual yang dibuat guru untuk tiap bab/LM).
+     - **Sumatif Lingkup Materi (SLM)**: Kolom evaluasi sumatif per Lingkup Materi (`LM 1`, `LM 2`, dst.).
+     - **Sumatif Akhir Semester (SAS)**: Kolom ujian sumatif akhir semester.
+     - **Rekapitulasi Nilai Akhir**: Rerata Formatif, Rerata Sumatif, Nilai Akhir (NA), dan Status Ketuntasan KKTP.
+   - Invariant Kunci:
+     - *Missing Grade ≠ Zero Grade*: Siswa yang belum dinilai ditandai dengan strip (`-`), bukan nilai nol.
+     - Sticky Columns: Kolom No, NIS/NISN, dan Nama Siswa di-freeze secara sticky saat scroll horizontal.
+2. **Presentation Layer (Academic Glass UI v1.2):**
+   - Komponen baru: `UnifiedAcademicLedgerTable` (`src/modules/assessment/presentation/unified-academic-ledger-table.tsx`):
+     - Header berjenjang 3-tier standar nasional Kurikulum Merdeka.
+     - Baris rekapitulasi rata-rata kelas, nilai tertinggi, dan persentase ketuntasan kelas pada footer tabel (`tfoot`).
+     - Fitur pencarian instan nama/NIS/NISN dan filter status (Semua, Tuntas, Belum Tuntas, Perlu Perhatian).
+     - Ekspor CSV Leger Nilai & Presensi lengkap untuk pembukuan sekolah / Excel.
+     - Tombol Cetak Leger format A4 Landscape (`window.print()`).
+     - Aksi interaktif: Klik pada kolom asesmen membuka modal input nilai atau pembuatan asesmen baru pada TP tersebut.
+   - Integrasi `ClassAssessmentTabView` (Tab Penilaian) & `ClassAttendanceTabView` (Tab Presensi):
+     - Menjadi tampilan default utama (Buku Nilai & Presensi Terpadu) yang dapat diakses langsung oleh pengampu kelas.
+3. **Quality Gates & Verification:**
+   - TypeScript `tsc --noEmit`: 0 errors.
+   - ESLint: 0 errors (4 warnings non-blocking).
+   - Prettier: 100% compliant.
+   - Vitest: 82 test files, 467 tests passing (100% PASS).
+   - Next.js Production Build: 22 static & dynamic routes compiled successfully.
+
+
+
 
 
 

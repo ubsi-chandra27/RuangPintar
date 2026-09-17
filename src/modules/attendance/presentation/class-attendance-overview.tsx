@@ -26,9 +26,11 @@ import {
   Sparkles,
   ChevronRight,
   Layers,
+  TableProperties,
 } from "lucide-react";
 import { ClassSessionDTO } from "@/modules/schedule/domain/schedule-types";
 import { SessionAttendanceModal } from "./session-attendance-modal";
+import { ClassAttendanceRecapModal } from "./class-attendance-recap-modal";
 import { Toast, ToastType } from "@/shared/components/ui/toast";
 
 export interface ClassAttendanceCardItem {
@@ -66,6 +68,7 @@ export function ClassAttendanceOverview({
   const [activeTab, setActiveTab] = useState<"sessions" | "classes">("sessions");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedRecapPenugasanId, setSelectedRecapPenugasanId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
   // Perhitungan KPI Ringkasan
@@ -487,18 +490,36 @@ export function ClassAttendanceOverview({
                   </div>
                 </div>
 
-                <Link
-                  href={`/kelas-saya/${c.penugasanId}?tab=presensi`}
-                  className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
-                >
-                  <span>Buka Lembar Presensi Kelas</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRecapPenugasanId(c.penugasanId)}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-bold text-xs border border-blue-200/80 transition-colors cursor-pointer"
+                  >
+                    <TableProperties className="h-3.5 w-3.5" />
+                    <span>Lihat Rekap Siswa</span>
+                  </button>
+
+                  <Link
+                    href={`/kelas-saya/${c.penugasanId}?tab=presensi`}
+                    className="flex items-center justify-center px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
+                    title="Buka Lembar Presensi Kelas Lengkap"
+                  >
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
               </div>
             ))
           )}
         </div>
       )}
+
+      {/* Modal Rekapitulasi Presensi Siswa */}
+      <ClassAttendanceRecapModal
+        penugasanId={selectedRecapPenugasanId}
+        isOpen={Boolean(selectedRecapPenugasanId)}
+        onClose={() => setSelectedRecapPenugasanId(null)}
+      />
 
       {/* Modal Presensi Sesi Kelas */}
       <SessionAttendanceModal

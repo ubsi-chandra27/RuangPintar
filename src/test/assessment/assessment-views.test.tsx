@@ -135,6 +135,12 @@ describe("M13 Assessment & Gradebook — Presentation Views (Academic Glass UI)"
       />
     );
 
+    // Switch to Daftar Asesmen sub-tab
+    const asesmenTabBtn = screen.getByRole("button", {
+      name: /Daftar Asesmen/i,
+    });
+    fireEvent.click(asesmenTabBtn);
+
     // KPI verification
     expect(screen.getByText("Total Asesmen")).toBeInTheDocument();
     expect(screen.getAllByText("Formatif (TP)").length).toBeGreaterThan(0);
@@ -143,7 +149,7 @@ describe("M13 Assessment & Gradebook — Presentation Views (Academic Glass UI)"
     expect(screen.getByText("Input Nilai")).toBeInTheDocument();
   });
 
-  it("switches to Gradebook Matrix tab and displays student rows with Missing Grade as -", () => {
+  it("renders Unified Academic Ledger Table with student rows and missing grade as -", () => {
     render(
       <ClassAssessmentTabView
         penugasanId="PENUGAS_1"
@@ -156,19 +162,13 @@ describe("M13 Assessment & Gradebook — Presentation Views (Academic Glass UI)"
       />
     );
 
-    // Click Gradebook Tab
-    const gradebookTabBtn = screen.getByRole("button", {
-      name: /Buku Nilai \(Gradebook Matrix\)/i,
-    });
-    fireEvent.click(gradebookTabBtn);
-
-    // Student Ahmad Dahlan has score 85
+    // Default tab is Buku Nilai & Presensi (Leger Terpadu)
     expect(screen.getByText("Ahmad Dahlan")).toBeInTheDocument();
     expect(screen.getAllByText("85").length).toBeGreaterThan(0);
 
     // Student Siti Rahma has missing grade (-)
     expect(screen.getByText("Siti Rahma")).toBeInTheDocument();
-    expect(screen.getByText("Tuntas")).toBeInTheDocument();
+    expect(screen.getByText("TUNTAS")).toBeInTheDocument();
   });
 
   it("renders TeacherGradebookOverviewView for centralized /penilaian route", () => {

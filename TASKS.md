@@ -1,16 +1,16 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 9.0  
-**Current Active Phase:** PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)  
-**Status:** ACTIVE  
+**Versi:** 10.0  
+**Current Active Phase:** PHASE 20 — INTEGRATION FOUNDATION (M20)  
+**Status:** IN PROGRESS  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19) [ACTIVE]
+PHASE 20 — INTEGRATION FOUNDATION (M20) [IN PROGRESS]
 ```
 
 Tujuan:
@@ -57,40 +57,40 @@ Tujuan:
 
 ## Domain & Invariants
 ```text
-[ ] Read Model Integrity: Laporan & analitik merupakan derived projection, tanpa memanipulasi transaksi sumber (M11, M12, M13)
-[ ] Position-Scoped Access Control: Otorisasi server-side terkunci pada PenugasanJabatan aktif (HEADMASTER, WAKASEK_KURIKULUM, WAKASEK_KESISWAAN, PROGRAM_HEAD, SUPER_ADMIN)
-[ ] Read-Only Evaluation Guard: Pimpinan memantau performa tanpa kemampuan manipulasi nilai atau absensi
-[ ] Export & Audit Trail: Pencatatan riwayat pembuatan dan pengunduhan laporan formal
+[x] Read Model Integrity: Laporan & analitik merupakan derived projection, tanpa memanipulasi transaksi sumber (M11, M12, M13)
+[x] Position-Scoped Access Control: Otorisasi server-side terkunci pada PenugasanJabatan aktif (HEADMASTER, WAKASEK_KURIKULUM, WAKASEK_KESISWAAN, PROGRAM_HEAD, SUPER_ADMIN)
+[x] Read-Only Evaluation Guard: Pimpinan memantau performa tanpa kemampuan manipulasi nilai atau absensi
+[x] Export & Audit Trail: Pencatatan riwayat pembuatan dan pengunduhan laporan formal
 ```
 
 ## Data Layer & Application Services
 ```text
-[ ] Prisma Migration: Model riwayat_ekspor_laporan
-[ ] Reporting Domain & Validation: types, errors, zod schemas
-[ ] ReportingRepository & LeadershipAnalyticsService (agregasi KPI strategis, analitik akademik & presensi)
-[ ] Server Actions: leadership-actions.ts & report-export-actions.ts
-[ ] Seed Data: Pemastian personil pimpinan (Kepala Sekolah, Wakasek, Kaprog) terhubung dengan akun demo
+[x] Prisma Migration: Model riwayat_ekspor_laporan
+[x] Reporting Domain & Validation: types, errors, zod schemas
+[x] ReportingRepository & LeadershipAnalyticsService (agregasi KPI strategis, analitik akademik & presensi)
+[x] Server Actions: leadership-actions.ts & report-export-actions.ts
+[x] Seed Data: Pemastian personil pimpinan (Kepala Sekolah, Wakasek, Kaprog) terhubung dengan akun demo
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[ ] Leadership Portal (/pimpinan): Multi-role leadership view dengan sub-tab & KPI cards
-[ ] Headmaster View: Strategi sekolah, KPI kehadiran global, distribusi KKTP, perhatian pimpinan
-[ ] Curriculum View: Capaian TP, ketuntasan penilaian, beban mengajar guru
-[ ] Student Affairs View: Matriks kehadiran, tren ketidakhadiran, ringkasan kasus pembinaan
-[ ] Program Head View: Fokus jurusan/program keahlian, performa kompetensi kejuruan
-[ ] Report Export Center: Filter dinamis, ekspor CSV, modal print preview A4 formal
-[ ] Navigation Config: Registrasi menu /pimpinan dengan proteksi akses jabatan
+[x] Leadership Portal (/pimpinan): Multi-role leadership view dengan sub-tab & KPI cards
+[x] Headmaster View: Strategi sekolah, KPI kehadiran global, distribusi KKTP, perhatian pimpinan
+[x] Curriculum View: Capaian TP, ketuntasan penilaian, beban mengajar guru
+[x] Student Affairs View: Matriks kehadiran, tren ketidakhadiran, ringkasan kasus pembinaan
+[x] Program Head View: Fokus jurusan/program keahlian, performa kompetensi kejuruan
+[x] Report Export Center: Filter dinamis, ekspor CSV, modal print preview A4 formal
+[x] Navigation Config: Registrasi menu /pimpinan dengan proteksi akses jabatan
 ```
 
 ## Quality Gates & Verification
 ```text
-[ ] Typecheck: TypeScript tsc --noEmit 0 errors
-[ ] Lint check: ESLint 0 errors
-[ ] Format check: Prettier 100% clean
-[ ] Tests: Seluruh test unit & integrasi passing (100% PASS)
-[ ] Build: Next.js production build passing
-[ ] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 19
+[x] Typecheck: TypeScript tsc --noEmit 0 errors
+[x] Lint check: ESLint 0 errors
+[x] Format check: Prettier 100% clean
+[x] Tests: Seluruh test unit & integrasi passing (81 test files, 458 tests passing, 100% PASS)
+[x] Build: Next.js production build passing (22 routes generated)
+[x] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 19 (8 visual screenshots PASS)
 ```
 
 ---
@@ -120,21 +120,35 @@ Tujuan:
     ├── [x] Phase 16 — Guardian Experience (M15) [APPROVED BY HUMAN (10 September 2026)]
     └── [x] Phase 17 — Communication & Notification (M16/M17) [APPROVED BY HUMAN (11 September 2026)]
 
-[ ] Milestone G — Student Monitoring, Leadership & School Operations (Phase 18–19) [ACTIVE]
+[x] Milestone G — Student Monitoring, Leadership & School Operations (Phase 18–19) [APPROVED BY HUMAN (17 September 2026)]
     ├── [x] Phase 18 — Student Monitoring & Homeroom (M18) [APPROVED BY HUMAN (11 September 2026)]
-    └── [ ] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19) [ACTIVE]
+    └── [x] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19) [APPROVED BY HUMAN (17 September 2026)]
+
+[ ] Milestone H — Extension Ready (Phase 20–21) [ACTIVE]
+    ├── [ ] Phase 20 — Integration Foundation (M20) [IN PROGRESS]
+    └── [ ] Phase 21 — AI Assistance (M21) [DEFERRED]
 ```
 
 ---
 
-# 4. Milestone G Historical Quality Gates (Phase 18)
+# 4. Milestone G Historical Quality Gates (Phase 18 & 19)
 
 ```text
-[x] Domain Invariants: M18 Derived Indicator Model, Homeroom Scoping (Default Deny), Read-Only Academic Guard, Persistent Guidance Notes & Follow-Up Plans
-[x] Format check: Prettier 100% clean (npm run format:check)
-[x] Lint check: 0 errors (npm run lint)
-[x] Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-[x] Tests: 79 test files, 442 tests passing (100% PASS)
-[x] Build: Next.js production compilation 100% PASS (31 routes generated)
-[x] End-to-End Walkthrough: Playwright automated test & 10 visual screenshots PASS (qa-phase18-visual-walkthrough.mjs)
+[x] Phase 18 Quality Gates:
+    - Domain Invariants: M18 Derived Indicator Model, Homeroom Scoping (Default Deny), Read-Only Academic Guard, Persistent Guidance Notes & Follow-Up Plans
+    - Format check: Prettier 100% clean (npm run format:check)
+    - Lint check: 0 errors (npm run lint)
+    - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
+    - Tests: 79 test files, 442 tests passing (100% PASS)
+    - Build: Next.js production compilation 100% PASS (31 routes generated)
+    - End-to-End Walkthrough: Playwright automated test & 10 visual screenshots PASS (qa-phase18-visual-walkthrough.mjs)
+
+[x] Phase 19 Quality Gates:
+    - Domain Invariants: Derived Read Models, Position-Scoped Visibility (Default Deny), Read-Only Evaluation Guard, Export History Audit Log
+    - Format check: Prettier 100% clean (npm run format:check)
+    - Lint check: 0 errors (npm run lint)
+    - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
+    - Tests: 82 test files, 467 tests passing (100% PASS)
+    - Build: Next.js production compilation 100% PASS (22 routes generated)
+    - Enhancement: Unified Academic Ledger Table (Buku Nilai & Presensi Terpadu Kurikulum Merdeka) fully implemented & integrated.
 ```

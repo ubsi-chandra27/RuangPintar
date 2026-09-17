@@ -71,14 +71,16 @@ export default async function ClassWorkspacePage({ params, searchParams }: PageP
     notFound();
   }
 
-  // Ambil data presensi, riwayat sesi kelas, asesmen, gradebook, dan ujian CBT untuk penugasan ini
-  const [attendanceHistory, attendanceStats, assessments, gradebook, exams] = await Promise.all([
-    attendanceService.getAssignmentAttendanceHistory(penugasanId, user.sekolah_id),
-    attendanceService.getOverallAttendanceStats(penugasanId, user.sekolah_id),
-    assessmentService.getAssessments(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
-    assessmentService.getGradebook(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
-    cbtService.getExamsByPenugasan(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
-  ]);
+  // Ambil data presensi, riwayat sesi kelas, rekap presensi siswa, asesmen, gradebook, dan ujian CBT untuk penugasan ini
+  const [attendanceHistory, attendanceStats, attendanceRecap, assessments, gradebook, exams] =
+    await Promise.all([
+      attendanceService.getAssignmentAttendanceHistory(penugasanId, user.sekolah_id),
+      attendanceService.getOverallAttendanceStats(penugasanId, user.sekolah_id),
+      attendanceService.getClassAttendanceRecap(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
+      assessmentService.getAssessments(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
+      assessmentService.getGradebook(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
+      cbtService.getExamsByPenugasan(penugasanId, user.sekolah_id, guruId, isSuperAdmin),
+    ]);
 
   const searchParamsObj = searchParams ? await searchParams : undefined;
   const initialTab = searchParamsObj?.tab as any;
@@ -105,6 +107,7 @@ export default async function ClassWorkspacePage({ params, searchParams }: PageP
         canManage={Boolean(canManage)}
         attendanceHistory={attendanceHistory}
         attendanceStats={attendanceStats}
+        attendanceRecap={attendanceRecap}
         assessments={assessments}
         gradebook={gradebook}
         exams={exams}
