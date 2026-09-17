@@ -133,7 +133,9 @@ async function main() {
 
   console.log("\n================================================================================");
   console.log("✓ PEMBERSIHAN SELESAI 100%!");
-  console.log("✓ Seluruh data guru, jadwal, siswa, rombel, dan akun SMK Otomindo telah dikosongkan.");
+  console.log(
+    "✓ Seluruh data guru, jadwal, siswa, rombel, dan akun SMK Otomindo telah dikosongkan."
+  );
   console.log("✓ Akun 'superadmin' (Password123#) tetap aktif untuk login administratif.");
   console.log("✓ Database bersih dan siap untuk SaaS Onboarding & Phase 21.");
   console.log("================================================================================\n");

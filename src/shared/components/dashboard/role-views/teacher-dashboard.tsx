@@ -40,6 +40,7 @@ import {
 } from "@/modules/schedule/domain/schedule-merger";
 import { TeacherTodaySchedule } from "./teacher-today-schedule";
 import { TeacherDigitalClockCalendar } from "./teacher-digital-clock-calendar";
+import { TrialBanner } from "@/modules/ai-assistant/presentation/trial-banner";
 
 export interface TeacherDashboardProps {
   user: AuthenticatedUser;
@@ -141,6 +142,9 @@ export async function TeacherDashboard({
 
   return (
     <div className="space-y-4 pb-8">
+      {/* SaaS Freemium Onboarding & AI Camera Setup Banner */}
+      <TrialBanner />
+
       {/* 1. Header Ringkas Guru */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-0.5">
         <div>

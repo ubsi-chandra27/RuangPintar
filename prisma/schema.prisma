@@ -17,10 +17,12 @@ model Sekolah {
   telepon      String?
   email        String?
   zona_waktu   String   @default("Asia/Jakarta")
-  logo_url     String?
-  status_aktif Boolean  @default(true)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  logo_url            String?
+  tipe_lisensi        String   @default("FREEMIUM") // FREEMIUM | SEKOLAH
+  trial_berakhir_pada DateTime?
+  status_aktif        Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 
   unit_organisasi     UnitOrganisasi[]
   jabatan             Jabatan[]
@@ -77,6 +79,7 @@ model Sekolah {
   konfigurasi_integrasi     KonfigurasiIntegrasi[]
   endpoint_webhook          EndpointWebhook[]
   log_pengiriman_integrasi  LogPengirimanIntegrasi[]
+  permintaan_setup_ai       PermintaanSetupKelasAi[]
 
   @@map("sekolah")
 }
@@ -238,6 +241,9 @@ model Pengguna {
   percobaan_login_gagal Int       @default(0)
   dikunci_sampai        DateTime?
   foto_url              String?
+  no_telepon            String?
+  tipe_lisensi          String    @default("FREEMIUM") // FREEMIUM | SEKOLAH
+  trial_berakhir_pada   DateTime?
   created_at            DateTime  @default(now())
   updated_at            DateTime  @updatedAt
 
@@ -253,6 +259,7 @@ model Pengguna {
   catatan_monitoring_ditulis CatatanMonitoring[]      @relation("PenulisCatatan")
   tindak_lanjut_ditugaskan   TindakLanjutMonitoring[] @relation("PenanggungJawabTindakLanjut")
   ekspor_laporan             RiwayatEksporLaporan[]   @relation("PembuatEksporLaporan")
+  permintaan_setup_ai        PermintaanSetupKelasAi[]
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -1693,8 +1700,24 @@ model LogPengirimanIntegrasi {
   @@map("log_pengiriman_integrasi")
 }
 
+/// M21 — AI Assistance: Permintaan pemindaian foto absensi ke kelas otomatis
+model PermintaanSetupKelasAi {
+  id                   String   @id
+  sekolah_id           String
+  pengguna_id          String
+  nama_kelas           String
+  mata_pelajaran       String?
+  foto_url             String
+  hasil_ekstraksi_json String? // JSON [{ nama_lengkap, nis, nisn, jenis_kelamin }]
+  status               String   @default("DRAFT") // DRAFT | DIPROSES | DISETUJUI | DITOLAK
+  rombel_id_hasil      String?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
 
+  sekolah  Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Cascade)
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
 
-
-
-
+  @@index([sekolah_id, status])
+  @@index([pengguna_id])
+  @@map("permintaan_setup_kelas_ai")
+}

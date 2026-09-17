@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAction, AuthActionResult } from "@/app/actions/auth-actions";
 import { Label } from "@/shared/components/ui/label";
@@ -124,8 +125,20 @@ export function LoginForm({ status }: { status?: string }) {
 
         {/* Supporting Footer Text */}
         <p className="text-center text-[11px] sm:text-xs text-[#64748B] dark:text-slate-400">
-          Akun dikelola oleh sekolah.
+          Akun sekolah resmi dikelola oleh administrator sekolah.
         </p>
+
+        <div className="text-center pt-3 border-t border-slate-200/60 dark:border-slate-800">
+          <p className="text-[12px] sm:text-[13px] text-slate-600 dark:text-slate-400">
+            Guru baru?{" "}
+            <Link
+              href="/register"
+              className="text-sky-600 dark:text-sky-400 font-semibold hover:underline"
+            >
+              Coba Gratis 30 Hari (Daftar Mandiri)
+            </Link>
+          </p>
+        </div>
       </div>
     </form>
   );

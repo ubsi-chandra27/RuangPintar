@@ -25,6 +25,133 @@ describe("Student Experience Service (Phase 15 / M15)", () => {
   const schoolId = "01JA0000000000000000000001";
   const userSiswaId = "01JASTUD0000000000000000001";
 
+  const mockProfile = {
+    siswaId: "01JASTUD0000000000000000001",
+    userId: userSiswaId,
+    nis: "20261001",
+    nisn: "0012345678",
+    namaLengkap: "Rian Pratama",
+    rombelId: "01JAROMB0000000000000000001",
+    rombelNama: "X RPL",
+    tingkatKelas: "10",
+    fase: "E",
+    tahunAjaranId: "01JATA000000000000000000001",
+    tahunAjaranNama: "2026/2027",
+    semesterId: "01JASEM00000000000000000001",
+    semesterNama: "Semester Ganjil",
+    waliKelasNama: "Budi Santoso, M.Kom",
+    sekolahNama: "Sekolah Percontohan Ruang Pintar",
+  };
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(studentExperienceRepository, "getStudentProfileByUserId").mockImplementation(
+      async (uid) => {
+        if (uid === userSiswaId) return mockProfile as any;
+        return null;
+      }
+    );
+    vi.spyOn(studentExperienceRepository, "getStudentDashboardData").mockResolvedValue({
+      profile: mockProfile as any,
+      statCards: {
+        rombelNama: "X RPL",
+        persentaseKehadiran: 95,
+        totalTugasAktif: 2,
+      } as any,
+      jadwalHariIni: [],
+      tugasMendatang: [],
+      nilaiTerbaru: [],
+    } as any);
+    vi.spyOn(studentExperienceRepository, "getStudentMaterials").mockResolvedValue([
+      {
+        id: "MAT-001",
+        judul: "Pengenalan Algoritma",
+        mataPelajaranNama: "Dasar Pemrograman",
+        guruNama: "Budi Santoso, M.Kom",
+        tipe: "DOKUMEN",
+        fileUrl: "/files/algo.pdf",
+        diunggahPada: "17 Sep 2026",
+      } as any,
+    ]);
+    vi.spyOn(studentExperienceRepository, "getStudentAssignments").mockResolvedValue([
+      {
+        id: "TUG-001",
+        judul: "Tugas Logika Dasar",
+        mataPelajaranNama: "Dasar Pemrograman",
+        tenggatWaktu: new Date(Date.now() + 86400000).toISOString(),
+        statusPengerjaan: "BELUM_DIKUMPULKAN",
+      } as any,
+    ]);
+    vi.spyOn(studentExperienceRepository, "getStudentAttendanceSummary").mockResolvedValue({
+      totalSesi: 20,
+      hadir: 19,
+      izin: 1,
+      sakit: 0,
+      alpha: 0,
+      dispensasi: 0,
+      terlambat: 0,
+      persentaseKehadiran: 95,
+      riwayatPresensi: [],
+    } as any);
+    vi.spyOn(studentExperienceRepository, "getStudentPublishedGrades").mockResolvedValue([
+      {
+        asesmenId: "ASM-001",
+        judulAsesmen: "Ulangan Harian 1",
+        mataPelajaranNama: "Dasar Pemrograman",
+        kkmKktp: 75,
+        nilaiAngka: 88,
+        statusPublikasi: "DIPUBLIKASIKAN",
+      } as any,
+      {
+        asesmenId: "ASM-002",
+        judulAsesmen: "Tugas Proyek",
+        mataPelajaranNama: "Dasar Pemrograman",
+        kkmKktp: 75,
+        nilaiAngka: null,
+        statusPublikasi: "DIPUBLIKASIKAN",
+      } as any,
+    ]);
+    vi.spyOn(studentExperienceRepository, "getStudentReportCardCompilation").mockResolvedValue({
+      sekolahNama: "Sekolah Percontohan Ruang Pintar",
+      tahunAjaran: "2026/2027",
+      semester: "Semester Ganjil",
+      siswa: {
+        namaLengkap: "Rian Pratama",
+        rombelNama: "X RPL",
+        nis: "20261001",
+        nisn: "0012345678",
+      } as any,
+      mataPelajaranList: [
+        {
+          mataPelajaranNama: "Dasar Pemrograman",
+          kkmKktp: 75,
+          nilaiAkhir: 85,
+          predikat: "A",
+          deskripsiCapaianTertinggi: "Sangat baik memahami logika dasar.",
+        } as any,
+      ],
+      presensi: { sakit: 0, izin: 1, tanpaKeterangan: 0 },
+      catatanWaliKelas: "Pertahankan prestasi.",
+      kepalaSekolahNama: "Dr. H. Siswanto, M.Pd",
+    } as any);
+    vi.spyOn(studentExperienceRepository, "submitAssignment").mockImplementation(
+      async (_, __, input) => {
+        if (input.publikasi_tugas_id === "NON_EXISTENT_PUBLIKASI_ID") {
+          throw new AssignmentNotFoundError();
+        }
+        return {
+          id: "SUB-001",
+          siswa_id: mockProfile.siswaId,
+          publikasi_tugas_id: input.publikasi_tugas_id,
+          teks_jawaban: input.teks_jawaban || "",
+          catatan_siswa: input.catatan_siswa,
+          status: "DIKUMPULKAN",
+          dikumpulkan_pada: new Date(),
+        } as any;
+      }
+    );
+  });
+
   it("berhasil mengambil profil dan konteks rombel siswa aktif", async () => {
     const profile = await studentExperienceService.getStudentProfile(userSiswaId, schoolId);
 

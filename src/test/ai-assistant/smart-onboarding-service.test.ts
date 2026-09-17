@@ -1,0 +1,136 @@
+import { describe, it, expect, beforeEach } from "vitest";
+import { smartOnboardingService } from "@/modules/ai-assistant/application/smart-onboarding-service";
+import { prisma } from "@/shared/infrastructure/database/prisma";
+import { generateUlid } from "@/shared/lib/ulid";
+
+describe("Smart Onboarding & SaaS Teacher Service (M21)", () => {
+  const testEmail = `guru_${Date.now()}@example.com`;
+
+  it("1. harus berhasil mendaftarkan guru mandiri dengan 4 field instan & trial 30 hari", async () => {
+    const result = await smartOnboardingService.registerTeacher({
+      nama_lengkap: "Ahmad Fauzi, S.Pd",
+      email: testEmail,
+      no_telepon: "081234567890",
+      password: "Password123#",
+      nama_sekolah: "SMA 1 Coba",
+    });
+
+    expect(result.user).toBeDefined();
+    expect(result.user.email).toBe(testEmail);
+    expect(result.sekolah.nama).toBe("SMA 1 Coba");
+    expect(result.rawSessionToken).toBeDefined();
+
+    // Verifikasi data di database
+    const createdSchool = await prisma.sekolah.findUnique({
+      where: { id: result.sekolah.id },
+    });
+    expect(createdSchool?.tipe_lisensi).toBe("FREEMIUM");
+    expect(createdSchool?.trial_berakhir_pada).toBeDefined();
+
+    // Verifikasi entitas guru terbuat
+    const teacher = await prisma.guru.findFirst({
+      where: { pengguna_id: result.user.id },
+    });
+    expect(teacher).toBeDefined();
+    expect(teacher?.nama_lengkap).toBe("Ahmad Fauzi, S.Pd");
+  });
+
+  it("2. harus menolak registrasi dengan email yang sama persis", async () => {
+    await expect(
+      smartOnboardingService.registerTeacher({
+        nama_lengkap: "Guru Kloning",
+        email: testEmail,
+        password: "Password123#",
+        nama_sekolah: "SMA Duplikat",
+      })
+    ).rejects.toThrow("Email sudah terdaftar");
+  });
+
+  it("3. harus dapat mengekstrak foto lembar absensi dan menyimpan draft permintaan AI", async () => {
+    // Ambil user yang tadi dibuat
+    const user = await prisma.pengguna.findFirst({
+      where: { email: testEmail },
+    });
+    expect(user).toBeDefined();
+
+    const extraction = await smartOnboardingService.processClassPhotoWithAi({
+      userId: user!.id,
+      sekolahId: user!.sekolah_id!,
+      imageBase64: "data:image/jpeg;base64,sample_photo_base64",
+      namaKelasHint: "X MIPA 1",
+      mataPelajaranHint: "Matematika Wajib",
+    });
+
+    expect(extraction).toBeDefined();
+    expect(extraction.nama_kelas).toBe("X MIPA 1");
+    expect(extraction.mata_pelajaran).toBe("Matematika Wajib");
+    expect(extraction.siswa.length).toBeGreaterThan(0);
+    expect(extraction.requestId).toBeDefined();
+
+    // Verifikasi catatan draft tersimpan
+    const draft = await prisma.permintaanSetupKelasAi.findUnique({
+      where: { id: extraction.requestId },
+    });
+    expect(draft).toBeDefined();
+    expect(draft?.status).toBe("DRAFT");
+  });
+
+  it("4. harus menerbitkan kelas dan seluruh siswa setelah dikonfirmasi guru (Human-in-the-Loop)", async () => {
+    const user = await prisma.pengguna.findFirst({
+      where: { email: testEmail },
+    });
+
+    const createClassResult = await smartOnboardingService.confirmAndCreateClass(
+      user!.id,
+      user!.sekolah_id!,
+      {
+        nama_kelas: "X MIPA 1",
+        mata_pelajaran: "Matematika Wajib",
+        tingkat_kelas: "10",
+        siswa: [
+          { nama_lengkap: "Budi Santoso", jenis_kelamin: "L", nis: "1001" },
+          { nama_lengkap: "Citra Lestari", jenis_kelamin: "P", nis: "1002" },
+          { nama_lengkap: "Dian Wahyuni", jenis_kelamin: "P", nis: "1003" },
+        ],
+      }
+    );
+
+    expect(createClassResult.rombelId).toBeDefined();
+    expect(createClassResult.namaRombel).toBe("X MIPA 1");
+    expect(createClassResult.totalSiswa).toBe(3);
+
+    // Verifikasi rombel di database
+    const rombel = await prisma.rombel.findUnique({
+      where: { id: createClassResult.rombelId },
+      include: { penempatan_rombel: true },
+    });
+    expect(rombel).toBeDefined();
+    expect(rombel?.penempatan_rombel.length).toBe(3);
+
+    // Verifikasi penugasan mengajar terbuat
+    const penugasan = await prisma.penugasanMengajar.findFirst({
+      where: { rombel_id: createClassResult.rombelId },
+      include: { mata_pelajaran: true },
+    });
+    expect(penugasan).toBeDefined();
+    expect(penugasan?.mata_pelajaran.nama).toBe("Matematika Wajib");
+  });
+
+  it("5. harus menghitung sisa hari uji coba dan status kuota kelas guru", async () => {
+    const user = await prisma.pengguna.findFirst({
+      where: { email: testEmail },
+    });
+
+    const trialStatus = await smartOnboardingService.getTeacherTrialStatus(
+      user!.id,
+      user!.sekolah_id!
+    );
+
+    expect(trialStatus.is_trial).toBe(true);
+    expect(trialStatus.days_remaining).toBeGreaterThanOrEqual(29);
+    expect(trialStatus.current_rombel_count).toBe(1);
+    expect(trialStatus.max_rombel).toBe(5);
+    expect(trialStatus.can_create_rombel).toBe(true);
+    expect(trialStatus.is_expired).toBe(false);
+  });
+});

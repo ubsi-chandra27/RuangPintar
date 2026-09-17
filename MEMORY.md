@@ -35,7 +35,7 @@ Current Implementation Phase:
 PHASE 21 — AI ASSISTANCE & SAAS ONBOARDING (M21)
 
 Current Phase Status:
-IN PROGRESS
+READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
 PHASE 20 — INTEGRATION FOUNDATION (M20)
@@ -952,12 +952,34 @@ Status: **APPROVED BY HUMAN (17 September 2026)**
 
 ---
 
-# 39. Phase 21 — AI Assistance & SaaS Onboarding (M21 / Milestone H — ACTIVE)
+# 39. Phase 21 — AI Assistance & SaaS Onboarding (M21 / Milestone H)
 
-Status: **IN PROGRESS**
+Status: **READY FOR HUMAN REVIEW**
 
-Fokus Implementasi:
-1. Pendaftaran mandiri guru tanpa friksi (`/register`) dengan progressive disclosure (4 kolom input instan).
-2. Asisten AI Vision Gemini ("Photo-to-Class Vision AI Agent"): pemindaian lembar presensi/daftar siswa dari foto kamera HP menjadi kelas dan rombel otomatis.
-3. Workspace guru mandiri berdurasi coba gratis 30 hari dengan batas kuota 5 rombel dan penanda visual fitur eksklusif sekolah 🔒.
-4. UI/UX polish dan persiapan hosting cloud.
+1. **Domain & Data Modeling (`M21`):**
+   - Database Models: `Sekolah` & `Pengguna` ditambahkan field `tipe_lisensi` (`FREEMIUM` | `SEKOLAH`) dan `trial_berakhir_pada`.
+   - Model Baru: `PermintaanSetupKelasAi` untuk pencatatan log pemrosesan foto, hasil ekstraksi Vision AI, dan audit status konfirmasi.
+   - Forward migration applied: `20260917220000_add_ai_assistance_and_saas_m21`.
+   - Invariants:
+     - *Vision Draft ≠ Committed Rombel (Strict Human-in-the-Loop)*: Hasil ekstraksi foto disajikan ke modal pratinjau interaktif (`AiPreviewTableModal`) agar guru dapat memeriksa/mengedit sebelum terbit ke database.
+     - *Zero Friction Sign-Up (Progressive Disclosure)*: Registrasi mandiri hanya memerlukan 4 kolom esensial (Nama Lengkap, Email/WhatsApp, Password, Asal Sekolah).
+     - *Freemium Workspace Scoping*: Akun guru mandiri mendapatkan masa uji coba 30 hari dan kuota 5 rombel aktif dengan isolasi tenant penuh.
+     - *Resilient Multimodal Vision & Fallback Parsing*: Menggunakan Google Gemini 1.5/Flash dengan cadangan parser heuristik OCR cerdas.
+2. **Infrastructure & Application Services:**
+   - Services: `GeminiVisionService` & `SmartOnboardingService`.
+   - Server Actions: `registerTeacherAction`, `processClassPhotoAction`, `confirmClassCreationAction`, `getTeacherTrialStatusAction`.
+   - Modul Presentasi:
+     - `/register` (`RegisterView`): Halaman pendaftaran mandiri guru super cepat dengan Academic Glass UI v1.2.
+     - `SmartPhotoOnboardingModal`: Dialog pengunggahan/pemotretan lembar absensi kertas.
+     - `AiPreviewTableModal`: Tabel pratinjau siswa interaktif dengan fitur edit nama, toggle gender, dan tambah baris.
+     - `TrialBanner`: Banner cockpit di dashboard guru menampilkan sisa hari, kuota kelas, dan aksi cepat.
+3. **Quality Gates & Verification:**
+   - TypeScript `tsc --noEmit`: 0 errors (PASS).
+   - ESLint: 0 errors (PASS).
+   - Prettier: 100% compliant (PASS).
+   - Vitest: 88 test files, 493 tests passing (100% PASS).
+   - Next.js Production Build: 24 static & dynamic routes compiled cleanly (PASS).
+   - Playwright Automated Walkthrough: 7 artifak visual tersimpan di `docs/phases/screenshots/phase-21-walkthrough/` (100% PASS).
+4. **Documentation:**
+   - `docs/phases/PHASE-21-AI-ASSISTANCE-AND-SAAS-ONBOARDING.md` disusun lengkap.
+

@@ -1,16 +1,16 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 12.0  
+**Versi:** 13.0  
 **Current Active Phase:** PHASE 21 — AI ASSISTANCE & SAAS ONBOARDING (M21)  
-**Status:** IN PROGRESS  
+**Status:** READY FOR HUMAN REVIEW  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 21 — AI ASSISTANCE & SAAS ONBOARDING (M21) [IN PROGRESS]
+PHASE 21 — AI ASSISTANCE & SAAS ONBOARDING (M21) [READY FOR HUMAN REVIEW]
 ```
 
 Tujuan:
@@ -27,23 +27,23 @@ Tujuan:
 >    - `GeminiVisionService`: Adapter pengolah gambar multimodal (ekstraksi nama siswa, NIS/NISN, jenis kelamin L/P, nama rombel).
 >    - `SmartOnboardingService`: Orkestrasi registrasi mandiri, pembuatan instansi sekolah awal secara instan, dan penerbitan kelas dari payload AI.
 >    - Server Actions:
->      - `registerTeacherAccountAction` (registrasi guru baru)
->      - `processClassPhotoWithAiAction` (upload foto lembar absensi & ekstraksi Vision AI)
->      - `confirmCreateClassFromAiAction` (konfirmasi draft dan simpan rombel + siswa)
->      - `getTrialStatusAction` (cek sisa hari masa percobaan 30 hari)
+>      - `registerTeacherAction` (registrasi guru baru)
+>      - `processClassPhotoAction` (upload foto lembar absensi & ekstraksi Vision AI)
+>      - `confirmClassCreationAction` (konfirmasi draft dan simpan rombel + siswa)
+>      - `getTeacherTrialStatusAction` (cek sisa hari masa percobaan 30 hari)
 > 4. Presentation Layer (Academic Glass UI v1.2):
 >    - Rute baru `/register` (Halaman pendaftaran publik yang bersih, responsif, dan elegan).
 >    - Komponen Onboarding Ramah:
->      - `PhotoToClassModal`: Area dropzone foto / tangkapan kamera HP untuk mengunggah lembar presensi kelas.
->      - `AiExtractionPreviewModal`: Tabel interaktif hasil pembacaan AI dengan opsi edit nama/gender sebelum konfirmasi.
->    - Banner Status Trial: Menampilkan sisa hari uji coba ("Tersisa 28 hari masa coba gratis") beserta tombol usulan ke Kepala Sekolah.
+>      - `SmartPhotoOnboardingModal`: Area dropzone foto / tangkapan kamera HP untuk mengunggah lembar presensi kelas.
+>      - `AiPreviewTableModal`: Tabel interaktif hasil pembacaan AI dengan opsi edit nama/gender sebelum konfirmasi.
+>    - Banner Status Trial: Menampilkan sisa hari uji coba ("Tersisa 30 hari masa coba gratis") beserta tombol usulan ke Kepala Sekolah.
 > 5. Quality Gates & Verification:
 >    - TypeScript typecheck: 0 errors
 >    - ESLint: 0 errors
 >    - Prettier: 100% compliant
->    - Vitest unit & integration tests passing
->    - Next.js production build passing
->    - Playwright automated visual walkthrough
+>    - Vitest unit & integration tests passing (88 files, 493 tests)
+>    - Next.js production build passing (24 routes)
+>    - Playwright automated visual walkthrough (7/7 screenshots captured)
 
 ---
 
@@ -51,36 +51,36 @@ Tujuan:
 
 ## Domain & Invariants
 ```text
-[ ] Human-in-the-Loop AI Guard: Pratinjau hasil ekstraksi foto sebelum mutasi database
-[ ] Zero Friction Registration: Pendaftaran 4 kolom tanpa beban administratif di awal
-[ ] Freemium Trial Scoping: Kuota 5 rombel guru & pembatas durasi 30 hari
-[ ] Safe Multimodal Vision: Ekstraksi foto kertas/tabel absensi menggunakan Gemini AI Vision
+[x] Human-in-the-Loop AI Guard: Pratinjau hasil ekstraksi foto sebelum mutasi database
+[x] Zero Friction Registration: Pendaftaran 4 kolom tanpa beban administratif di awal
+[x] Freemium Trial Scoping: Kuota 5 rombel guru & pembatas durasi 30 hari
+[x] Safe Multimodal Vision: Ekstraksi foto kertas/tabel absensi menggunakan Gemini AI Vision
 ```
 
 ## Data Layer & Application Services
 ```text
-[ ] Prisma Schema & Migration: Field lisensi uji coba & log ekstraksi AI
-[ ] AI Vision Service: Integrasi Gemini Vision multimodal OCR
-[ ] Smart Onboarding Service & Server Actions: /register & proses foto AI
-[ ] Role & Permissions Guard: Guru mandiri mendapatkan bundle peran TEACHER
+[x] Prisma Schema & Migration: Field lisensi uji coba & log ekstraksi AI
+[x] AI Vision Service: Integrasi Gemini Vision multimodal OCR
+[x] Smart Onboarding Service & Server Actions: /register & proses foto AI
+[x] Role & Permissions Guard: Guru mandiri mendapatkan bundle peran TEACHER
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[ ] Halaman Pendaftaran Publik (/register)
-[ ] Modal Smart Onboarding (Upload Foto Lembar Absensi)
-[ ] Modal Pratinjau Ekstraksi AI & Editor Tabel Siswa
-[ ] Trial Badge & Banner Pengingat Sisa Hari Masa Percobaan
+[x] Halaman Pendaftaran Publik (/register)
+[x] Modal Smart Onboarding (Upload Foto Lembar Absensi)
+[x] Modal Pratinjau Ekstraksi AI & Editor Tabel Siswa
+[x] Trial Badge & Banner Pengingat Sisa Hari Masa Percobaan
 ```
 
 ## Quality Gates & Verification
 ```text
-[ ] Typecheck: TypeScript tsc --noEmit 0 errors
-[ ] Lint check: ESLint 0 errors
-[ ] Format check: Prettier 100% clean
-[ ] Tests: Seluruh test passing
-[ ] Build: Next.js production build passing
-[ ] Playwright Visual Walkthrough: Bukti visual alur registrasi & pemrosesan foto AI
+[x] Typecheck: TypeScript tsc --noEmit 0 errors
+[x] Lint check: ESLint 0 errors
+[x] Format check: Prettier 100% clean
+[x] Tests: Seluruh test passing (88 test files, 493 tests pass)
+[x] Build: Next.js production build passing (24 routes)
+[x] Playwright Visual Walkthrough: Bukti visual alur registrasi & pemrosesan foto AI (7 screenshots)
 ```
 
 ---
@@ -114,14 +114,14 @@ Tujuan:
     ├── [x] Phase 18 — Student Monitoring & Homeroom (M18) [APPROVED BY HUMAN (11 September 2026)]
     └── [x] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19) [APPROVED BY HUMAN (17 September 2026)]
 
-[ ] Milestone H — Extension Ready (Phase 20–21) [ACTIVE]
+[ ] Milestone H — Extension Ready (Phase 20–21) [READY FOR REVIEW]
     ├── [x] Phase 20 — Integration Foundation (M20) [APPROVED BY HUMAN (17 September 2026)]
-    └── [ ] Phase 21 — AI Assistance & SaaS Onboarding (M21) [ACTIVE / IN PROGRESS]
+    └── [x] Phase 21 — AI Assistance & SaaS Onboarding (M21) [READY FOR HUMAN REVIEW]
 ```
 
 ---
 
-# 4. Milestone H Historical Quality Gates (Phase 20)
+# 4. Milestone H Historical Quality Gates
 
 ```text
 [x] Phase 20 Quality Gates:
@@ -133,4 +133,14 @@ Tujuan:
     - Build: Next.js production compilation 100% PASS (23 routes generated)
     - End-to-End Walkthrough: Playwright automated test & 7 visual screenshots PASS (qa-phase20-visual-walkthrough.mjs)
     - Human Approval: APPROVED BY HUMAN (17 September 2026)
+
+[x] Phase 21 Quality Gates:
+    - Domain Invariants: Strict Human-in-the-Loop AI Vision Guard, 4-Field Progressive Disclosure Sign-up, Freemium 30-Day Workspace Quota Isolation (Max 5 Classes)
+    - Format check: Prettier 100% clean (npm run format:check)
+    - Lint check: 0 errors (npm run lint)
+    - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
+    - Tests: 88 test files, 493 tests passing (100% PASS)
+    - Build: Next.js production compilation 100% PASS (24 routes generated)
+    - End-to-End Walkthrough: Playwright automated test & 7 visual screenshots PASS (qa-phase21-visual-walkthrough.mjs)
+    - Human Approval: READY FOR HUMAN REVIEW
 ```
