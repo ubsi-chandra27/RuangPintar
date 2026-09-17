@@ -51,9 +51,9 @@ export function getMobileBottomNavItems(
     case "SUPER_ADMIN":
       return [
         { id: "home", label: "Beranda", href: "/dashboard", icon: LayoutDashboard },
-        { id: "students", label: "Siswa", href: "/data-siswa", icon: UserSquare2 },
-        { id: "academic", label: "Akademik", href: "/struktur-akademik", icon: Layers },
+        { id: "school", label: "Sekolah", href: "/sekolah", icon: Building2 },
         { id: "teachers", label: "Guru", href: "/guru-pengajaran", icon: GraduationCap },
+        { id: "academic", label: "Akademik", href: "/struktur-akademik", icon: Layers },
       ];
 
     case "SCHOOL_STAFF": {

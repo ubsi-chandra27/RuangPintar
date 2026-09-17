@@ -23,6 +23,10 @@ import {
   Building2,
   Sparkles,
   Megaphone,
+  CalendarDays,
+  Plug,
+  PlayCircle,
+  School,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -46,6 +50,10 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Building2,
   Sparkles,
   Megaphone,
+  CalendarDays,
+  Plug,
+  PlayCircle,
+  School,
 };
 
 export interface MobileDrawerProps {
