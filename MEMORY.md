@@ -32,15 +32,15 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 20 — INTEGRATION FOUNDATION (M20)
+PHASE 21 — AI ASSISTANCE & SAAS ONBOARDING (M21)
 
 Current Phase Status:
-READY FOR HUMAN REVIEW
+IN PROGRESS
 
 Last Human-Approved Implementation Phase:
-PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
+PHASE 20 — INTEGRATION FOUNDATION (M20)
 
-Phase 19 Official Human Approval:
+Phase 20 Official Human Approval:
 APPROVED BY HUMAN (17 September 2026)
 ```
 
@@ -918,7 +918,7 @@ Menindaklanjuti masukan guru / human reviewer terkait format buku daftar nilai d
 
 # 38. Phase 20 — Integration Foundation (M20 / Milestone H — 17 September 2026)
 
-Status: **READY FOR HUMAN REVIEW**
+Status: **APPROVED BY HUMAN (17 September 2026)**
 
 1. **Domain & Data Modeling (`M20`):**
    - Database Models: `KonfigurasiIntegrasi`, `EndpointWebhook`, `LogPengirimanIntegrasi`.
@@ -945,3 +945,19 @@ Status: **READY FOR HUMAN REVIEW**
    - Vitest: 85 test files, 483 tests passing (100% PASS).
    - Next.js Production Build: 23 static & dynamic routes compiled successfully (PASS).
    - Playwright Visual Walkthrough: 7 screenshots verified (100% PASS).
+5. **Data Reset / Preparation for SaaS:**
+   - Backup basis data dibuat: `prisma/data/backups/ruang-pintar-before-wipe-otomindo-20260917.db`.
+   - Seluruh data operasional dummy/sampel SMK Otomindo (guru, siswa, rombel, jadwal, materi, asesmen) telah dibersihkan secara aman (cascade-safe) via `scripts/wipe-otomindo-data.mjs`.
+   - Akun administratif `superadmin` (`Password123#`) tetap aktif dan profil sekolah diubah menjadi entitas bersih siap pakai.
+
+---
+
+# 39. Phase 21 — AI Assistance & SaaS Onboarding (M21 / Milestone H — ACTIVE)
+
+Status: **IN PROGRESS**
+
+Fokus Implementasi:
+1. Pendaftaran mandiri guru tanpa friksi (`/register`) dengan progressive disclosure (4 kolom input instan).
+2. Asisten AI Vision Gemini ("Photo-to-Class Vision AI Agent"): pemindaian lembar presensi/daftar siswa dari foto kamera HP menjadi kelas dan rombel otomatis.
+3. Workspace guru mandiri berdurasi coba gratis 30 hari dengan batas kuota 5 rombel dan penanda visual fitur eksklusif sekolah 🔒.
+4. UI/UX polish dan persiapan hosting cloud.
