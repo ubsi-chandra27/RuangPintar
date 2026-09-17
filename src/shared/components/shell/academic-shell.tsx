@@ -7,6 +7,7 @@ import { MobileDrawer } from "./mobile-drawer";
 import { MobileBottomNav } from "./mobile-bottom-nav";
 import { BreadcrumbItem } from "./breadcrumb";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
+import { ThemeProvider } from "./theme-provider";
 
 export interface AcademicShellProps {
   user: {
@@ -44,8 +45,9 @@ export function AcademicShell({
   }, []);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC]">
-      {/* Desktop Sidebar / Rail */}
+    <ThemeProvider>
+      <div className="flex h-screen w-full overflow-hidden bg-[#F8FAFC] dark:bg-[#090D16] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+        {/* Desktop Sidebar / Rail */}
       <Sidebar
         userRole={user.peran_dasar as BaseRole}
         userCapabilities={userCapabilities}
@@ -85,5 +87,6 @@ export function AcademicShell({
         onOpenMenu={() => setIsMobileDrawerOpen(true)}
       />
     </div>
+    </ThemeProvider>
   );
 }

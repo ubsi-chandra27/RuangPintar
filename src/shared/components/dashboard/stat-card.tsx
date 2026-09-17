@@ -32,11 +32,11 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-white border border-slate-200/80 shadow-xs hover:shadow-sm hover:border-blue-200 transition-all duration-200 p-5 flex flex-col justify-between ${className}`}
+      className={`relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:border-blue-200 dark:hover:border-blue-800/60 transition-all duration-300 p-5 flex flex-col justify-between ${className}`}
     >
       {/* Background Watermark Icon if provided */}
       {watermarkIcon && (
-        <div className="absolute -right-2 -bottom-2 text-slate-200/40 pointer-events-none transform -rotate-6 select-none">
+        <div className="absolute -right-2 -bottom-2 text-slate-100/80 dark:text-slate-800/30 pointer-events-none transform -rotate-6 select-none">
           {watermarkIcon}
         </div>
       )}
@@ -44,23 +44,23 @@ export function StatCard({
       <div>
         <div className="flex items-start justify-between gap-3">
           {icon && (
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-[#2563EB] shadow-xs border border-blue-100/60 flex-shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 shadow-xs border border-blue-100/60 dark:border-blue-900/50 flex-shrink-0">
               {icon}
             </div>
           )}
 
           {badge && (
-            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
               {badge}
             </span>
           )}
         </div>
 
         <div className="mt-3.5 space-y-1">
-          <span className="text-xs font-semibold text-slate-500 tracking-wide block truncate">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide block truncate">
             {label}
           </span>
-          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A] dark:text-white">
             {value}
           </div>
         </div>
@@ -68,7 +68,7 @@ export function StatCard({
 
       {/* Trend indicator or description */}
       {(trend || description || phaseDeferredNote) && (
-        <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-col gap-1.5 z-10">
+        <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col gap-1.5 z-10">
           {trend && (
             <div className="flex items-center gap-1.5 text-xs">
               <span

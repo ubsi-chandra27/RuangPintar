@@ -147,8 +147,8 @@ export function Sidebar({
                       className={`flex items-center transition-all duration-150 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
                         isActive
                           ? isCollapsed
-                            ? "ml-3 mr-0 pl-0 pr-0 justify-center bg-[#F8FAFC] text-[#2563EB] font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)]"
-                            : "ml-3 xl:ml-3.5 mr-0 pl-0 xl:pl-3.5 pr-0 xl:pr-3.5 justify-center xl:justify-start bg-[#F8FAFC] text-[#0F172A] font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)] gap-0 xl:gap-3"
+                            ? "ml-3 mr-0 pl-0 pr-0 justify-center bg-[#F8FAFC] dark:bg-[#090D16] text-[#2563EB] dark:text-blue-400 font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)]"
+                            : "ml-3 xl:ml-3.5 mr-0 pl-0 xl:pl-3.5 pr-0 xl:pr-3.5 justify-center xl:justify-start bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-white font-bold rounded-l-2xl relative z-10 shadow-[-2px_0_10px_rgba(0,0,0,0.03)] gap-0 xl:gap-3"
                           : isCollapsed
                             ? "mx-3 p-3 justify-center rounded-xl text-blue-100/90 hover:bg-white/10 hover:text-white font-medium"
                             : "mx-3 xl:mx-3.5 px-0 xl:px-3.5 py-3 justify-center xl:justify-start rounded-xl text-blue-100/90 hover:bg-white/10 hover:text-white font-medium gap-0 xl:gap-3"
@@ -160,11 +160,11 @@ export function Sidebar({
                         <>
                           <span
                             aria-hidden="true"
-                            className="absolute -top-5 right-0 w-5 h-5 bg-transparent pointer-events-none rounded-br-2xl shadow-[8px_8px_0_0_#F8FAFC]"
+                            className="absolute -top-5 right-0 w-5 h-5 bg-transparent pointer-events-none rounded-br-2xl shadow-[8px_8px_0_0_#F8FAFC] dark:shadow-[8px_8px_0_0_#090D16]"
                           />
                           <span
                             aria-hidden="true"
-                            className="absolute -bottom-5 right-0 w-5 h-5 bg-transparent pointer-events-none rounded-tr-2xl shadow-[8px_-8px_0_0_#F8FAFC]"
+                            className="absolute -bottom-5 right-0 w-5 h-5 bg-transparent pointer-events-none rounded-tr-2xl shadow-[8px_-8px_0_0_#F8FAFC] dark:shadow-[8px_-8px_0_0_#090D16]"
                           />
                         </>
                       )}

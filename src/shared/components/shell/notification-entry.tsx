@@ -144,11 +144,11 @@ export function NotificationEntry() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label="Pemberitahuan Sistem"
-        className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
+        className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-black text-white ring-2 ring-white animate-in zoom-in-50">
+          <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-black text-white ring-2 ring-white dark:ring-slate-900 animate-in zoom-in-50">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -161,16 +161,16 @@ export function NotificationEntry() {
             className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm sm:hidden"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed inset-x-4 top-18 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-96 origin-top-right rounded-2xl bg-white/95 backdrop-blur-md p-4 shadow-2xl shadow-slate-900/20 border border-slate-200/80 z-50 animate-in fade-in-0 zoom-in-95 duration-160">
+          <div className="fixed inset-x-4 top-18 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-96 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 shadow-2xl shadow-slate-900/20 dark:shadow-slate-950/60 border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-160">
             {/* Popover Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-slate-900">Pemberitahuan</h4>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Pemberitahuan</h4>
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     unreadCount > 0
-                      ? "bg-red-50 text-red-600 border border-red-200"
-                      : "bg-slate-100 text-slate-500"
+                      ? "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >
                   {unreadCount} belum dibaca
@@ -181,7 +181,7 @@ export function NotificationEntry() {
                   <button
                     type="button"
                     onClick={handleMarkAllRead}
-                    className="text-[11px] font-medium text-blue-600 hover:text-blue-800 hover:underline px-1.5 py-0.5 rounded cursor-pointer"
+                    className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline px-1.5 py-0.5 rounded cursor-pointer"
                   >
                     Tandai semua
                   </button>
@@ -190,7 +190,7 @@ export function NotificationEntry() {
                   type="button"
                   onClick={() => setIsOpen(false)}
                   aria-label="Tutup"
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -198,7 +198,7 @@ export function NotificationEntry() {
             </div>
 
             {/* Notification List */}
-            <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 pr-0.5">
+            <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 pr-0.5">
               {isLoading && notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400">
                   <Loader2 className="h-6 w-6 animate-spin text-blue-500 mb-2" />
@@ -206,10 +206,12 @@ export function NotificationEntry() {
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-500 mb-3 shadow-xs">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900/50 text-emerald-500 mb-3 shadow-xs">
                     <CheckCheck className="h-6 w-6" />
                   </div>
-                  <p className="text-sm font-bold text-slate-800 mb-0.5">Semua Sudah Terbaca</p>
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                    Semua Sudah Terbaca
+                  </p>
                   <p className="text-xs text-slate-400 max-w-[240px] leading-relaxed">
                     Tidak ada tugas baru atau pengumuman yang belum dilihat.
                   </p>
@@ -221,11 +223,11 @@ export function NotificationEntry() {
                     onClick={() => handleNotificationClick(notif)}
                     className={`group flex items-start gap-3 p-2.5 rounded-xl transition-all cursor-pointer ${
                       notif.apakah_dibaca
-                        ? "hover:bg-slate-50 opacity-85"
-                        : "bg-blue-50/40 hover:bg-blue-50/80 border-l-2 border-blue-600"
+                        ? "hover:bg-slate-50 dark:hover:bg-slate-800/60 opacity-85"
+                        : "bg-blue-50/40 dark:bg-blue-950/30 hover:bg-blue-50/80 dark:hover:bg-blue-900/40 border-l-2 border-blue-600 dark:border-blue-400"
                     }`}
                   >
-                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
                       {renderIcon(notif.tipe)}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -233,8 +235,8 @@ export function NotificationEntry() {
                         <p
                           className={`text-xs truncate ${
                             notif.apakah_dibaca
-                              ? "font-medium text-slate-700"
-                              : "font-bold text-slate-900"
+                              ? "font-medium text-slate-700 dark:text-slate-300"
+                              : "font-bold text-slate-900 dark:text-white"
                           }`}
                         >
                           {notif.judul}
@@ -243,12 +245,12 @@ export function NotificationEntry() {
                           {formatRelativeTime(notif.created_at)}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                         {notif.pesan}
                       </p>
                     </div>
                     {!notif.apakah_dibaca && (
-                      <span className="mt-2 h-2 w-2 rounded-full bg-blue-600 shrink-0 ring-2 ring-blue-100" />
+                      <span className="mt-2 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0 ring-2 ring-blue-100 dark:ring-blue-950" />
                     )}
                   </div>
                 ))
@@ -256,11 +258,11 @@ export function NotificationEntry() {
             </div>
 
             {/* Popover Footer */}
-            <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
               <Link
                 href="/pengumuman"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                className="flex items-center gap-1.5 font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
                 <span>Buka Pusat Pengumuman</span>
                 <ExternalLink className="h-3.5 w-3.5" />

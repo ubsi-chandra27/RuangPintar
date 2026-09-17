@@ -114,7 +114,7 @@ export function MobileBottomNav({
   return (
     <nav
       aria-label="Navigasi Bawah Mobile"
-      className={`fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around bg-white/95 backdrop-blur-xl border-t border-slate-200/90 px-1 py-1.5 shadow-[0_-2px_12px_rgba(0,0,0,0.04)] ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around bg-white/95 dark:bg-[#090D16]/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800/80 px-1 py-1.5 shadow-[0_-2px_12px_rgba(0,0,0,0.04)] ${className}`}
       style={{ paddingBottom: "max(0.45rem, env(safe-area-inset-bottom))" }}
     >
       {items.map((item) => {
@@ -130,15 +130,17 @@ export function MobileBottomNav({
             href={item.href}
             aria-current={isActive ? "page" : undefined}
             className={`group relative flex flex-1 flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 min-h-[48px] ${
-              isActive ? "text-[#2563EB]" : "text-slate-400 hover:text-slate-700"
+              isActive
+                ? "text-[#2563EB] dark:text-blue-400"
+                : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200"
             }`}
           >
             {/* Active Pill Container around Icon */}
             <div
               className={`flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-50/90 text-[#2563EB]"
-                  : "group-hover:bg-slate-50 text-slate-400 group-hover:text-slate-600"
+                  ? "bg-blue-50/90 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400"
+                  : "group-hover:bg-slate-50 dark:group-hover:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
               }`}
             >
               <Icon
@@ -150,8 +152,8 @@ export function MobileBottomNav({
             <span
               className={`mt-1 text-[10px] tracking-tight text-center truncate max-w-[64px] leading-tight transition-colors ${
                 isActive
-                  ? "font-bold text-[#2563EB]"
-                  : "font-medium text-slate-500 group-hover:text-slate-700"
+                  ? "font-bold text-[#2563EB] dark:text-blue-400"
+                  : "font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200"
               }`}
             >
               {item.label}
@@ -166,12 +168,12 @@ export function MobileBottomNav({
         type="button"
         onClick={onOpenMenu}
         aria-label="Buka Menu Lainnya"
-        className="group relative flex flex-1 flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 min-h-[48px] text-slate-400 hover:text-slate-700 cursor-pointer"
+        className="group relative flex flex-1 flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 min-h-[48px] text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
       >
-        <div className="flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 group-hover:bg-slate-50 text-slate-400 group-hover:text-slate-600">
+        <div className="flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300">
           <Menu className="h-5 w-5 stroke-[1.75] transition-transform group-active:scale-95" />
         </div>
-        <span className="mt-1 text-[10px] tracking-tight text-center truncate max-w-[64px] leading-tight font-medium text-slate-500 group-hover:text-slate-700 transition-colors">
+        <span className="mt-1 text-[10px] tracking-tight text-center truncate max-w-[64px] leading-tight font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
           Menu
         </span>
       </button>

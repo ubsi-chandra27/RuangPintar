@@ -344,16 +344,21 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     expect(screen.getByText("Modul Operasional & Wewenang")).toBeInTheDocument();
   });
 
-  it("renders SuperAdminDashboard with core stat cards, activity chart, and quick actions", () => {
-    render(<SuperAdminDashboard user={mockAdmin} />);
+  it("renders SuperAdminDashboard with core stat cards, activity chart, and quick actions", async () => {
+    const jsx = await SuperAdminDashboard({ user: mockAdmin });
+    render(jsx);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText(/Tahun Ajaran 2026\/2027/i)).toBeInTheDocument();
     expect(
-      screen.getByText("Ringkasan operasional dan aktivitas akademik sekolah.")
+      screen.getByText(
+        "Pusat pemantauan ekosistem SaaS: adopsi sekolah, guru mandiri, dan operasional akademik."
+      )
     ).toBeInTheDocument();
-    expect(screen.getByText("Total Siswa")).toBeInTheDocument();
-    expect(screen.getByText("Kehadiran Hari Ini")).toBeInTheDocument();
-    expect(screen.getByText("Aktivitas Terbaru")).toBeInTheDocument();
-    expect(screen.getByText("Aksi Cepat")).toBeInTheDocument();
+    expect(screen.getByText("Total Sekolah Pengguna")).toBeInTheDocument();
+    expect(screen.getByText("Guru Terdaftar (SaaS)")).toBeInTheDocument();
+    expect(screen.getByText("Total Rombel / Kelas")).toBeInTheDocument();
+    expect(screen.getByText("Total Siswa Terdata")).toBeInTheDocument();
+    expect(screen.getByText("Ringkasan Aktivitas Pembelajaran")).toBeInTheDocument();
+    expect(screen.getByText("Aksi Cepat Super Admin")).toBeInTheDocument();
   });
 });
