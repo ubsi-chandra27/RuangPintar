@@ -21,6 +21,8 @@ export const CAPABILITY_BUNDLE_PERMISSIONS: Record<
     "academic.school.view",
     "report.school.view",
     "report.export",
+    "integration.view",
+    "integration.manage",
   ],
 
   ACADEMIC_OPERATOR: [

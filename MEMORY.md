@@ -35,7 +35,7 @@ Current Implementation Phase:
 PHASE 20 — INTEGRATION FOUNDATION (M20)
 
 Current Phase Status:
-IN PROGRESS
+READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
 PHASE 19 — LEADERSHIP DASHBOARD, REPORTING & ANALYTICS (M19)
@@ -914,9 +914,34 @@ Menindaklanjuti masukan guru / human reviewer terkait format buku daftar nilai d
    - Vitest: 82 test files, 467 tests passing (100% PASS).
    - Next.js Production Build: 22 static & dynamic routes compiled successfully.
 
+---
 
+# 38. Phase 20 — Integration Foundation (M20 / Milestone H — 17 September 2026)
 
+Status: **READY FOR HUMAN REVIEW**
 
-
-
-
+1. **Domain & Data Modeling (`M20`):**
+   - Database Models: `KonfigurasiIntegrasi`, `EndpointWebhook`, `LogPengirimanIntegrasi`.
+   - Forward migration applied: `20260917200000_add_integration_foundation_m20`.
+   - Domain Invariants:
+     - *Integration ≠ Core Domain (Decoupled Port & Adapter)*: Pemisahan adapter gateway WhatsApp, FCM Push, Email, dan Webhook.
+     - *Delivery Failure ≠ Domain Rollback*: Pengiriman pesan/notifikasi bersifat asinkron dan fault-tolerant, kegagalan vendor pihak ketiga tidak membatalkan transaksi akademik.
+     - *Strict Redaction & Idempotency*: Kerahasiaan API secret/signing key dilindungi dari plaintext leak; idempotency key mencegah duplikasi pesan.
+     - *Cryptographic Signature & Anti-Replay*: Webhook di-sign menggunakan HMAC-SHA256 dengan timestamp tolerance 5 menit.
+2. **Infrastructure & Application Services:**
+   - Adapters: `WhatsAppAdapter` (Fonnte/Meta/Simulation), `PushNotificationAdapter` (FCM/Web Push/Simulation), `EmailAdapter` (Resend/SMTP/Simulation), `WebhookDispatcher` (HMAC signer, anti-replay, retry backoff).
+   - Service: `IntegrationService` & `IntegrationRepository` dengan Server Actions di `src/app/actions/integration-actions.ts`.
+   - Permissions: `integration.view` dan `integration.manage` dikunci ke peran `SUPER_ADMIN` (bundle `SYSTEM_ADMIN`).
+3. **Presentation Layer (Academic Glass UI v1.2):**
+   - Route `/integrasi` ("Pusat Integrasi & Layanan Eksternal") dengan 3 sub-tab:
+     - Katalog Adapter Layanan (WhatsApp, Push, Email, Webhooks) dengan status health indicator & modal konfigurasi.
+     - Endpoint Webhook dengan modal pendaftaran webhook baru, event subscriptions, dan tombol test ping.
+     - Log Pengiriman & Audit Trail dengan filter pencarian dan detail status pengiriman.
+   - Sidebar navigasi diperbarui dengan menu Pusat Integrasi (ikon `Plug`).
+4. **Quality Gates & Verification:**
+   - TypeScript `tsc --noEmit`: 0 errors (PASS).
+   - ESLint: 0 errors (PASS).
+   - Prettier: 100% compliant (PASS).
+   - Vitest: 85 test files, 483 tests passing (100% PASS).
+   - Next.js Production Build: 23 static & dynamic routes compiled successfully (PASS).
+   - Playwright Visual Walkthrough: 7 screenshots verified (100% PASS).

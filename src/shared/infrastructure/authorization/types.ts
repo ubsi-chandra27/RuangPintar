@@ -105,7 +105,11 @@ export type PermissionString =
   | "report.school.view"
   | "report.academic.view"
   | "report.attendance.view"
-  | "report.export";
+  | "report.export"
+
+  // External Integration & Webhooks (M20)
+  | "integration.view"
+  | "integration.manage";
 
 export interface ResourceContext {
   sekolah_id?: string | null;

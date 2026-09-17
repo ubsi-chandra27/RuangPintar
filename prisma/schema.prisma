@@ -74,6 +74,9 @@ model Sekolah {
   notifikasi_pengguna       NotifikasiPengguna[]
   catatan_monitoring        CatatanMonitoring[]
   riwayat_ekspor_laporan    RiwayatEksporLaporan[]
+  konfigurasi_integrasi     KonfigurasiIntegrasi[]
+  endpoint_webhook          EndpointWebhook[]
+  log_pengiriman_integrasi  LogPengirimanIntegrasi[]
 
   @@map("sekolah")
 }
@@ -1615,6 +1618,79 @@ model RiwayatEksporLaporan {
   @@index([sekolah_id, tipe_laporan])
   @@index([dibuat_oleh_id])
   @@map("riwayat_ekspor_laporan")
+}
+
+/// M20 — Integration: Konfigurasi adapter layanan eksternal sekolah (WhatsApp, FCM, Email, Storage, Webhook)
+model KonfigurasiIntegrasi {
+  id                  String    @id
+  sekolah_id          String
+  tipe_layanan        String    // WHATSAPP | PUSH_NOTIFICATION | EMAIL | STORAGE | CALENDAR | WEBHOOK
+  nama_konfigurasi    String
+  provider            String    // WHATSAPP_FONNTE | WHATSAPP_META | FCM | RESEND | SMTP | S3 | LOCAL_DISK
+  status              String    @default("AKTIF") // AKTIF | NONAKTIF | SIMULASI
+  kredensial_json     String?   // JSON masked/encrypted untuk token, api key, endpoint url
+  parameter_json      String?   // JSON untuk parameter tambahan (sender name, phone, quota, options)
+  terakhir_diuji_pada DateTime?
+  status_uji_terakhir String?   // BERHASIL | GAGAL
+  catatan_uji         String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  sekolah Sekolah @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+
+  @@unique([sekolah_id, tipe_layanan, provider])
+  @@index([sekolah_id, status])
+  @@map("konfigurasi_integrasi")
+}
+
+/// M20 — Integration: Pendaftaran endpoint webhook keluar (Outbound Webhooks)
+model EndpointWebhook {
+  id                   String    @id
+  sekolah_id           String
+  nama                 String
+  url_target           String
+  secret_token         String    // Digunakan untuk generate signature HMAC-SHA256
+  event_langganan_json String    // JSON string array e.g. ["PRESENSI_SESI_SELESAI", "NILAI_PUBLISHED"]
+  status               String    @default("AKTIF") // AKTIF | NONAKTIF
+  retry_count_max      Int       @default(3)
+  timeout_detik        Int       @default(10)
+  terakhir_dipicu_pada DateTime?
+  total_terkirim       Int       @default(0)
+  total_gagal          Int       @default(0)
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  sekolah Sekolah @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+
+  @@index([sekolah_id, status])
+  @@map("endpoint_webhook")
+}
+
+/// M20 — Integration: Audit log pengiriman integrasi eksternal (Inbound/Outbound)
+model LogPengirimanIntegrasi {
+  id                  String   @id
+  sekolah_id          String
+  tipe_layanan        String   // WHATSAPP | PUSH_NOTIFICATION | EMAIL | STORAGE | WEBHOOK
+  arah                String   @default("OUTBOUND") // OUTBOUND | INBOUND
+  event_name          String
+  idempotency_key     String   @unique
+  penerima            String?  // Phone number, FCM token / user ID, email, atau webhook URL
+  judul               String?
+  payload_json        String   // Request body / message details
+  respons_status_code Int?     // HTTP status code atau adapter response code
+  respons_body        String?  // Cuplikan respons adapter
+  status              String   @default("PENDING") // PENDING | SUKSES | GAGAL | RETRY
+  jumlah_percobaan    Int      @default(1)
+  error_message       String?
+  durasi_ms           Int?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  sekolah Sekolah @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+
+  @@index([sekolah_id, tipe_layanan, status])
+  @@index([sekolah_id, created_at])
+  @@map("log_pengiriman_integrasi")
 }
 
 

@@ -1,86 +1,83 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 10.0  
+**Versi:** 11.0  
 **Current Active Phase:** PHASE 20 — INTEGRATION FOUNDATION (M20)  
-**Status:** IN PROGRESS  
+**Status:** READY FOR HUMAN REVIEW  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 20 — INTEGRATION FOUNDATION (M20) [IN PROGRESS]
+PHASE 20 — INTEGRATION FOUNDATION (M20) [READY FOR HUMAN REVIEW]
 ```
 
 Tujuan:
-> Membangun sistem dashboard kepemimpinan sekolah (*Leadership Dashboard*), pelaporan operasional terpadu (*Operational Reporting*), analitik akademik lintas rombel (*Academic Analytics*), dan rekapitulasi data pimpinan (*Executive Export*) sesuai Academic Glass UI v1.2:
+> Membangun fondasi integrasi multi-kanal (*Integration Foundation*) dan gerbang eksternal platform Ruang Pintar untuk menghubungkan operasional sekolah dengan layanan pihak ketiga (WhatsApp Gateway, Push Notification, Email Transaksional, dan Webhook Engine) sesuai Academic Glass UI v1.2:
 > 1. Invariant Domain Inti:
->    - `Report ≠ Source of Truth`: Data laporan dan analitik merupakan proyeksi baca (*read models/aggregations*) dari M01 (Organisasi), M07 (Akademik), M08 (Siswa), M09 (Guru), M10 (Jadwal & KBM), M11 (Tugas & Materi), M12 (Presensi), M13 (Asesmen & Nilai), dan M18 (Monitoring). Data sumber transaksi tetap menjadi acuan utama (*source of truth*).
->    - `Leadership Monitoring ≠ Full Administrative Write Access`: Pimpinan sekolah (Kepala Sekolah, Wakasek, Kaprog) memiliki visibilitas analitik dan supervisi evaluatif, bukan hak untuk memanipulasi atau membypass penilaian (*grade override*) maupun presensi guru mata pelajaran.
->    - `Position-Scoped Visibility Enforcement`: Akses dashboard kepemimpinan dikunci secara ketat server-side berdasarkan `PenugasanJabatan` aktif:
->      - `HEADMASTER`: Visibilitas manajemen strategis tingkat sekolah (*School-Wide Management View*).
->      - `VICE_PRINCIPAL_CURRICULUM`: Visibilitas manajemen akademik sekolah (*School-Wide Academic Management*).
->      - `VICE_PRINCIPAL_STUDENT_AFFAIRS`: Visibilitas manajemen kesiswaan & kehadiran sekolah (*School-Wide Student Affairs*).
->      - `PROGRAM_HEAD`: Visibilitas program keahlian perjurusan (*Program-Scoped View*).
->      - `SUPER_ADMIN`: Visibilitas supervisi komprehensif dengan kemampuan memilih konteks kepemimpinan.
->      - Role non-pimpinan tanpa penugasan struktural ditolak (*default deny*).
+>    - `Integration ≠ Core Domain (Decoupled Port & Adapter)`: Modul transaksional inti sekolah (absensi M12, nilai M13, pengumuman M17, monitoring M18) tidak bergantung langsung pada vendor pihak ketiga. Seluruh interaksi diisolasi melalui abstraksi *Port & Adapter*.
+>    - `Delivery Failure ≠ Domain Transaction Rollback`: Kegagalan pengiriman ke vendor eksternal (misal: WhatsApp timeout atau kuota FCM habis) tidak membatalkan transaksi akademik siswa. Pengiriman dicatat dan diisolasi dengan status delivery yang jelas (`PENDING`, `DISPATCHED`, `DELIVERED`, `FAILED`, `RETRYING`).
+>    - `Strict Redaction of Secrets`: API key, webhook secrets, dan kredensial sensitif tidak pernah disajikan mentah ke antarmuka atau audit log tanpa masking.
+>    - `Cryptographic Signature & Anti-Replay`: Dispatch webhook keluar dilindungi dengan tanda tangan HMAC-SHA256 (`X-RuangPintar-Signature`) dan timestamp header toleransi 5 menit (`X-RuangPintar-Timestamp`).
+>    - `Idempotency Enforcement`: Setiap pengiriman diproteksi oleh `idempotency_key` unik untuk mencegah pesan duplikat ke nomor/tujuan yang sama.
 > 2. Database & Data Architecture:
->    - Model `RiwayatEksporLaporan` (id, sekolah_id, tipe_laporan [PRESENSI, NILAI, AKADEMIK, EKSEKUTIF], judul, format [CSV, PRINT_A4], parameter_filter_json, dibuat_oleh_id, total_baris, berkas_url, created_at)
->    - Prisma migration forward aman untuk tabel rekapitulasi / riwayat ekspor laporan
+>    - Model `KonfigurasiIntegrasi`: Penyimpanan konfigurasi provider per tipe adapter dengan toggle simulasi (`is_simulasi`) dan rate limiting.
+>    - Model `EndpointWebhook`: Pendaftaran URL webhook tujuan, rahasia penandatanganan HMAC, filter event, dan metrik keberhasilan.
+>    - Model `LogPengirimanIntegrasi`: Audit trail pengiriman pesan lengkap dengan subjek, durasi, jumlah percobaan, respon eksternal, dan status.
+>    - Forward migration SQLite: `20260917200000_add_integration_foundation_m20`.
 > 3. Application & Service Layer:
->    - `ReportingRepository` & `LeadershipAnalyticsService`
->    - Engine agregasi metrik pimpinan (kehadiran sekolah harian/semesteran, distribusi capaian KKTP lintas rombel, pemenuhan administrasi pembelajaran guru, rasio tugas & asesmen, tren kasus kesiswaan)
->    - Generator ekspor laporan (CSV formatter & Print-Ready data transformer)
->    - Server Actions:
->      - `getLeadershipDashboardOverviewAction` (overview metrik berdasarkan jabatan aktif pengguna)
->      - `getAcademicAnalyticsAction` (analitik capaian belajar per mapel/tingkat/rombel)
->      - `getAttendanceAnalyticsAction` (analitik tren kehadiran guru & siswa)
->      - `generateReportExportAction` (pembuatan berkas ekspor CSV/print log)
+>    - Adapters: `WhatsAppAdapter` (Fonnte/Meta/Simulation), `PushNotificationAdapter` (FCM/Web Push/Simulation), `EmailAdapter` (Resend/SMTP/Simulation), `WebhookDispatcher` (HMAC signer, anti-replay, retry backoff).
+>    - Service: `IntegrationService` & `IntegrationRepository`.
+>    - Server Actions: `getIntegrationCatalogAction`, `updateAdapterConfigAction`, `registerWebhookAction`, `testWebhookPingAction`, `getDeliveryLogsAction`.
+>    - Permissions: `integration.view` dan `integration.manage` di-assign ke peran `SUPER_ADMIN` (bundle `SYSTEM_ADMIN`).
 > 4. Presentation Layer (Academic Glass UI v1.2):
->    - Direktori Portal Kepemimpinan & Laporan (`/pimpinan` atau `/laporan`):
->      - Dashboard Kepala Sekolah (`HeadmasterDashboardView`): KPI strategis (rasio guru-siswa, rata-rata kehadiran, distribusi ketuntasan KKTP, daftar anomali perhatian, status KBM aktif).
->      - Dashboard Wakasek Kurikulum (`CurriculumDashboardView`): Monitoring silabus/TP, kepatuhan administrasi guru, status penilaian tugas/asesmen, beban mengajar per guru.
->      - Dashboard Wakasek Kesiswaan (`StudentAffairsDashboardView`): Matriks presensi siswa per rombel/tingkat, daftar siswa alpha tinggi (*chronic absenteeism*), statistik catatan pembinaan & tindak lanjut.
->      - Dashboard Kepala Program (`ProgramHeadDashboardView`): Cohort per program keahlian, performa mapel kejuruan, kehadiran siswa jurusan.
->      - Tab Pusat Rekap & Ekspor Laporan (`ReportingExportTab`): Filter periode, tingkat kelas, rombel, unduh CSV terstruktur dan lembar cetak eksekutif A4 (*window.print()* siap tanda tangan).
->    - Switcher Konteks Jabatan bagi Super Admin atau personil dengan multi-penugasan.
->    - Integrasi tautan navigasi kanonikal `/pimpinan` di `CANONICAL_NAVIGATION_CONFIG` dan `AcademicShell`.
+>    - Portal Integrasi (`/integrasi`) dengan 3 sub-tab interaktif:
+>      - Tab Katalog Adapter Layanan (WhatsApp, Push Notification, Email Transaksional, Webhooks) dengan status health indicator.
+>      - Tab Endpoint Webhook dengan modal registrasi webhook, event picker, dan tombol test ping.
+>      - Tab Log Pengiriman & Audit Trail dengan filter pencarian dan detail status pengiriman.
+>    - Modal dialog `AdapterConfigModal` dan `CreateWebhookModal` berbasis portal DOM client-side.
+>    - Sidebar navigasi: Penambahan menu "Pusat Integrasi" (`/integrasi`) dengan ikon `Plug`.
 > 5. Quality Gates & Verification:
->    - Unit/integration tests untuk M19 & Leadership authorization
->    - Quality gates (typecheck, lint, format, vitest, build)
->    - Playwright automated visual walkthrough
+>    - TypeScript typecheck: 0 errors
+>    - ESLint: 0 errors
+>    - Prettier: 100% compliant
+>    - Vitest: 85 test files, 483 tests passing (100% PASS)
+>    - Next.js Production Build: 23 static & dynamic routes compiled successfully (PASS)
+>    - Playwright automated visual walkthrough: 7 screenshots verified (100% PASS)
 
 ---
 
-# 2. Checklist Phase 19 — Leadership Dashboard, Reporting & Analytics (M19)
+# 2. Checklist Phase 20 — Integration Foundation (M20)
 
 ## Domain & Invariants
 ```text
-[x] Read Model Integrity: Laporan & analitik merupakan derived projection, tanpa memanipulasi transaksi sumber (M11, M12, M13)
-[x] Position-Scoped Access Control: Otorisasi server-side terkunci pada PenugasanJabatan aktif (HEADMASTER, WAKASEK_KURIKULUM, WAKASEK_KESISWAAN, PROGRAM_HEAD, SUPER_ADMIN)
-[x] Read-Only Evaluation Guard: Pimpinan memantau performa tanpa kemampuan manipulasi nilai atau absensi
-[x] Export & Audit Trail: Pencatatan riwayat pembuatan dan pengunduhan laporan formal
+[x] Decoupled Port & Adapter: Isolasi vendor WhatsApp, FCM, Email, dan Webhook dari domain core
+[x] Non-Blocking Delivery Resiliency: Kegagalan vendor eksternal tidak membatalkan transaksi akademik
+[x] Security & Zero Plaintext Secrets: Masking kredensial API dan signing secret
+[x] Cryptographic Webhook Security: Tanda tangan HMAC-SHA256 dan perlindungan replay attack 5-menit
+[x] Idempotency & Delivery Audit Trail: Pencegahan duplikasi pengiriman dan logging riwayat pengiriman
 ```
 
 ## Data Layer & Application Services
 ```text
-[x] Prisma Migration: Model riwayat_ekspor_laporan
-[x] Reporting Domain & Validation: types, errors, zod schemas
-[x] ReportingRepository & LeadershipAnalyticsService (agregasi KPI strategis, analitik akademik & presensi)
-[x] Server Actions: leadership-actions.ts & report-export-actions.ts
-[x] Seed Data: Pemastian personil pimpinan (Kepala Sekolah, Wakasek, Kaprog) terhubung dengan akun demo
+[x] Prisma Migration: Model konfigurasi_integrasi, endpoint_webhook, log_pengiriman_integrasi
+[x] Integration Domain & Validation: types, errors, zod schemas
+[x] Infrastructure Adapters: WhatsAppAdapter, PushNotificationAdapter, EmailAdapter, WebhookDispatcher
+[x] IntegrationRepository & IntegrationService
+[x] Server Actions: integration-actions.ts
+[x] Seed Data: prisma/seed-integration-foundation.ts
+[x] Role Permissions: integration.view & integration.manage untuk SUPER_ADMIN (SYSTEM_ADMIN bundle)
 ```
 
 ## Presentation Layer (Academic Glass UI v1.2)
 ```text
-[x] Leadership Portal (/pimpinan): Multi-role leadership view dengan sub-tab & KPI cards
-[x] Headmaster View: Strategi sekolah, KPI kehadiran global, distribusi KKTP, perhatian pimpinan
-[x] Curriculum View: Capaian TP, ketuntasan penilaian, beban mengajar guru
-[x] Student Affairs View: Matriks kehadiran, tren ketidakhadiran, ringkasan kasus pembinaan
-[x] Program Head View: Fokus jurusan/program keahlian, performa kompetensi kejuruan
-[x] Report Export Center: Filter dinamis, ekspor CSV, modal print preview A4 formal
-[x] Navigation Config: Registrasi menu /pimpinan dengan proteksi akses jabatan
+[x] Integration Portal (/integrasi): Multi-tab service catalog, webhook registry, delivery audit logs
+[x] Adapter Configuration Modal: Toggle provider, endpoint, kredensial masking, simulasi mode
+[x] Create Webhook Modal: Pendaftaran URL target HTTPS, selektor event, secret generator
+[x] Webhook Test Ping: Uji coba koneksi endpoint webhook dengan umpan balik visual instan
+[x] Delivery Audit Log Table: Filter pencarian, status badge, durasi pengiriman, respon vendor
+[x] Navigation Config & Sidebar: Penambahan menu Pusat Integrasi dengan ikon Plug
 ```
 
 ## Quality Gates & Verification
@@ -88,9 +85,9 @@ Tujuan:
 [x] Typecheck: TypeScript tsc --noEmit 0 errors
 [x] Lint check: ESLint 0 errors
 [x] Format check: Prettier 100% clean
-[x] Tests: Seluruh test unit & integrasi passing (81 test files, 458 tests passing, 100% PASS)
-[x] Build: Next.js production build passing (22 routes generated)
-[x] Playwright Visual Walkthrough: Bukti tangkapan layar alur kerja Phase 19 (8 visual screenshots PASS)
+[x] Tests: Seluruh test unit & integrasi passing (85 test files, 483 tests passing, 100% PASS)
+[x] Build: Next.js production build passing (23 routes generated)
+[x] Playwright Visual Walkthrough: Bukti 7 tangkapan layar alur kerja Phase 20 (100% PASS)
 ```
 
 ---
@@ -125,30 +122,21 @@ Tujuan:
     └── [x] Phase 19 — Leadership Dashboard, Reporting & Analytics (M19) [APPROVED BY HUMAN (17 September 2026)]
 
 [ ] Milestone H — Extension Ready (Phase 20–21) [ACTIVE]
-    ├── [ ] Phase 20 — Integration Foundation (M20) [IN PROGRESS]
-    └── [ ] Phase 21 — AI Assistance (M21) [DEFERRED]
+    ├── [x] Phase 20 — Integration Foundation (M20) [READY FOR HUMAN REVIEW]
+    └── [ ] Phase 21 — AI Assistance (M21) [NEXT]
 ```
 
 ---
 
-# 4. Milestone G Historical Quality Gates (Phase 18 & 19)
+# 4. Milestone H Historical Quality Gates (Phase 20)
 
 ```text
-[x] Phase 18 Quality Gates:
-    - Domain Invariants: M18 Derived Indicator Model, Homeroom Scoping (Default Deny), Read-Only Academic Guard, Persistent Guidance Notes & Follow-Up Plans
+[x] Phase 20 Quality Gates:
+    - Domain Invariants: Decoupled Port & Adapter, Non-Blocking Resiliency, Zero Plaintext Secrets, HMAC-SHA256 Anti-Replay Webhooks, Idempotent Dispatch
     - Format check: Prettier 100% clean (npm run format:check)
     - Lint check: 0 errors (npm run lint)
     - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-    - Tests: 79 test files, 442 tests passing (100% PASS)
-    - Build: Next.js production compilation 100% PASS (31 routes generated)
-    - End-to-End Walkthrough: Playwright automated test & 10 visual screenshots PASS (qa-phase18-visual-walkthrough.mjs)
-
-[x] Phase 19 Quality Gates:
-    - Domain Invariants: Derived Read Models, Position-Scoped Visibility (Default Deny), Read-Only Evaluation Guard, Export History Audit Log
-    - Format check: Prettier 100% clean (npm run format:check)
-    - Lint check: 0 errors (npm run lint)
-    - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-    - Tests: 82 test files, 467 tests passing (100% PASS)
-    - Build: Next.js production compilation 100% PASS (22 routes generated)
-    - Enhancement: Unified Academic Ledger Table (Buku Nilai & Presensi Terpadu Kurikulum Merdeka) fully implemented & integrated.
+    - Tests: 85 test files, 483 tests passing (100% PASS)
+    - Build: Next.js production compilation 100% PASS (23 routes generated)
+    - End-to-End Walkthrough: Playwright automated test & 7 visual screenshots PASS (qa-phase20-visual-walkthrough.mjs)
 ```

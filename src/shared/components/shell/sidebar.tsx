@@ -30,6 +30,7 @@ import {
   CalendarDays,
   FileSpreadsheet,
   MonitorPlay,
+  Plug,
   LucideIcon,
 } from "lucide-react";
 import { BaseRole, CapabilityBundle } from "@/shared/infrastructure/authorization/types";
@@ -59,6 +60,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   CalendarDays,
   FileSpreadsheet,
   MonitorPlay,
+  Plug,
 };
 
 export interface SidebarProps {

@@ -63,6 +63,10 @@ export const BASE_ROLE_PERMISSIONS: Record<BaseRole, ReadonlyArray<PermissionStr
     "report.academic.view",
     "report.attendance.view",
     "report.export",
+
+    // External Integration & Webhooks (M20)
+    "integration.view",
+    "integration.manage",
   ],
 
   SCHOOL_STAFF: ["academic.school.view", "communication.announcement.view"],

@@ -348,6 +348,16 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         requiredCapability: "REPORT_OPERATOR",
         isPhaseDeferred: false,
       },
+      {
+        id: "staff-integration",
+        title: "Pusat Integrasi",
+        href: "/integrasi",
+        iconName: "Plug",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "integration.view",
+        requiredCapability: "SYSTEM_ADMIN",
+        isPhaseDeferred: false,
+      },
     ],
   },
 ];
