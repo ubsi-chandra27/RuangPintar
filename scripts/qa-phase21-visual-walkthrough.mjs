@@ -226,7 +226,9 @@ async function main() {
     console.log("   ✓ Screenshot 07 tersimpan: Tampilan responsif mobile /register.");
 
     await mobileContext.close();
-    console.log("\n================================================================================");
+    console.log(
+      "\n================================================================================"
+    );
     console.log("WALKTHROUGH SUKSES: SELURUH 7 ARTIFAK VISUAL PHASE 21 BERHASIL DIAMBIL!");
     console.log("================================================================================");
   } catch (err) {

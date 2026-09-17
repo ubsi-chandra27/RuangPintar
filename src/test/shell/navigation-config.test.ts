@@ -90,4 +90,14 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     expect(allItemIds).toContain("staff-students");
     expect(allItemIds).not.toContain("staff-academic");
   });
+
+  it("ensures no duplicate hrefs exist for any role (Bug Prevention)", () => {
+    const roles = ["SUPER_ADMIN", "TEACHER", "STUDENT", "GUARDIAN", "SCHOOL_STAFF"] as const;
+    for (const role of roles) {
+      const nav = getFilteredNavigation(role);
+      const hrefs = nav.flatMap((g) => g.items.map((i) => i.href));
+      const uniqueHrefs = new Set(hrefs);
+      expect(hrefs.length).toBe(uniqueHrefs.size);
+    }
+  });
 });

@@ -102,7 +102,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "Presensi Kehadiran",
         href: "/presensi-kelas",
         iconName: "Users",
-        roles: ["TEACHER", "SUPER_ADMIN"],
+        roles: ["TEACHER"],
         requiredPermission: "attendance.session.record",
         isPhaseDeferred: false,
       },
@@ -111,7 +111,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "Buku Nilai & Rapor",
         href: "/penilaian",
         iconName: "GraduationCap",
-        roles: ["TEACHER", "SUPER_ADMIN"],
+        roles: ["TEACHER"],
         requiredPermission: "assessment.grades.manage",
         isPhaseDeferred: false,
       },
@@ -120,7 +120,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "CBT Ujian Online",
         href: "/cbt-ujian",
         iconName: "FileCheck",
-        roles: ["TEACHER", "SUPER_ADMIN"],
+        roles: ["TEACHER"],
         requiredPermission: "cbt.exam.manage",
         isPhaseDeferred: false,
       },
@@ -129,7 +129,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "Wali Kelas",
         href: "/wali-kelas",
         iconName: "ShieldAlert",
-        roles: ["TEACHER", "SUPER_ADMIN"],
+        roles: ["TEACHER"],
         isPhaseDeferred: false,
       },
       {
@@ -137,7 +137,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "Portal Pimpinan",
         href: "/pimpinan",
         iconName: "BarChart3",
-        roles: ["TEACHER", "SUPER_ADMIN"],
+        roles: ["TEACHER"],
         isPhaseDeferred: false,
       },
       {
@@ -145,7 +145,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         title: "Asisten AI Guru",
         href: "/asisten-ai",
         iconName: "Sparkles",
-        roles: ["TEACHER", "SUPER_ADMIN", "SCHOOL_STAFF"],
+        roles: ["TEACHER"],
         badge: "AI 2.0",
         isPhaseDeferred: false,
       },
@@ -349,6 +349,34 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         isPhaseDeferred: false,
       },
       {
+        id: "staff-grades",
+        title: "Buku Nilai & Rapor",
+        href: "/penilaian",
+        iconName: "GraduationCap",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "assessment.grades.manage",
+        requiredCapability: "ACADEMIC_OPERATOR",
+        isPhaseDeferred: false,
+      },
+      {
+        id: "staff-cbt",
+        title: "CBT Ujian Online",
+        href: "/cbt-ujian",
+        iconName: "FileCheck",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        requiredPermission: "cbt.exam.manage",
+        isPhaseDeferred: false,
+      },
+      {
+        id: "staff-ai-assistant",
+        title: "Asisten AI Guru",
+        href: "/asisten-ai",
+        iconName: "Sparkles",
+        roles: ["SUPER_ADMIN", "SCHOOL_STAFF"],
+        badge: "AI 2.0",
+        isPhaseDeferred: false,
+      },
+      {
         id: "staff-integration",
         title: "Pusat Integrasi",
         href: "/integrasi",
@@ -370,6 +398,7 @@ export function getFilteredNavigation(
   userCapabilities: CapabilityBundle[] = []
 ): NavGroup[] {
   const filteredGroups: NavGroup[] = [];
+  const seenHrefs = new Set<string>();
 
   for (const group of CANONICAL_NAVIGATION_CONFIG) {
     const matchingItems: NavItem[] = [];
@@ -386,6 +415,12 @@ export function getFilteredNavigation(
           continue;
         }
       }
+
+      // 3. Deduplikasi mutlak: dilarang menampilkan link rute yang sama dua kali
+      if (seenHrefs.has(item.href)) {
+        continue;
+      }
+      seenHrefs.add(item.href);
 
       matchingItems.push(item);
     }
