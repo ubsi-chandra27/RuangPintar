@@ -72,9 +72,14 @@ export class AuthService {
       };
     }
 
-    // 2. Lookup User
-    const user = await prisma.pengguna.findUnique({
-      where: { username },
+    // 2. Lookup User by username OR email
+    const user = await prisma.pengguna.findFirst({
+      where: {
+        OR: [
+          { username },
+          { email: username },
+        ],
+      },
     });
 
     if (!user) {

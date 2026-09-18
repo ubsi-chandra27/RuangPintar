@@ -88,18 +88,18 @@ export function AuthLoginLayout({
         </div>
       </header>
 
-      {/* Main Container - Balanced Center-Right positioning with subtle glass effect */}
-      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-20 sm:pt-24 lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(420px,470px)_minmax(0,0.42fr)] xl:grid-cols-[minmax(0,1.2fr)_minmax(440px,480px)_minmax(0,0.5fr)] lg:grid-rows-1 lg:pt-0">
+      {/* Main Container - Balanced right positioning shifted gently from edge */}
+      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-20 sm:pt-24 lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(440px,520px)] xl:grid-cols-[minmax(0,1.15fr)_minmax(450px,500px)] lg:grid-rows-1 lg:pt-0">
         {/* Left Column Spacer (Full artwork shines through) */}
         <div className="hidden lg:block pointer-events-none" aria-hidden="true" />
 
-        {/* Center-Right Form Container: Shifted comfortably inward from right edge */}
-        <section className="relative z-10 flex w-full flex-col justify-start lg:justify-center items-center px-4 sm:px-6 lg:px-0 pt-4 pb-8 lg:py-12">
+        {/* Right Form Container: Shifted gently inward with modest breathing room */}
+        <section className="relative z-10 flex w-full flex-col justify-start lg:justify-center items-center lg:items-start px-6 sm:px-8 lg:pl-4 lg:pr-14 xl:pr-20 2xl:pr-28 pt-4 pb-8 lg:py-12">
           {/* Subtle Frosted Glass Container (Effek Glass Tipis) */}
           <div
             className={`w-full ${
-              wideForm ? "max-w-[540px]" : "max-w-[430px] sm:max-w-[460px]"
-            } rounded-2xl sm:rounded-3xl bg-white/45 backdrop-blur-md border border-white/65 shadow-[0_12px_36px_-8px_rgba(15,23,42,0.06),0_1px_2px_rgba(255,255,255,0.7)] p-6 sm:p-8 lg:p-9 transition-all`}
+              wideForm ? "max-w-[540px]" : "max-w-[420px] sm:max-w-[440px]"
+            } rounded-2xl sm:rounded-3xl bg-white/45 backdrop-blur-md border border-white/65 shadow-[0_12px_36px_-8px_rgba(15,23,42,0.06),0_1px_2px_rgba(255,255,255,0.7)] p-6 sm:p-8 transition-all`}
           >
             {/* Optional Back Link */}
             {backLink && (
@@ -133,9 +133,6 @@ export function AuthLoginLayout({
             {children}
           </div>
         </section>
-
-        {/* Right Spacer (Guarantees form never hugs the right edge) */}
-        <div className="hidden lg:block pointer-events-none" aria-hidden="true" />
       </main>
     </div>
   );

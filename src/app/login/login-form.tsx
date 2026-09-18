@@ -57,10 +57,10 @@ export function LoginForm({ status }: { status?: string }) {
         </div>
       )}
 
-      {/* Username Field */}
+      {/* Username or Email Field */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="username" className="text-xs sm:text-sm font-semibold text-[#0F172A]">
-          Username
+          Username atau Email
         </Label>
         <Input
           id="username"
@@ -70,7 +70,7 @@ export function LoginForm({ status }: { status?: string }) {
           required
           disabled={isPending}
           isError={Boolean(errorMessage)}
-          placeholder="Masukkan username"
+          placeholder="Masukkan username atau email"
           inputSize="lg"
           className="h-11 sm:h-12 text-[14px] sm:text-[15px] bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs"
         />

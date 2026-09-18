@@ -22,6 +22,7 @@ export interface ClassExtractionResult {
 
 export interface SmartOnboardingRegistrationDTO {
   nama_lengkap: string;
+  username?: string;
   email: string;
   no_telepon?: string;
   password: string;

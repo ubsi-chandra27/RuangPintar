@@ -99,6 +99,24 @@ export function RegisterForm() {
         />
       </div>
 
+      {/* Username Akun */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <label htmlFor="username" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+            Username Akun
+          </label>
+          <span className="text-[11px] text-slate-500 font-medium">Bisa otomatis dari email</span>
+        </div>
+        <Input
+          id="username"
+          name="username"
+          type="text"
+          disabled={isPending}
+          placeholder="cth: wardahulfa (opsional, untuk login)"
+          className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
+        />
+      </div>
+
       {/* Nama Sekolah */}
       <div className="flex flex-col gap-1">
         <label htmlFor="nama_sekolah" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">

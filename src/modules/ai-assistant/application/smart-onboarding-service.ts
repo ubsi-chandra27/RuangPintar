@@ -50,8 +50,20 @@ export class SmartOnboardingService {
       );
     }
 
-    // Buat username ramah dari email atau nama
-    const baseUsername = normalizedEmail
+    // Buat username ramah dari input pengguna atau email
+    const requestedUsername = dto.username?.trim().toLowerCase().replace(/[^a-zA-Z0-9_]/g, "");
+    if (requestedUsername) {
+      const existingUser = await prisma.pengguna.findUnique({
+        where: { username: requestedUsername },
+      });
+      if (existingUser) {
+        throw new UserRegistrationError(
+          "Username tersebut sudah digunakan. Silakan pilih username lain."
+        );
+      }
+    }
+
+    const baseUsername = requestedUsername || normalizedEmail
       .split("@")[0]
       .replace(/[^a-zA-Z0-9_]/g, "_")
       .substring(0, 20);

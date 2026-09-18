@@ -36,6 +36,7 @@ export async function registerTeacherAction(
   try {
     const rawData = {
       nama_lengkap: formData.get("nama_lengkap")?.toString() ?? "",
+      username: formData.get("username")?.toString()?.trim() || undefined,
       email: formData.get("email")?.toString() ?? "",
       no_telepon: formData.get("no_telepon")?.toString() ?? undefined,
       password: formData.get("password")?.toString() ?? "",
