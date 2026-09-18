@@ -118,7 +118,7 @@ export function LoginForm({ status }: { status?: string }) {
           variant="primary"
           isLoading={isPending}
           disabled={isPending}
-          className="h-11 sm:h-12 w-full rounded-xl bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold shadow-[0_6px_20px_rgba(37,99,235,0.25)] hover:shadow-[0_8px_25px_rgba(37,99,235,0.35)] text-[14px] sm:text-base transition-all cursor-pointer"
+          className="h-12 w-full rounded-xl bg-[#1E293B] hover:bg-[#26364B] active:scale-[0.99] text-white font-semibold shadow-[0_8px_22px_rgba(15,23,42,0.16)] text-[15px] sm:text-base transition-all cursor-pointer"
         >
           Masuk
         </Button>
