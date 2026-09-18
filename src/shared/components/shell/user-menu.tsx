@@ -116,15 +116,9 @@ export function UserMenu({ user }: UserMenuProps) {
         />
       </button>
 
-      {/* Dropdown Menu (Academic Glass UI selaras dengan ThemeSwitcher) */}
+      {/* Dropdown Menu (Academic Glass UI selaras dengan ThemeSwitcher, tanpa backdrop blur) */}
       {isOpen && (
-        <>
-          {/* Mobile backdrop */}
-          <div
-            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-xs sm:hidden"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-1.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-1.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
             {/* Identity Header */}
             <div className="p-3 border-b border-slate-100 dark:border-slate-800 mb-1 flex items-center gap-2.5">
               <div className="size-10 rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
@@ -195,7 +189,6 @@ export function UserMenu({ user }: UserMenuProps) {
               </button>
             </div>
           </div>
-        </>
       )}
 
       {/* Logout Confirmation Modal Dialog (Portaled to document.body for true viewport centering) */}

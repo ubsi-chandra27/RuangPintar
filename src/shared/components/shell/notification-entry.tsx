@@ -155,13 +155,7 @@ export function NotificationEntry() {
       </button>
 
       {isOpen && (
-        <>
-          {/* Mobile backdrop */}
-          <div
-            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-xs sm:hidden"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
             {/* Popover Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">
               <div className="flex items-center gap-2">
@@ -267,9 +261,8 @@ export function NotificationEntry() {
                 <span>Buka Pusat Pengumuman</span>
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
-            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -9,10 +9,16 @@ export function AuthLoginLayout({
   children,
   title = "Masuk ke Ruang Pintar",
   description = "Gunakan akun sekolah Anda untuk mengakses pembelajaran, aktivitas akademik, dan informasi sekolah.",
+  backLink,
+  badge,
+  wideForm = false,
 }: {
   children: React.ReactNode;
   title?: string;
   description?: string;
+  backLink?: { href: string; label: string };
+  badge?: string;
+  wideForm?: boolean;
 }) {
   return (
     <div className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-gradient-to-br from-[#EEF4FB] via-[#F8FAFC] to-[#FFFFFF] text-[#0F172A]">
@@ -50,11 +56,11 @@ export function AuthLoginLayout({
       </header>
 
       {/* Main Container */}
-      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-6 sm:pt-20 lg:grid lg:grid-cols-[minmax(0,56%)_minmax(420px,44%)] lg:grid-rows-1 lg:pt-0">
+      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-6 sm:pt-20 lg:grid lg:grid-cols-[minmax(0,54%)_minmax(440px,46%)] lg:grid-rows-1 lg:pt-0">
         {/* Left Hero Artwork (Desktop) / Bottom Hero Artwork (Mobile) */}
         <section
           aria-label="Ilustrasi ruang belajar"
-          className="relative order-2 mt-auto w-full h-[280px] sm:h-[340px] overflow-hidden flex items-end justify-center lg:order-1 lg:mt-0 lg:h-full lg:min-h-[100dvh] lg:overflow-visible"
+          className="relative order-2 mt-auto w-full h-[260px] sm:h-[320px] overflow-hidden flex items-end justify-center lg:order-1 lg:mt-0 lg:h-full lg:min-h-[100dvh] lg:overflow-visible"
         >
           <img
             src="/images/auth/login-hero-astronaut.png"
@@ -65,12 +71,29 @@ export function AuthLoginLayout({
 
         {/* Right Form Container */}
         <section className="relative z-10 order-1 flex w-full flex-col justify-start lg:justify-center items-center lg:items-start px-6 sm:px-10 lg:px-12 xl:px-16 pt-4 pb-2 lg:py-12">
-          <div className="w-full max-w-[440px] sm:max-w-[470px]">
-            <div className="mb-5 space-y-2 sm:mb-8 sm:space-y-3">
-              <h1 className="text-[26px] leading-[1.2] font-bold tracking-[-0.03em] text-[#0F172A] sm:text-[34px] 2xl:text-[38px]">
+          <div className={`w-full ${wideForm ? "max-w-[540px]" : "max-w-[440px] sm:max-w-[470px]"}`}>
+            {/* Optional Back Link */}
+            {backLink && (
+              <Link
+                href={backLink.href}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] mb-4 group transition-colors"
+              >
+                <span className="transition-transform group-hover:-translate-x-0.5">&larr;</span>
+                <span>{backLink.label}</span>
+              </Link>
+            )}
+
+            {/* Header Content */}
+            <div className="mb-5 space-y-2 sm:mb-7 sm:space-y-2.5">
+              {badge && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-[#2563EB] text-[11px] font-bold tracking-wide uppercase">
+                  {badge}
+                </div>
+              )}
+              <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.03em] text-[#0F172A] sm:text-[32px] 2xl:text-[36px]">
                 {title}
               </h1>
-              <p className="max-w-[42ch] text-[13px] leading-5 text-[#475569] sm:text-[15px] sm:leading-6">
+              <p className="max-w-[44ch] text-[13px] leading-5 text-[#475569] sm:text-[14px] sm:leading-6">
                 {description}
               </p>
             </div>

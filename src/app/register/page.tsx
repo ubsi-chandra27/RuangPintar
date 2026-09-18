@@ -1,12 +1,22 @@
 import { Metadata } from "next";
-import { RegisterView } from "@/modules/ai-assistant/presentation/register-view";
+import { AuthLoginLayout } from "@/shared/components/auth/auth-login-layout";
+import { RegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
-  title: "Daftar Akun Guru Mandiri — Ruang Pintar SaaS",
-  description:
-    "Coba gratis 30 hari Ruang Pintar: absensi kelas cepat 15 detik, rekapitulasi Kurikulum Merdeka format A4, dan pembuatan kelas otomatis via foto AI.",
+  title: "Daftar Akun — Ruang Pintar",
+  description: "Daftar akun Ruang Pintar untuk guru mandiri dan sekolah.",
 };
 
 export default function RegisterPage() {
-  return <RegisterView />;
+  return (
+    <AuthLoginLayout
+      title="Daftar Akun Ruang Pintar"
+      description="Buat akun baru untuk memulai pengalaman administrasi dan pembelajaran modern terintegrasi."
+      badge="Registrasi Cepat"
+      backLink={{ href: "/login", label: "Kembali ke Masuk" }}
+    >
+      <RegisterForm />
+    </AuthLoginLayout>
+  );
 }
+
