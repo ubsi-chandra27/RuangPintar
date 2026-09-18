@@ -38,6 +38,9 @@ import {
   KeyRound,
   Copy,
   CheckCheck,
+  Smartphone,
+  Tablet,
+  Laptop,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import {
@@ -799,12 +802,37 @@ export function TeachersView({
 
                     {/* Identitas */}
                     <div>
-                      <h4 className="font-bold text-slate-800 text-xs sm:text-sm">
-                        {t.nama_dengan_gelar}
-                      </h4>
-                      <span className="text-[11px] text-slate-400 font-mono block">
-                        NIP: {t.nip || "-"}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h4 className="font-bold text-slate-800 text-xs sm:text-sm">
+                          {t.nama_dengan_gelar}
+                        </h4>
+                        {t.presence_info && (
+                          <span
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.2 text-[9px] font-bold rounded-full border ${t.presence_info.badgeClass}`}
+                          >
+                            <span className={`size-1.5 rounded-full ${t.presence_info.dotClass}`} />
+                            <span>{t.presence_info.label}</span>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mt-0.5 flex-wrap">
+                        <span>NIP: {t.nip || "-"}</span>
+                        {t.device_info && (
+                          <>
+                            <span>•</span>
+                            <span className="inline-flex items-center gap-1 text-slate-500 font-sans">
+                              {t.device_info.type === "mobile" ? (
+                                <Smartphone className="size-3 text-slate-400" />
+                              ) : t.device_info.type === "tablet" ? (
+                                <Tablet className="size-3 text-slate-400" />
+                              ) : (
+                                <Laptop className="size-3 text-slate-400" />
+                              )}
+                              <span>{t.device_info.brand}</span>
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -982,15 +1010,46 @@ export function TeachersView({
                             </div>
                           )}
                           <div>
-                            <span
-                              className="font-bold text-slate-800 block hover:text-[#2563EB] cursor-pointer"
-                              onClick={() => setDetailTeacher(t)}
-                            >
-                              {t.nama_dengan_gelar}
-                            </span>
-                            <span className="text-[11px] text-slate-400 font-mono">
-                              NIP: {t.nip || "-"} {t.nuptk ? `• NUPTK: ${t.nuptk}` : ""}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="font-bold text-slate-800 hover:text-[#2563EB] cursor-pointer"
+                                onClick={() => setDetailTeacher(t)}
+                              >
+                                {t.nama_dengan_gelar}
+                              </span>
+                              {t.presence_info && (
+                                <span
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${t.presence_info.badgeClass}`}
+                                >
+                                  <span
+                                    className={`size-1.5 rounded-full ${t.presence_info.dotClass}`}
+                                  />
+                                  <span>{t.presence_info.label}</span>
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
+                              <span>
+                                NIP: {t.nip || "-"} {t.nuptk ? `• NUPTK: ${t.nuptk}` : ""}
+                              </span>
+                              {t.device_info && (
+                                <>
+                                  <span>•</span>
+                                  <span className="inline-flex items-center gap-1 font-sans text-slate-500 font-medium">
+                                    {t.device_info.type === "mobile" ? (
+                                      <Smartphone className="size-3 text-slate-400" />
+                                    ) : t.device_info.type === "tablet" ? (
+                                      <Tablet className="size-3 text-slate-400" />
+                                    ) : (
+                                      <Laptop className="size-3 text-slate-400" />
+                                    )}
+                                    <span>
+                                      {t.device_info.brand} ({t.device_info.browser})
+                                    </span>
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>

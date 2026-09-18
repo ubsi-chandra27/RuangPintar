@@ -14,11 +14,16 @@ import {
   User,
   Plug,
   Inbox,
+  Smartphone,
+  Laptop,
+  Tablet,
+  Activity,
 } from "lucide-react";
 import { StatCard } from "@/shared/components/dashboard/stat-card";
 import { SystemStatusIndicator } from "@/shared/components/dashboard/system-status-indicator";
 import { AuthenticatedUser } from "@/shared/infrastructure/auth/auth-service";
 import { prisma } from "@/shared/infrastructure/database/prisma";
+import { parseUserAgent, calculatePresence } from "@/shared/lib/device-detector";
 
 export interface SuperAdminDashboardProps {
   user: AuthenticatedUser;
@@ -35,6 +40,7 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
     totalRombel,
     daftarSekolahTerbaru,
     pengumumanList,
+    sesiPenggunaTerbaru,
   ] = await Promise.all([
     prisma.sekolah.count(),
     prisma.sekolah.count({ where: { tipe_lisensi: "FREEMIUM" } }),
@@ -61,7 +67,43 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
       take: 3,
       orderBy: { created_at: "desc" },
     }),
+    prisma.sesiPengguna.findMany({
+      take: 20,
+      orderBy: { created_at: "desc" },
+      include: {
+        pengguna: {
+          select: {
+            nama_lengkap: true,
+            peran_dasar: true,
+            sekolah: { select: { nama: true } },
+          },
+        },
+      },
+    }),
   ]);
+
+  // Kalkulasi Distribusi Perangkat (Mobile vs Desktop)
+  let mobileCount = 0;
+  let desktopCount = 0;
+  let tabletCount = 0;
+
+  const sesiDenganDevice = sesiPenggunaTerbaru.map((sesi) => {
+    const device = parseUserAgent(sesi.user_agent);
+    const presence = calculatePresence(sesi.terakhir_aktif_pada || sesi.created_at);
+    if (device.type === "mobile") mobileCount++;
+    else if (device.type === "tablet") tabletCount++;
+    else desktopCount++;
+
+    return {
+      ...sesi,
+      device,
+      presence,
+    };
+  });
+
+  const totalSesiTerdata = sesiPenggunaTerbaru.length || 1;
+  const mobilePct = Math.round(((mobileCount + tabletCount) / totalSesiTerdata) * 100);
+  const desktopPct = 100 - mobilePct;
 
   // Formatter Hari, Tanggal Bulan Tahun Indonesia (Contoh: "Kamis, 17 September 2026")
   const formattedDate = new Intl.DateTimeFormat("id-ID", {
@@ -362,83 +404,166 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
           </div>
         </div>
 
-        {/* Right Col: Aksi Cepat Super Admin */}
-        <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-[#2563EB] dark:text-blue-400" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Aksi Cepat Super Admin
-            </h3>
+        {/* Right Col: Perangkat & Sesi Terkini + Aksi Cepat */}
+        <div className="space-y-6">
+          {/* Widget 1: Distribusi Perangkat & Sesi Pengguna */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-[#2563EB] dark:text-blue-400" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Perangkat & Sesi Aktif
+                </h3>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                🟢 Live Audit
+              </span>
+            </div>
+
+            {/* Device Bar Ratio */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <span className="flex items-center gap-1.5">
+                  <Smartphone className="size-3.5 text-blue-600" />
+                  <span>Ponsel (HP): {mobilePct}%</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Laptop className="size-3.5 text-slate-500" />
+                  <span>Komputer: {desktopPct}%</span>
+                </span>
+              </div>
+              <div className="h-2.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex">
+                <div
+                  style={{ width: `${mobilePct}%` }}
+                  className="bg-blue-600 h-full rounded-l-full"
+                  title={`Mobile: ${mobilePct}%`}
+                />
+                <div
+                  style={{ width: `${desktopPct}%` }}
+                  className="bg-slate-400 dark:bg-slate-600 h-full rounded-r-full"
+                  title={`Desktop: ${desktopPct}%`}
+                />
+              </div>
+            </div>
+
+            {/* List of Recent Live Sessions */}
+            <div className="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                Sesi Guru Terakhir
+              </span>
+              {sesiDenganDevice.slice(0, 3).map((s) => (
+                <div
+                  key={s.id}
+                  className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-750 flex items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="size-8 rounded-lg bg-blue-100/60 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                      {s.device.type === "mobile" ? (
+                        <Smartphone className="size-4" />
+                      ) : s.device.type === "tablet" ? (
+                        <Tablet className="size-4" />
+                      ) : (
+                        <Laptop className="size-4" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate">
+                        {s.pengguna?.nama_lengkap || "Pengguna SaaS"}
+                      </span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                        {s.device.brand} • {s.pengguna?.sekolah?.nama || "Sekolah"}
+                      </span>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold border shrink-0 ${s.presence.badgeClass}`}
+                  >
+                    <span className={`size-1 rounded-full ${s.presence.dotClass}`} />
+                    <span>{s.presence.label}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href="/sekolah"
-              className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 border border-slate-100 dark:border-slate-750 hover:border-blue-200 dark:hover:border-blue-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
-            >
-              <div className="h-10 w-10 rounded-xl bg-blue-100/60 dark:bg-blue-900/50 text-[#2563EB] dark:text-blue-400 group-hover:bg-[#2563EB] group-hover:text-white flex items-center justify-center transition-colors">
-                <School className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Kelola Sekolah
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                  Profil & lisensi
-                </span>
-              </div>
-            </Link>
+          {/* Widget 2: Aksi Cepat Super Admin */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[#2563EB] dark:text-blue-400" />
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Aksi Cepat Super Admin
+              </h3>
+            </div>
 
-            <Link
-              href="/guru-pengajaran"
-              className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 border border-slate-100 dark:border-slate-750 hover:border-emerald-200 dark:hover:border-emerald-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
-            >
-              <div className="h-10 w-10 rounded-xl bg-emerald-100/60 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-colors">
-                <Users className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Data Guru
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                  Pendidik & penugasan
-                </span>
-              </div>
-            </Link>
+            <div className="grid grid-cols-2 gap-3">
+              <Link
+                href="/sekolah"
+                className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 border border-slate-100 dark:border-slate-750 hover:border-blue-200 dark:hover:border-blue-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-xl bg-blue-100/60 dark:bg-blue-900/50 text-[#2563EB] dark:text-blue-400 group-hover:bg-[#2563EB] group-hover:text-white flex items-center justify-center transition-colors">
+                  <School className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Kelola Sekolah
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Profil & lisensi
+                  </span>
+                </div>
+              </Link>
 
-            <Link
-              href="/data-siswa"
-              className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-purple-50/70 dark:hover:bg-purple-950/40 border border-slate-100 dark:border-slate-750 hover:border-purple-200 dark:hover:border-purple-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
-            >
-              <div className="h-10 w-10 rounded-xl bg-purple-100/60 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition-colors">
-                <GraduationCap className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Data Siswa
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                  Rombel & penempatan
-                </span>
-              </div>
-            </Link>
+              <Link
+                href="/guru-pengajaran"
+                className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 border border-slate-100 dark:border-slate-750 hover:border-emerald-200 dark:hover:border-emerald-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-xl bg-emerald-100/60 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-colors">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Data Guru
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Pendidik & penugasan
+                  </span>
+                </div>
+              </Link>
 
-            <Link
-              href="/integrasi"
-              className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-amber-50/70 dark:hover:bg-amber-950/40 border border-slate-100 dark:border-slate-750 hover:border-amber-200 dark:hover:border-amber-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
-            >
-              <div className="h-10 w-10 rounded-xl bg-amber-100/60 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition-colors">
-                <Plug className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Integrasi Gateway
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                  WhatsApp & Webhook
-                </span>
-              </div>
-            </Link>
+              <Link
+                href="/data-siswa"
+                className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-purple-50/70 dark:hover:bg-purple-950/40 border border-slate-100 dark:border-slate-750 hover:border-purple-200 dark:hover:border-purple-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-xl bg-purple-100/60 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition-colors">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Data Siswa
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Rombel & penempatan
+                  </span>
+                </div>
+              </Link>
+
+              <Link
+                href="/integrasi"
+                className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-amber-50/70 dark:hover:bg-amber-950/40 border border-slate-100 dark:border-slate-750 hover:border-amber-200 dark:hover:border-amber-700 transition-all flex flex-col items-center text-center gap-2 group cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-xl bg-amber-100/60 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition-colors">
+                  <Plug className="h-5 w-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Integrasi Gateway
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    WhatsApp & Webhook
+                  </span>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@
 
 import { prisma } from "@/shared/infrastructure/database/prisma";
 import { generateUlid } from "@/shared/lib/ulid";
+import { parseUserAgent, calculatePresence } from "@/shared/lib/device-detector";
 import {
   AssignHomeroomInput,
   CreateSubjectInput,
@@ -67,7 +68,17 @@ export class TeacherRepository {
     const records = await prisma.guru.findMany({
       where,
       include: {
-        pengguna: { select: { username: true } },
+        pengguna: {
+          select: {
+            username: true,
+            terakhir_login_pada: true,
+            sesi: {
+              take: 1,
+              orderBy: { created_at: "desc" },
+              select: { user_agent: true, created_at: true },
+            },
+          },
+        },
         penugasan_mengajar: {
           where: { status: "AKTIF" },
           select: { id: true, rombel_id: true, jumlah_jam_minggu: true },
@@ -114,6 +125,12 @@ export class TeacherRepository {
         .replace(/\s+/g, " ")
         .trim();
 
+      const latestSession = r.pengguna?.sesi?.[0];
+      const userAgent = latestSession?.user_agent;
+      const lastActive = r.pengguna?.terakhir_login_pada || latestSession?.created_at;
+      const deviceInfo = userAgent ? parseUserAgent(userAgent) : null;
+      const presenceInfo = lastActive ? calculatePresence(lastActive) : null;
+
       return {
         id: r.id,
         sekolah_id: r.sekolah_id,
@@ -144,6 +161,8 @@ export class TeacherRepository {
         rombel_wali_nama: activeWali?.rombel.nama || null,
         jumlah_histori_akademik: jumlahHistoriAkademik,
         bisa_hapus_permanen: jumlahHistoriAkademik === 0,
+        device_info: deviceInfo,
+        presence_info: presenceInfo,
       };
     });
   }
@@ -152,7 +171,17 @@ export class TeacherRepository {
     const r = await prisma.guru.findFirst({
       where: { id, sekolah_id },
       include: {
-        pengguna: { select: { username: true } },
+        pengguna: {
+          select: {
+            username: true,
+            terakhir_login_pada: true,
+            sesi: {
+              take: 1,
+              orderBy: { created_at: "desc" },
+              select: { user_agent: true, created_at: true },
+            },
+          },
+        },
         penugasan_mengajar: {
           where: { status: "AKTIF" },
           select: { id: true, rombel_id: true, jumlah_jam_minggu: true },
@@ -197,6 +226,12 @@ export class TeacherRepository {
       .replace(/\s+/g, " ")
       .trim();
 
+    const latestSession = r.pengguna?.sesi?.[0];
+    const userAgent = latestSession?.user_agent;
+    const lastActive = r.pengguna?.terakhir_login_pada || latestSession?.created_at;
+    const deviceInfo = userAgent ? parseUserAgent(userAgent) : null;
+    const presenceInfo = lastActive ? calculatePresence(lastActive) : null;
+
     return {
       id: r.id,
       sekolah_id: r.sekolah_id,
@@ -227,6 +262,8 @@ export class TeacherRepository {
       rombel_wali_nama: activeWali?.rombel.nama || null,
       jumlah_histori_akademik: jumlahHistoriAkademik,
       bisa_hapus_permanen: jumlahHistoriAkademik === 0,
+      device_info: deviceInfo,
+      presence_info: presenceInfo,
     };
   }
 

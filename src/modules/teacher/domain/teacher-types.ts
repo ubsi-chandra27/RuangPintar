@@ -1,6 +1,4 @@
-/**
- * Ruang Pintar — M08 Teacher & Teaching Assignment Domain Types & DTOs
- */
+import { DeviceInfo, PresenceInfo } from "@/shared/lib/device-detector";
 
 export type StatusKepegawaianGuru = "TETAP" | "HONORER" | "KONTRAK" | "PNS" | "PPPK" | "LAINNYA";
 
@@ -81,6 +79,8 @@ export interface TeacherProfileDTO {
   rombel_wali_nama?: string | null;
   jumlah_histori_akademik?: number;
   bisa_hapus_permanen?: boolean;
+  device_info?: DeviceInfo | null;
+  presence_info?: PresenceInfo | null;
 }
 
 export interface SubjectDTO {

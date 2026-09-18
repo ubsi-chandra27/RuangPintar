@@ -15,11 +15,13 @@ import { SmartPhotoOnboardingModal } from "./smart-photo-onboarding-modal";
 import { AiPreviewTableModal } from "./ai-preview-table-modal";
 import { ClassExtractionResult, TeacherTrialStatusDTO } from "../domain/ai-types";
 import { getTeacherTrialStatusAction } from "@/app/actions/smart-onboarding-actions";
+import { SchoolProposalModal } from "@/modules/school/presentation/school-proposal-modal";
 
 export function TrialBanner() {
   const [trialStatus, setTrialStatus] = useState<TeacherTrialStatusDTO | null>(null);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [extractionResult, setExtractionResult] = useState<ClassExtractionResult | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
@@ -102,8 +104,8 @@ export function TrialBanner() {
             </button>
 
             <button
-              onClick={handlePrintProposal}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-medium transition-colors"
+              onClick={() => setProposalModalOpen(true)}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-medium transition-colors cursor-pointer"
               title="Cetak Surat Usulan Lisensi Sekolah"
             >
               <FileDown className="w-4 h-4 text-emerald-400" />
@@ -134,6 +136,8 @@ export function TrialBanner() {
         onSuccess={handleClassCreated}
         extractionData={extractionResult}
       />
+
+      <SchoolProposalModal isOpen={proposalModalOpen} onClose={() => setProposalModalOpen(false)} />
     </>
   );
 }
