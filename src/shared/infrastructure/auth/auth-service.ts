@@ -246,11 +246,17 @@ export class AuthService {
       });
     }
 
+    let effectiveSekolahId = session.pengguna.sekolah_id;
+    if (!effectiveSekolahId && session.pengguna.peran_dasar === "SUPER_ADMIN") {
+      const activeSchool = await prisma.sekolah.findFirst({ select: { id: true } });
+      effectiveSekolahId = activeSchool?.id ?? null;
+    }
+
     return {
       session,
       user: {
         id: session.pengguna.id,
-        sekolah_id: session.pengguna.sekolah_id,
+        sekolah_id: effectiveSekolahId,
         username: session.pengguna.username,
         email: session.pengguna.email,
         nama_lengkap: session.pengguna.nama_lengkap,

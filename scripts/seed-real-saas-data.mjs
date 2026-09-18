@@ -92,22 +92,7 @@ async function main() {
   await prisma.$executeRawUnsafe("PRAGMA foreign_keys = ON;");
   console.log("Pembersihan database selesai.");
 
-  // 2. Buat Pengguna SUPER ADMIN untuk Login Platform
-  const superAdminId = ulid();
-  const superAdmin = await prisma.pengguna.create({
-    data: {
-      id: superAdminId,
-      username: "superadmin",
-      nama_lengkap: "Super Administrator",
-      email: "superadmin@ruangpintar.id",
-      password_hash: passwordHash,
-      peran_dasar: "SUPER_ADMIN",
-      status_akun: "AKTIF",
-    },
-  });
-  console.log("2. Akun Super Admin dibuat:", superAdmin.username);
-
-  // 3. Buat 1 Sekolah Riil: SMK OTOMINDO (Status: Trial 30 Hari / Freemium)
+  // 2. Buat 1 Sekolah Riil: SMK OTOMINDO (Status: Trial 30 Hari / Freemium)
   const sekolahId = ulid();
   const trialBerakhir = new Date();
   trialBerakhir.setDate(trialBerakhir.getDate() + 30);
@@ -126,7 +111,23 @@ async function main() {
       status_aktif: true,
     },
   });
-  console.log("3. Sekolah Riil dibuat:", sekolah.nama, "(Tipe: FREEMIUM Trial 30 Hari)");
+  console.log("2. Sekolah Riil dibuat:", sekolah.nama, "(Tipe: FREEMIUM Trial 30 Hari)");
+
+  // 3. Buat Pengguna SUPER ADMIN untuk Login Platform (dihubungkan ke SMK OTOMINDO agar dapat akses penuh ke semua menu)
+  const superAdminId = ulid();
+  const superAdmin = await prisma.pengguna.create({
+    data: {
+      id: superAdminId,
+      sekolah_id: sekolahId,
+      username: "superadmin",
+      nama_lengkap: "Super Administrator",
+      email: "superadmin@ruangpintar.id",
+      password_hash: passwordHash,
+      peran_dasar: "SUPER_ADMIN",
+      status_akun: "AKTIF",
+    },
+  });
+  console.log("3. Akun Super Admin dibuat:", superAdmin.username);
 
   // 4. Buat Tahun Ajaran 2026/2027 & Semester Ganjil
   const tahunAjaranId = ulid();
@@ -261,7 +262,20 @@ async function main() {
       },
     });
   }
-  console.log("7. Penugasan Mengajar Mapel KKA berhasil dihubungkan ke 10 Kelas X!");
+  // 11. Buat Pengumuman Perdana SMK OTOMINDO
+  await prisma.pengumuman.create({
+    data: {
+      id: ulid(),
+      judul: "Selamat Datang di Ruang Pintar — SMK OTOMINDO",
+      konten: "Sistem digitalisasi sekolah Ruang Pintar resmi aktif untuk SMK OTOMINDO. Tahun Ajaran 2026/2027.",
+      kategori: "AKADEMIK",
+      status: "DITERBITKAN",
+      dipublikasikan_pada: new Date(),
+      sekolah: { connect: { id: sekolahId } },
+      penulis: { connect: { id: superAdminId } },
+    },
+  });
+  console.log("8. Pengumuman perdana SMK OTOMINDO dibuat.");
 
   // Verifikasi Hitungan Akhir
   const totalSekolah = await prisma.sekolah.count();
