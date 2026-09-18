@@ -88,50 +88,54 @@ export function AuthLoginLayout({
         </div>
       </header>
 
-      {/* Main Container - Cardless Form Layout matching auth-layout-reference.png */}
-      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-20 sm:pt-24 lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(420px,500px)] xl:grid-cols-[minmax(0,1.18fr)_minmax(440px,480px)] lg:grid-rows-1 lg:pt-0">
+      {/* Main Container - Balanced Center-Right positioning with subtle glass effect */}
+      <main className="relative z-10 min-h-[100dvh] w-full flex flex-col justify-between pt-20 sm:pt-24 lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(420px,470px)_minmax(0,0.42fr)] xl:grid-cols-[minmax(0,1.2fr)_minmax(440px,480px)_minmax(0,0.5fr)] lg:grid-rows-1 lg:pt-0">
         {/* Left Column Spacer (Full artwork shines through) */}
         <div className="hidden lg:block pointer-events-none" aria-hidden="true" />
 
-        {/* Right Form Container: Perfectly placed in the open pastel canvas */}
-        <section className="relative z-10 flex w-full flex-col justify-start lg:justify-center items-center lg:items-start px-6 sm:px-10 lg:px-8 xl:px-12 pt-4 pb-8 lg:py-12">
-          {/* Optional Back Link */}
-          {backLink && (
-            <Link
-              href={backLink.href}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] mb-4 group transition-colors self-start"
-            >
-              <span className="transition-transform group-hover:-translate-x-0.5">&larr;</span>
-              <span>{backLink.label}</span>
-            </Link>
-          )}
-
+        {/* Center-Right Form Container: Shifted comfortably inward from right edge */}
+        <section className="relative z-10 flex w-full flex-col justify-start lg:justify-center items-center px-4 sm:px-6 lg:px-0 pt-4 pb-8 lg:py-12">
+          {/* Subtle Frosted Glass Container (Effek Glass Tipis) */}
           <div
             className={`w-full ${
-              wideForm ? "max-w-[520px]" : "max-w-[420px] sm:max-w-[450px]"
-            }`}
+              wideForm ? "max-w-[540px]" : "max-w-[430px] sm:max-w-[460px]"
+            } rounded-2xl sm:rounded-3xl bg-white/45 backdrop-blur-md border border-white/65 shadow-[0_12px_36px_-8px_rgba(15,23,42,0.06),0_1px_2px_rgba(255,255,255,0.7)] p-6 sm:p-8 lg:p-9 transition-all`}
           >
+            {/* Optional Back Link */}
+            {backLink && (
+              <Link
+                href={backLink.href}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] mb-4 group transition-colors"
+              >
+                <span className="transition-transform group-hover:-translate-x-0.5">&larr;</span>
+                <span>{backLink.label}</span>
+              </Link>
+            )}
+
             {/* Header Content */}
-            <div className="mb-6 space-y-2 sm:mb-7 sm:space-y-2.5">
+            <div className="mb-5 space-y-1.5 sm:mb-6 sm:space-y-2">
               {badge && (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[#2563EB] text-[11px] font-bold tracking-wide uppercase">
                   {badge}
                 </div>
               )}
-              <h1 className="text-[28px] leading-[1.2] font-bold tracking-[-0.035em] text-[#0F172A] sm:text-[34px] xl:text-[38px]">
+              <h1 className="text-[26px] leading-[1.2] font-bold tracking-[-0.035em] text-[#0F172A] sm:text-[30px] xl:text-[34px]">
                 {title}
               </h1>
               {description && (
-                <p className="max-w-[44ch] text-[13px] leading-5 text-[#475569] sm:text-[14px] sm:leading-6">
+                <p className="max-w-[42ch] text-[12.5px] leading-5 text-[#475569] sm:text-[13.5px] sm:leading-6">
                   {description}
                 </p>
               )}
             </div>
 
-            {/* Form Fields (Clean inputs floating on the open canvas) */}
+            {/* Form Fields & Controls */}
             {children}
           </div>
         </section>
+
+        {/* Right Spacer (Guarantees form never hugs the right edge) */}
+        <div className="hidden lg:block pointer-events-none" aria-hidden="true" />
       </main>
     </div>
   );
