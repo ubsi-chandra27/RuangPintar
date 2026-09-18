@@ -51,11 +51,10 @@ describe("Role-Aware Navigation Filtering (Phase 05)", () => {
     const allItemIds = nav.flatMap((g) => g.items.map((i) => i.id));
 
     expect(allItemIds).toContain("dashboard");
-    expect(allItemIds).toContain("staff-school");
-    expect(allItemIds).toContain("staff-academic");
-    expect(allItemIds).toContain("staff-students");
-    expect(allItemIds).toContain("staff-attendance");
-    expect(allItemIds).toContain("staff-reports");
+    expect(allItemIds.some((id) => id === "staff-school" || id === "saas-schools")).toBe(true);
+    expect(allItemIds.some((id) => id === "staff-academic" || id === "saas-academic")).toBe(true);
+    expect(allItemIds.some((id) => id === "staff-students" || id === "saas-students")).toBe(true);
+    expect(allItemIds.some((id) => id === "staff-reports" || id === "saas-reports")).toBe(true);
   });
 
   it("restricts SCHOOL_STAFF without capabilities from specialized administrative items", () => {

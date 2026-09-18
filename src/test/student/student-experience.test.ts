@@ -21,6 +21,11 @@ import {
   StudentNotFoundError,
 } from "@/modules/student/domain/student-experience-errors";
 
+vi.mock("@/shared/infrastructure/audit/audit-logger", () => ({
+  recordAuditEvent: vi.fn().mockResolvedValue({ id: "mock-audit-id" }),
+  queryAuditLogs: vi.fn().mockResolvedValue({ logs: [], total: 0 }),
+}));
+
 describe("Student Experience Service (Phase 15 / M15)", () => {
   const schoolId = "01JA0000000000000000000001";
   const userSiswaId = "01JASTUD0000000000000000001";
