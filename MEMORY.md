@@ -1181,3 +1181,35 @@ Status: **READY FOR HUMAN REVIEW**
      - `super-admin-academic-glass.png` (Desktop 1440x900)
      - `super-admin-mobile-verified.png` (Mobile iPhone 14 Pro 393x852)
      - `super-admin-mobile-rombel.png` (Detail Section Card List Mobile)
+
+---
+
+# 45. Pengumuman & Performa Rombel UI Overhaul (Academic Glass Craftsmanship)
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Perombakan Total Halaman Pengumuman (`/pengumuman`):**
+   - Menggantikan banner lama bernuansa gelap kaku menjadi **Academic Glass Header Canvas** (`rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-slate-800/80`) dengan badge berkedip `Pusat Komunikasi Resmi` dan tombol aksi utama `+ Buat Pengumuman`.
+   - Mengubah toolbar pencarian & filter kategori menjadi jajaran pil rounded Academic Glass yang adaptif terhadap Dark Mode dan Light Mode (`bg-slate-100/70 dark:bg-slate-800/50`).
+   - Menyempurnakan kartu pengumuman disematkan (*pinned*) dengan aksen amber lembut dan kartu standar bergrid responsif (1 kolom di smartphone, 2 di tablet, 3 di desktop).
+   - Menghadirkan **Empty State Presisi** ketika database belum memiliki pengumuman: ikon Megaphone dengan kontainer membulat bercahaya halus, tipografi kontras tinggi, dan tombol ajakan tindakan `+ Buat Pengumuman Baru`.
+
+2. **Perombakan Modal Dialog Pengumuman:**
+   - `CreateAnnouncementModal` & `AnnouncementDetailModal` kini mendukung penuh mode gelap dan mode terang.
+   - Dilengkapi transisi buka/tutup halus yang nyaman di mata (`animate-in fade-in zoom-in-95 duration-200`) serta latar belakang kabur (*backdrop-blur-md*).
+   - Seluruh tombol aksi dilengkapi feedback sentuhan taktil (`active:scale-95`).
+
+3. **Penyempurnaan Tampilan Performa Rombongan Belajar di Dashboard:**
+   - Menghilangkan tampilan tabel mentah yang sebelumnya sesak di layar smartphone.
+   - Mengubah tampilan rombel pada smartphone menjadi **LMS Course Card** mandiri: dilengkapi inisial avatar kelas (misal: `XD` untuk X DKV 1), nama wali/guru pengampu, status KBM non-wrapping, dan jumlah siswa terdaftar.
+   - Menyajikan *Empty State* Academic Glass yang anggun dan terkalibrasi ketika belum ada kelas terdaftar di database.
+
+4. **Verifikasi Teknis & Visual QA:**
+   - TypeScript `npm run typecheck` (`tsc --noEmit`): 0 error (PASS).
+   - ESLint `npm run lint`: 0 error (PASS).
+   - Prettier: 100% compliant.
+   - Visual QA tersimpan di `docs/phases/screenshots/`:
+     - `inspect-pengumuman-desktop-dark.png` (Desktop 1440x900)
+     - `inspect-pengumuman-mobile-dark.png` (Mobile Dark 393x852)
+     - `inspect-pengumuman-mobile-light.png` (Mobile Light 393x852)
+     - `verify-rombel-light-mobile.png` (Mobile Light Rombel Section)

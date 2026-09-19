@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   X,
-  Megaphone,
   Pin,
   Calendar,
   User,
@@ -85,69 +84,71 @@ export function AnnouncementDetailModal({
   const getCategoryBadgeClass = (cat: string) => {
     switch (cat) {
       case "DARURAT":
-        return "bg-rose-50 text-rose-700 border-rose-200";
+        return "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60";
       case "PENTING":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60";
       case "AKADEMIK":
-        return "bg-blue-50 text-blue-700 border-blue-200";
+        return "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/60";
       case "KEGIATAN":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60";
       default:
-        return "bg-slate-100 text-slate-700 border-slate-200";
+        return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/60";
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl rounded-3xl bg-white dark:bg-slate-900 shadow-2xl border border-white/60 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+        <div className="flex items-start justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="flex-1 pr-4">
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getCategoryBadgeClass(
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border whitespace-nowrap ${getCategoryBadgeClass(
                   announcement.kategori
                 )}`}
               >
                 {announcement.kategori}
               </span>
               {announcement.apakah_disematkan && (
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  <Pin className="h-3 w-3 rotate-45" />
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 whitespace-nowrap">
+                  <Pin className="size-3 rotate-45" />
                   Disematkan
                 </span>
               )}
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 whitespace-nowrap">
                 Sasaran: {announcement.target_audiens}
                 {announcement.target_rombel ? ` (${announcement.target_rombel.nama})` : ""}
               </span>
               {announcement.status !== "PUBLISHED" && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 whitespace-nowrap">
                   {announcement.status}
                 </span>
               )}
             </div>
-            <h3 className="text-lg font-bold text-slate-900 leading-snug">{announcement.judul}</h3>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug">
+              {announcement.judul}
+            </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X className="h-5 w-5" />
+            <X className="size-5" />
           </button>
         </div>
 
         {/* Metadata Strip */}
-        <div className="flex flex-wrap items-center gap-4 px-6 py-2.5 bg-slate-100/60 border-b border-slate-100 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-4 px-6 py-3 bg-slate-100/60 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1.5">
-            <User className="h-3.5 w-3.5 text-slate-400" />
-            <span>
+            <User className="size-3.5 text-slate-400" />
+            <span className="font-medium">
               {announcement.penulis.nama_lengkap} ({announcement.penulis.peran_dasar})
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-slate-400" />
+            <Calendar className="size-3.5 text-slate-400" />
             <span>
               {new Date(
                 announcement.dipublikasikan_pada || announcement.created_at
@@ -161,31 +162,31 @@ export function AnnouncementDetailModal({
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+        <div className="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
           {announcement.konten}
 
           {announcement.lampiran_url && (
-            <div className="pt-4 mt-4 border-t border-slate-100">
+            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
               <a
                 href={announcement.lampiran_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200/80 dark:border-blue-800/60 transition-colors text-xs font-bold active:scale-95 cursor-pointer shadow-xs"
               >
-                <Paperclip className="h-3.5 w-3.5" />
+                <Paperclip className="size-3.5" />
                 <span>Buka / Unduh Berkas Lampiran</span>
-                <ExternalLink className="h-3 w-3" />
+                <ExternalLink className="size-3" />
               </a>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors active:scale-95 cursor-pointer"
           >
             Tutup
           </button>
@@ -197,12 +198,12 @@ export function AnnouncementDetailModal({
                   type="button"
                   disabled={isProcessing}
                   onClick={handlePublish}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#2563EB] hover:bg-blue-700 text-white transition-all cursor-pointer shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50"
                 >
                   {isProcessing ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Loader2 className="size-3.5 animate-spin" />
                   ) : (
-                    <Send className="h-3.5 w-3.5" />
+                    <Send className="size-3.5" />
                   )}
                   <span>Terbitkan</span>
                 </button>
@@ -213,9 +214,9 @@ export function AnnouncementDetailModal({
                   type="button"
                   disabled={isProcessing}
                   onClick={handleArchive}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer active:scale-95 disabled:opacity-50 shadow-2xs"
                 >
-                  <Archive className="h-3.5 w-3.5 text-slate-500" />
+                  <Archive className="size-3.5 text-slate-500" />
                   <span>Arsipkan</span>
                 </button>
               )}
@@ -224,9 +225,9 @@ export function AnnouncementDetailModal({
                 type="button"
                 disabled={isProcessing}
                 onClick={handleDelete}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="size-3.5" />
                 <span>Hapus</span>
               </button>
             </div>

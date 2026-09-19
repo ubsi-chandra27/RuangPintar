@@ -309,38 +309,57 @@ export function SuperAdminDashboardView({
               rombelList.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/60 flex flex-col gap-2"
+                  className="p-4 rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 shadow-xs flex flex-col gap-3 transition-all"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-slate-900 dark:text-white text-sm truncate">
-                      {item.nama}
-                    </span>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                        {item.nama.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-bold text-slate-900 dark:text-white text-sm block truncate">
+                          {item.nama}
+                        </span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                          {item.guruNama}
+                        </span>
+                      </div>
+                    </div>
                     {/* Fixed Non-Wrapping Badge */}
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap shrink-0 border border-slate-200/60 dark:border-slate-700/60">
                       {item.sessionCount > 0 ? `${item.completion}% Kehadiran` : "0 Sesi KBM"}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{item.guruNama}</div>
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100 dark:border-slate-700/40 pt-2 mt-0.5">
-                    <span className="font-medium text-slate-600 dark:text-slate-300">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/40 pt-2.5 mt-0.5">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
                       {item.siswaCount} Siswa Terdaftar
                     </span>
-                    <span className="text-slate-400 truncate max-w-[140px]">{item.mapelNama}</span>
+                    <span className="text-slate-400 truncate max-w-[140px] font-medium">
+                      {item.mapelNama}
+                    </span>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="py-10 text-center text-slate-400 space-y-2">
-                <Building2 className="size-8 mx-auto text-slate-300 dark:text-slate-600" />
-                <p className="text-xs font-semibold">
-                  Belum ada rombongan belajar aktif terdaftar di sistem.
-                </p>
+              <div className="py-12 text-center text-slate-400 flex flex-col items-center justify-center space-y-3">
+                <div className="size-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shadow-inner">
+                  <Building2 className="size-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    Belum Ada Rombel Terdaftar
+                  </p>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Rombongan belajar yang aktif terdaftar akan muncul di sini beserta ringkasan KBM
+                    dan siswa.
+                  </p>
+                </div>
                 <Link
                   href="/rombel"
-                  className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors mt-1 active:scale-95"
                 >
                   <span>+ Buat Rombel Sekarang</span>
-                  <ArrowRight className="size-3" />
+                  <ArrowRight className="size-3.5" />
                 </Link>
               </div>
             )}
@@ -364,10 +383,17 @@ export function SuperAdminDashboardView({
                       className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors group"
                     >
                       <td className="py-3.5 pr-4">
-                        <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm group-hover:text-blue-600 transition-colors">
-                          {item.nama}
+                        <div className="flex items-center gap-3">
+                          <div className="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 font-bold text-xs flex items-center justify-center shrink-0">
+                            {item.nama.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm group-hover:text-blue-600 transition-colors">
+                              {item.nama}
+                            </div>
+                            <div className="text-[11px] text-slate-400 mt-0.5">{item.guruNama}</div>
+                          </div>
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">{item.guruNama}</div>
                       </td>
                       <td className="py-3.5 pr-4">
                         <div className="font-semibold text-slate-700 dark:text-slate-300">
@@ -376,7 +402,7 @@ export function SuperAdminDashboardView({
                         <div className="text-[11px] text-slate-400 mt-0.5">{item.mapelNama}</div>
                       </td>
                       <td className="py-3.5 text-right whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 whitespace-nowrap border border-slate-200/60 dark:border-slate-700/60">
                           {item.sessionCount > 0 ? `${item.completion}% Kehadiran` : "0 Sesi KBM"}
                         </span>
                       </td>
@@ -385,17 +411,25 @@ export function SuperAdminDashboardView({
                 </tbody>
               </table>
             ) : (
-              <div className="py-12 text-center text-slate-400 space-y-2">
-                <Building2 className="size-8 mx-auto text-slate-300 dark:text-slate-600" />
-                <p className="text-xs font-semibold">
-                  Belum ada rombongan belajar aktif terdaftar di sistem.
-                </p>
+              <div className="py-12 text-center text-slate-400 flex flex-col items-center justify-center space-y-3">
+                <div className="size-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shadow-inner">
+                  <Building2 className="size-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    Belum Ada Rombel Terdaftar
+                  </p>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Rombongan belajar yang aktif terdaftar akan muncul di sini beserta ringkasan KBM
+                    dan siswa.
+                  </p>
+                </div>
                 <Link
                   href="/rombel"
-                  className="inline-flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors mt-1 active:scale-95"
                 >
                   <span>+ Buat Rombel Sekarang</span>
-                  <ArrowRight className="size-3" />
+                  <ArrowRight className="size-3.5" />
                 </Link>
               </div>
             )}
