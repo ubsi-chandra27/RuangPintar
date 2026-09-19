@@ -210,7 +210,7 @@ function RadarBeacon({ active = false }: { active?: boolean }) {
   );
 }
 
-// Smooth Scroll-Triggered Reveal Component (Optimized for Mobile Touch & Desktop 60fps)
+// Smooth Scroll-Triggered Reveal Component (Zero Blank Gap Guarantee + 60fps Motion)
 function RevealOnScroll({
   children,
   className = "",
@@ -224,48 +224,26 @@ function RevealOnScroll({
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
       setIsVisible(true);
       return;
     }
-
-    const el = ref.current;
-    // Check if element is already within or near viewport on initial mount
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 1.2) {
-        setIsVisible(true);
-        return;
-      }
-    }
-
-    if (!("IntersectionObserver" in window)) {
-      setIsVisible(true);
-      return;
-    }
-
-    // Safety fallback: reveal after max 1000ms so no blank space ever occurs on mobile
-    const safetyTimer = setTimeout(() => {
-      setIsVisible(true);
-    }, 1000);
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-            clearTimeout(safetyTimer);
             observer.unobserve(entry.target);
           }
         });
       },
-      // Positive bottom margin triggers 80px BEFORE reaching viewport, so the user actually sees the smooth glide
-      { threshold: 0.02, rootMargin: "0px 0px 80px 0px" }
+      { threshold: 0.02, rootMargin: "0px 0px 100px 0px" }
     );
 
+    const el = ref.current;
     if (el) observer.observe(el);
     return () => {
-      clearTimeout(safetyTimer);
       if (el) observer.unobserve(el);
     };
   }, []);
@@ -274,13 +252,12 @@ function RevealOnScroll({
     <div
       ref={ref}
       style={{
-        transitionDelay:
-          typeof window !== "undefined" && window.innerWidth < 640
-            ? `${Math.min(delay, 80)}ms`
-            : `${delay}ms`,
+        transitionDelay: `${Math.min(delay, 120)}ms`,
       }}
-      className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      className={`transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-transform ${
+        isVisible
+          ? "opacity-100 translate-y-0"
+          : "opacity-85 sm:opacity-70 translate-y-5"
       } ${className}`}
     >
       {children}

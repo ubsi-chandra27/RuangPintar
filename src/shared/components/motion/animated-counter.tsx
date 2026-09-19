@@ -29,9 +29,7 @@ export function AnimatedCounter({
   className = "",
   delay = 0,
 }: AnimatedCounterProps) {
-  const [displayValue, setDisplayValue] = React.useState<number>(
-    process.env.NODE_ENV === "test" ? value : 0
-  );
+  const [displayValue, setDisplayValue] = React.useState<number>(value);
   const startTimestampRef = React.useRef<number | null>(null);
   const animationFrameRef = React.useRef<number | null>(null);
 
@@ -43,6 +41,7 @@ export function AnimatedCounter({
     let timer: NodeJS.Timeout;
 
     const startAnimation = () => {
+      setDisplayValue(0);
       startTimestampRef.current = null;
 
       const step = (timestamp: number) => {

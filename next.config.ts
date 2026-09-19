@@ -31,6 +31,8 @@ const localOrigins = [
   "127.0.0.1",
   "127.0.0.1:3000",
   "127.0.0.1:3001",
+  "*.trycloudflare.com",
+  "trycloudflare.com",
 ];
 
 const nextConfig: NextConfig = {
