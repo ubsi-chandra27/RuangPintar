@@ -263,6 +263,11 @@ function RevealOnScroll({
 }
 
 export function ModernLandingView({ user }: ModernLandingViewProps) {
+  // Kunci landing page SELALU Light Mode (terang & bersih 24 jam)
+  React.useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
+
   // 1. Sticky Header & Scroll Motion Tracking
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [scrollProgress, setScrollProgress] = React.useState(0);

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 
 export type ThemeMode = "light" | "dark" | "auto";
 export type ResolvedTheme = "light" | "dark";
@@ -40,6 +41,9 @@ function subscribeStorage(callback: () => void) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
+
   // Menggunakan useSyncExternalStore agar sesuai standar React 19 tanpa cascading setState dalam effect
   const theme = React.useSyncExternalStore(
     subscribeStorage,
@@ -48,23 +52,29 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const resolvedTheme: ResolvedTheme = React.useMemo(() => {
+    // Halaman landing page (/) selalu dikunci dalam mode terang (Light Mode) 24 jam
+    if (isLandingPage) return "light";
     if (theme === "light") return "light";
     if (theme === "dark") return "dark";
     return getAutoTheme();
-  }, [theme]);
+  }, [theme, isLandingPage]);
 
   // Sinkronisasi kelas dark pada dokumen HTML
   React.useEffect(() => {
+    if (isLandingPage) {
+      document.documentElement.classList.remove("dark");
+      return;
+    }
     if (resolvedTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [resolvedTheme]);
+  }, [resolvedTheme, isLandingPage]);
 
-  // Interval pembaruan otomatis per menit saat mode auto aktif
+  // Interval pembaruan otomatis per menit saat mode auto aktif (tidak berlaku di landing page)
   React.useEffect(() => {
-    if (theme !== "auto") return;
+    if (theme !== "auto" || isLandingPage) return;
     const interval = setInterval(() => {
       const computed = getAutoTheme();
       if (computed === "dark") {
@@ -74,7 +84,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
     }, 60000);
     return () => clearInterval(interval);
-  }, [theme]);
+  }, [theme, isLandingPage]);
 
   const setTheme = React.useCallback((newMode: ThemeMode) => {
     try {

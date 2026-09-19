@@ -38,6 +38,11 @@ export default function RootLayout({
           {`
             (function() {
               try {
+                // Landing page (/) selalu dalam mode terang (Light Mode) 24 jam
+                if (window.location.pathname === '/') {
+                  document.documentElement.classList.remove('dark');
+                  return;
+                }
                 var theme = localStorage.getItem('rp-theme') || 'auto';
                 var isDark = false;
                 if (theme === 'dark') {
