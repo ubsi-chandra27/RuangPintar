@@ -255,7 +255,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
       },
       {
         id: "saas-users",
-        title: "Guru & Pengguna SaaS",
+        title: "Guru & Penugasan SaaS",
         href: "/guru-pengajaran",
         iconName: "GraduationCap",
         roles: ["SUPER_ADMIN"],

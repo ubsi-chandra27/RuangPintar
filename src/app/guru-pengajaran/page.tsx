@@ -1,27 +1,85 @@
 /**
  * Ruang Pintar — Teacher & Teaching Assignment Page (/guru-pengajaran)
  *
- * Server Component yang dilindungi requireAuth() dan otorisasi M02/M08.
+ * Mendukung 2 mode operasional:
+ * 1. Platform SaaS Multi-Tenant (SUPER_ADMIN): Menampilkan direktori seluruh dewan guru & penugasan
+ *    jika diakses tanpa parameter sekolahId.
+ * 2. Institusi Sekolah Tunggal: Menampilkan tab manajemen guru, mapel, penugasan KBM, dan wali kelas
+ *    untuk sekolah aktif staf institusi atau sekolah yang dipilih oleh SUPER_ADMIN.
  */
 
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { GraduationCap, BookOpen, Layers, Users } from "lucide-react";
+import { GraduationCap, BookOpen, Layers, ArrowLeft } from "lucide-react";
 import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
 import { checkPermission } from "@/shared/infrastructure/authorization/authz-guard";
 import { staffCapabilityService } from "@/shared/infrastructure/authorization/staff-capability-service";
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { TeacherFacade } from "@/modules/teacher/application/teacher-facade";
 import { TeacherManagementTabs } from "@/modules/teacher/presentation/teacher-management-tabs";
+import { SuperAdminTeacherDirectoryView } from "@/modules/teacher/presentation/super-admin-teacher-directory-view";
 import { schoolProfileService } from "@/modules/school/application/school-profile-service";
+import { prisma } from "@/shared/infrastructure/database/prisma";
 
-export default async function TeacherManagementPage() {
+interface TeacherManagementPageProps {
+  searchParams?: Promise<{ sekolahId?: string }>;
+}
+
+export default async function TeacherManagementPage(props: TeacherManagementPageProps) {
   const user = await requireAuth();
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
+  const isSuperAdmin = user.peran_dasar === "SUPER_ADMIN";
 
-  if (!user.sekolah_id) {
-    redirect("/dashboard");
+  // Mode 1: SUPER_ADMIN membuka direktori multi-tenant guru
+  if (isSuperAdmin && !searchParams?.sekolahId) {
+    const [rawTeachers, schools, totalTeachingAssignments] = await Promise.all([
+      prisma.guru.findMany({
+        orderBy: { created_at: "desc" },
+        include: {
+          sekolah: {
+            select: { id: true, nama: true, jenjang: true },
+          },
+          pengguna: {
+            select: { username: true, email: true, status_akun: true },
+          },
+          penugasan_mengajar: {
+            where: { status: "AKTIF" },
+            include: {
+              mata_pelajaran: { select: { nama: true, kode: true } },
+              rombel: { select: { nama: true } },
+            },
+          },
+        },
+      }),
+      prisma.sekolah.findMany({
+        select: { id: true, nama: true, jenjang: true },
+        orderBy: { nama: "asc" },
+      }),
+      prisma.penugasanMengajar.count({
+        where: { status: "AKTIF" },
+      }),
+    ]);
+
+    return (
+      <AcademicShell user={user} userCapabilities={[]}>
+        <SuperAdminTeacherDirectoryView
+          teachers={rawTeachers}
+          schools={schools}
+          totalTeachingAssignments={totalTeachingAssignments}
+        />
+      </AcademicShell>
+    );
+  }
+
+  // Mode 2: Halaman manajemen guru sekolah tunggal
+  const effectiveSekolahId = isSuperAdmin
+    ? searchParams?.sekolahId ?? user.sekolah_id
+    : user.sekolah_id;
+
+  if (!effectiveSekolahId) {
+    redirect(isSuperAdmin ? "/guru-pengajaran" : "/dashboard");
   }
 
   // Ambil capability bundle jika peran adalah SCHOOL_STAFF atau TEACHER
@@ -31,24 +89,34 @@ export default async function TeacherManagementPage() {
       : [];
 
   // Evaluasi Hak Akses Server-Side
-  const canViewTeachers = await checkPermission("academic.teachers.view", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canViewTeachers = isSuperAdmin
+    ? true
+    : await checkPermission("academic.teachers.view", {
+        sekolah_id: effectiveSekolahId,
+      });
 
-  const canManageTeachers = await checkPermission("academic.teachers.manage", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canManageTeachers = isSuperAdmin
+    ? true
+    : await checkPermission("academic.teachers.manage", {
+        sekolah_id: effectiveSekolahId,
+      });
 
   // Jika tidak memiliki izin -> redirect ke dashboard
   if (!canViewTeachers && !canManageTeachers) {
     redirect("/dashboard");
   }
 
-  // Pengambilan Data Dataset Pendidik & Profil Sekolah
-  const [data, schoolProfile] = await Promise.all([
-    TeacherFacade.getTeacherManagementData(user.sekolah_id),
-    schoolProfileService.getProfile(user.sekolah_id),
-  ]);
+  // Pengambilan Data Dataset Pendidik & Profil Sekolah dengan penanganan graceful
+  let data;
+  let schoolProfile;
+  try {
+    [data, schoolProfile] = await Promise.all([
+      TeacherFacade.getTeacherManagementData(effectiveSekolahId),
+      schoolProfileService.getProfile(effectiveSekolahId),
+    ]);
+  } catch {
+    redirect(isSuperAdmin ? "/guru-pengajaran" : "/dashboard");
+  }
 
   const activeTeachersCount = data.teachers.filter((t) => t.status_aktif).length;
   const activeSubjectsCount = data.subjects.filter((subject) => subject.status_aktif).length;
@@ -68,16 +136,44 @@ export default async function TeacherManagementPage() {
             {/* Left Content */}
             <div className="w-full md:max-w-[60%] lg:max-w-[66%] space-y-3.5">
               {/* Breadcrumb Navigation */}
-              <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
-                  Dashboard
-                </Link>
-                <span>/</span>
-                <span className="text-slate-700 font-semibold">Guru & Penugasan</span>
-              </div>
+              {isSuperAdmin ? (
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                  <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
+                    Dashboard
+                  </Link>
+                  <span>/</span>
+                  <Link
+                    href="/guru-pengajaran"
+                    className="hover:text-[#2563EB] transition-colors"
+                  >
+                    Guru & Penugasan
+                  </Link>
+                  <span>/</span>
+                  <span className="text-slate-700 font-semibold truncate max-w-[200px]">
+                    {schoolProfile.nama}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                  <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
+                    Dashboard
+                  </Link>
+                  <span>/</span>
+                  <span className="text-slate-700 font-semibold">Guru & Penugasan</span>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2.5">
+                  {isSuperAdmin && (
+                    <Link
+                      href="/guru-pengajaran"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors mr-1"
+                    >
+                      <ArrowLeft className="size-3.5" />
+                      <span>Kembali ke Direktori Guru</span>
+                    </Link>
+                  )}
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
                     Pendidik & Penugasan Akademik
                   </h1>

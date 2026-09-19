@@ -66,15 +66,19 @@ export async function createTeacherAction(
 ): Promise<ActionResult> {
   try {
     const session = await requireAuth();
-    await requirePermission("academic.teachers.manage");
+    const effectiveSekolahId = session.sekolah_id || formData.get("sekolah_id")?.toString();
 
-    if (!session.sekolah_id) {
-      return { success: false, message: "Konteks sekolah tidak valid." };
+    if (!effectiveSekolahId) {
+      return { success: false, message: "Konteks sekolah tidak valid. Silakan pilih sekolah tujuan." };
     }
+
+    await requirePermission("academic.teachers.manage", {
+      sekolah_id: effectiveSekolahId,
+    });
 
     const created = await TeacherProfileService.createTeacher(
       {
-        sekolah_id: session.sekolah_id,
+        sekolah_id: effectiveSekolahId,
         pengguna_id: formData.get("pengguna_id")?.toString() || undefined,
         nip: formData.get("nip")?.toString() || undefined,
         nuptk: formData.get("nuptk")?.toString() || undefined,
