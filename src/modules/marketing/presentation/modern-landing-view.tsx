@@ -210,7 +210,7 @@ function RadarBeacon({ active = false }: { active?: boolean }) {
   );
 }
 
-// Smooth Scroll-Triggered Reveal Component
+// Smooth Scroll-Triggered Reveal Component (Optimized for Mobile Touch & Desktop 60fps)
 function RevealOnScroll({
   children,
   className = "",
@@ -224,25 +224,48 @@ function RevealOnScroll({
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+    if (typeof window === "undefined") {
       setIsVisible(true);
       return;
     }
+
+    const el = ref.current;
+    // Check if element is already within or near viewport on initial mount
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 1.2) {
+        setIsVisible(true);
+        return;
+      }
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      setIsVisible(true);
+      return;
+    }
+
+    // Safety fallback: reveal after max 1000ms so no blank space ever occurs on mobile
+    const safetyTimer = setTimeout(() => {
+      setIsVisible(true);
+    }, 1000);
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
+            clearTimeout(safetyTimer);
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      // Positive bottom margin triggers 80px BEFORE reaching viewport, so the user actually sees the smooth glide
+      { threshold: 0.02, rootMargin: "0px 0px 80px 0px" }
     );
 
-    const el = ref.current;
     if (el) observer.observe(el);
     return () => {
+      clearTimeout(safetyTimer);
       if (el) observer.unobserve(el);
     };
   }, []);
@@ -250,11 +273,14 @@ function RevealOnScroll({
   return (
     <div
       ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
-        isVisible
-          ? "opacity-100 translate-y-0 scale-100"
-          : "opacity-0 translate-y-8 scale-[0.98] pointer-events-none"
+      style={{
+        transitionDelay:
+          typeof window !== "undefined" && window.innerWidth < 640
+            ? `${Math.min(delay, 80)}ms`
+            : `${delay}ms`,
+      }}
+      className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-transform ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       } ${className}`}
     >
       {children}
@@ -632,7 +658,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="hero"
-        className="relative pt-24 pb-16 sm:pt-32 sm:pb-28 overflow-hidden bg-[#F8FAFD] dark:bg-[#070B14]"
+        className="relative pt-20 pb-10 sm:pt-32 sm:pb-20 overflow-hidden bg-[#F8FAFD] dark:bg-[#070B14]"
       >
         {/* Camply-Inspired Atmospheric Radial Gradient Mesh (z-0, above canvas base, below content) */}
         {/* Left Wash: Soft celestial sky mist behind headline */}
@@ -890,11 +916,11 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="fitur"
-        className="pt-24 sm:pt-32 pb-12 sm:pb-16 relative overflow-hidden scroll-mt-24"
+        className="pt-10 sm:pt-20 pb-8 sm:pb-14 relative overflow-hidden scroll-mt-24"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Top Row: Heading + 3-Feature Trio (Camply "That The Way To Camp!" Layout) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-12 sm:mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-8 sm:mb-14">
             {/* Left Headline Block */}
             <RevealOnScroll className="lg:col-span-4 text-left space-y-3">
               <div className="flex items-center gap-1.5">
@@ -1002,7 +1028,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.07),transparent_70%)] pointer-events-none" />
 
             {/* Pin Canvas Container (Responsive Height, Open Edges) */}
-            <div className="relative w-full h-[380px] sm:h-[450px] md:h-[500px]">
+            <div className="relative w-full h-[260px] sm:h-[420px] md:h-[500px]">
               {MAP_PINS.map((pin) => {
                 const isSelected = activePinId === pin.id;
                 const isHero = pin.featured;
@@ -1091,7 +1117,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
             </div>
 
             {/* Interactive Role Benefits Quick Finder (Seamlessly anchored below map) */}
-            <div className="mt-8 pt-6">
+            <div className="mt-4 sm:mt-8 pt-3 sm:pt-6">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-5 text-left">
                   <h3 className="text-lg sm:text-xl font-bold font-century text-slate-900 dark:text-white tracking-tight">
@@ -1183,7 +1209,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="testimoni"
-        className="pt-6 sm:pt-10 pb-20 sm:pb-28 relative overflow-hidden"
+        className="pt-4 sm:pt-8 pb-10 sm:pb-20 relative overflow-hidden"
       >
         {/* Continuous Dotted World Map & Atmospheric Ambient Flow */}
         <div className="absolute inset-0 -mx-4 sm:-mx-8 lg:-mx-16 flex items-start justify-center opacity-25 dark:opacity-15 pointer-events-none select-none overflow-hidden">
@@ -1309,7 +1335,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="ekosistem"
-        className="py-20 sm:py-28 relative overflow-hidden"
+        className="py-10 sm:py-20 relative overflow-hidden"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -1406,7 +1432,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       {/* ─────────────────────────────────────────────────────────────
           8. QUESTION & FAQ CARD ("Got A Question For Camply?" in Video)
       ───────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-20 sm:py-28 bg-white dark:bg-[#090D16]">
+      <section id="faq" className="py-10 sm:py-20 bg-white dark:bg-[#090D16]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           {/* Rounded White Card Container */}
           <RevealOnScroll className="rounded-[36px] border border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/70 p-8 sm:p-14 shadow-xl">
@@ -1498,7 +1524,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="biaya"
-        className="py-20 sm:py-28 bg-[#F8FAFC] dark:bg-[#070A12] border-t border-slate-200/80 dark:border-slate-800"
+        className="py-10 sm:py-20 bg-[#F8FAFC] dark:bg-[#070A12] border-t border-slate-200/80 dark:border-slate-800"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <RevealOnScroll className="max-w-2xl mx-auto space-y-3">
