@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   const user = await requireAuth();
 
   let capabilities: CapabilityBundle[] = [];
-  if (user.peran_dasar === "SCHOOL_STAFF") {
+  if (user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER") {
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
   }
 

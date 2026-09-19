@@ -1,6 +1,8 @@
 import * as React from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
+import { AnimatedCounter } from "@/shared/components/motion/animated-counter";
+
 export interface StatTrend {
   value: string;
   label?: string;
@@ -9,7 +11,10 @@ export interface StatTrend {
 
 export interface StatCardProps {
   label: string;
-  value: string | number;
+  value: string | number | React.ReactNode;
+  numericValue?: number;
+  suffix?: string;
+  decimals?: number;
   icon?: React.ReactNode;
   trend?: StatTrend;
   watermarkIcon?: React.ReactNode;
@@ -22,6 +27,9 @@ export interface StatCardProps {
 export function StatCard({
   label,
   value,
+  numericValue,
+  suffix,
+  decimals,
   icon,
   trend,
   watermarkIcon,
@@ -61,7 +69,11 @@ export function StatCard({
             {label}
           </span>
           <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A] dark:text-white">
-            {value}
+            {numericValue !== undefined ? (
+              <AnimatedCounter value={numericValue} suffix={suffix} decimals={decimals} />
+            ) : (
+              value
+            )}
           </div>
         </div>
       </div>

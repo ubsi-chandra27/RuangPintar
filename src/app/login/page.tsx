@@ -10,7 +10,8 @@ export const metadata = {
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams?: { reset?: string; registered?: string } | Promise<{ reset?: string; registered?: string }>;
+  searchParams?:
+    { reset?: string; registered?: string } | Promise<{ reset?: string; registered?: string }>;
 }) {
   let statusMessage: string | undefined = undefined;
 

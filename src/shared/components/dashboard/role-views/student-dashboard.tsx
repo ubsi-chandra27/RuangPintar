@@ -102,7 +102,7 @@ export async function StudentDashboard({ user, initialData }: StudentDashboardPr
         </div>
       </div>
 
-      {/* Top 4 Stat Cards */}
+      {/* Top 4 Stat Cards with CountUp Motion */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Kelas Terdaftar"
@@ -118,6 +118,8 @@ export async function StudentDashboard({ user, initialData }: StudentDashboardPr
         <StatCard
           label="Kehadiran Saya"
           value={`${statCards.persentaseKehadiran}%`}
+          numericValue={statCards.persentaseKehadiran}
+          suffix="%"
           icon={<CheckCircle2 className="h-6 w-6" />}
           trend={{
             value: `${statCards.totalHadir} Hadir`,
@@ -129,6 +131,8 @@ export async function StudentDashboard({ user, initialData }: StudentDashboardPr
         <StatCard
           label="Tugas Perlu Dikerjakan"
           value={`${statCards.tugasPerluDikerjakan} Tugas`}
+          numericValue={statCards.tugasPerluDikerjakan}
+          suffix=" Tugas"
           icon={<BookOpen className="h-6 w-6" />}
           trend={{
             value: `${statCards.totalTugasAktif} Total`,

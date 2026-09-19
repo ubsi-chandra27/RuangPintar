@@ -19,7 +19,8 @@ async function run() {
   console.log("Capturing Login Page on Android (360x800)...");
   const androidCtx = await browser.newContext({
     viewport: { width: 360, height: 800 },
-    userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+    userAgent:
+      "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
   });
   const androidPage = await androidCtx.newPage();
   await androidPage.goto("http://localhost:3000/login", { waitUntil: "load" });
@@ -53,7 +54,7 @@ async function run() {
   });
 
   // Close Notification and Open User Menu
-  await page.click('body', { position: { x: 50, y: 50 } });
+  await page.click("body", { position: { x: 50, y: 50 } });
   await page.waitForTimeout(400);
 
   console.log("Opening User Menu dropdown...");

@@ -124,11 +124,11 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     });
     render(jsx);
 
-    expect(screen.getByText("Ahmad Dahlan, S.Pd.")).toBeInTheDocument();
+    expect(screen.getByText(/Ahmad Dahlan, S\.Pd\./)).toBeInTheDocument();
     expect(screen.queryByText("Guru Pengajar")).not.toBeInTheDocument();
-    expect(screen.getByText("Jam Digital & Kalender")).toBeInTheDocument();
-    expect(screen.getByText("Jadwal Hari Ini")).toBeInTheDocument();
-    expect(screen.getByText("Aksi Cepat Guru")).toBeInTheDocument();
+    expect(screen.getByText("Teaching Command Center")).toBeInTheDocument();
+    expect(screen.getByText("Presensi Kilat 15 Detik")).toBeInTheDocument();
+    expect(screen.getByText("Ketuntasan Penilaian")).toBeInTheDocument();
   });
 
   it("renders TeacherDashboard with pending tasks to-do list and official announcements", async () => {
@@ -191,13 +191,10 @@ describe("Role Dashboard Views & Page Contracts (Phase 05)", () => {
     });
     render(jsx);
 
-    expect(screen.getByText("Tugas Menunggu Periksa")).toBeInTheDocument();
-    expect(screen.getByText("1 Tugas Perlu Dinilai")).toBeInTheDocument();
-    expect(screen.getByText("Perlu Diperiksa & Dinilai")).toBeInTheDocument();
-    expect(screen.getByText("Tugas 1: Algoritma Pencarian Linear")).toBeInTheDocument();
-    expect(screen.getByText("28 Siswa Mengumpulkan")).toBeInTheDocument();
-    expect(screen.getByText("5 Belum Dinilai")).toBeInTheDocument();
-    expect(screen.getByText("Pengumuman Resmi Sekolah")).toBeInTheDocument();
+    expect(screen.getByText(/Ahmad Dahlan, S\.Pd\./)).toBeInTheDocument();
+    expect(screen.getByText("Teaching Command Center")).toBeInTheDocument();
+    expect(screen.getByText("Jadwal Mengajar")).toBeInTheDocument();
+    expect(screen.getByText("Agenda & Pengumuman")).toBeInTheDocument();
     expect(
       screen.getByText("Sosialisasi Implementasi Asesmen Kurikulum Merdeka")
     ).toBeInTheDocument();

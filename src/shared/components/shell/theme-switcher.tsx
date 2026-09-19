@@ -4,9 +4,16 @@ import * as React from "react";
 import { Sun, Moon, Clock, Check } from "lucide-react";
 import { useTheme, ThemeMode } from "./theme-provider";
 
+const emptySubscribe = () => () => {};
+
 export function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = React.useState(false);
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -40,6 +47,21 @@ export function ThemeSwitcher() {
       icon: <Clock className="h-4 w-4 text-blue-500" />,
     },
   ];
+
+  if (!mounted) {
+    return (
+      <div className="relative inline-block text-left" ref={containerRef}>
+        <button
+          type="button"
+          aria-label="Pilih Mode Tampilan (Siang, Malam, Jam Device)"
+          title="Pilih Mode Tampilan (Siang, Malam, Jam Device)"
+          className="relative flex items-center justify-center text-slate-500 hover:text-[#2563EB] hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 p-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 cursor-pointer"
+        >
+          <Sun className="h-5 w-5 text-amber-500" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative inline-block text-left" ref={containerRef}>

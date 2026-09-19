@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 
 async function run() {
   const browser = await chromium.launch({ headless: true });
-  
+
   // 1. Desktop Super Admin
   const desktopCtx = await browser.newContext({
     viewport: { width: 1440, height: 950 },
@@ -26,7 +26,8 @@ async function run() {
   // 2. Mobile Super Admin Drawer
   const mobileCtx = await browser.newContext({
     viewport: { width: 390, height: 844 },
-    userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
   });
   const mobilePage = await mobileCtx.newPage();
 

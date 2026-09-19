@@ -32,10 +32,10 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-ALL PHASES (PHASE 01 - 22) COMPLETED & LOCKED
+PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT
 
 Current Phase Status:
-APPROVED BY HUMAN (18 September 2026)
+READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
 PHASE 22 — SAAS GROWTH ENGINE, LANDING PAGE & LIVE DEVICE TRACKING (M22)
@@ -1017,4 +1017,96 @@ Status: **APPROVED BY HUMAN (18 September 2026)**
 5. **Documentation:**
    - `docs/phases/PHASE-22-SAAS-GROWTH-AND-LANDING-PAGE.md` disusun lengkap.
 
+---
 
+# 41. Phase 23 — SaaS Monetization & Go-To-Market: Midtrans QRIS Checkout, Subscription Webhook & Marketing Kit (M23 / Milestone J)
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Midtrans QRIS Checkout & Auto-Subscription (`src/modules/billing/`):**
+   - Database Model: `TransaksiLangganan` untuk mencatat order ID, nominal Rp 15.000/bulan, status `PENDING` -> `PAID`, dan data webhook.
+   - Adapter Dual-Mode (`MidtransService`): Menggunakan API Midtrans Snap saat `MIDTRANS_SERVER_KEY` tersedia, dan Interactive Simulator saat dalam tahap demonstrasi/pengujian.
+   - Public Webhook (`/api/billing/midtrans-webhook`): Verifikasi tanda tangan kriptografi SHA-512 dan otomatisasi promosi lisensi pengguna ke `PRO` serta perpanjangan 30 hari.
+   - Modal Checkout QRIS (`SubscriptionCheckoutModal`): Barcode QRIS dinamis, polling status 3 detik, indikator e-wallet/m-banking nasional, dan tombol pengujian langsung (`⚡ Simulasi Bayar QRIS Sukses`).
+   - Tombol `ProCheckoutButton` terintegrasi pada Landing Page (`src/app/page.tsx`) dan Trial Banner dashboard guru (`src/modules/ai-assistant/presentation/trial-banner.tsx`).
+
+2. **Marketing Kit & Quick Start User Guide (`src/modules/marketing/` & `/panduan`):**
+   - Halaman publik baru: `/panduan` (Panduan Pengguna & Materi Promosi).
+   - Tab 1: **Panduan Operasional Kilat Guru** (1 Halaman Siap Cetak/Simpan PDF dengan 4 langkah visual: Daftar 30 Detik, Foto Absensi AI 5 Detik, Pratinjau Rombel, dan Presensi Kelas di HP).
+   - Tab 2: **Template Pesan Siaran WhatsApp (3 Variasi Copywriting)** dengan tombol *1-Click Copy*:
+     - Variasi 1: Untuk Rekan Guru Perorangan (Pendekatan Solusi Kelelahan Rekap Manual).
+     - Variasi 2: Untuk Komunitas MGMP / KKG / Forum Guru (Pendekatan Inovasi Kurikulum Merdeka).
+     - Variasi 3: Untuk Kepala Sekolah & Tim Dana BOS (Format Usulan Formal Pengadaan BOS).
+
+3. **Quality Gates & Verification:**
+   - TypeScript `tsc --noEmit`: 0 errors (PASS).
+   - ESLint: 0 errors (PASS).
+   - Prettier: 100% compliant (PASS).
+   - Vitest: 12 unit & component tests passing (100% PASS).
+   - Next.js Production Build: 28 static & dynamic routes compiled cleanly (PASS).
+   - Playwright Automated Walkthrough: 5 artifak tangkapan layar tersimpan di `docs/phases/screenshots/phase-23-walkthrough/` (100% PASS).
+4. **Documentation:**
+   - `docs/phases/PHASE-23-SAAS-MONETIZATION-AND-MARKETING-KIT.md` disusun lengkap.
+
+---
+
+# 42. Teacher Cockpit Dashboard UI Refinement, Profile Overhaul & Manual Class Creation
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Penyelarasan Garis Horizontal (Horizontal Baseline Alignment):**
+   - Kartu Sambutan (Hero Card) dan Kartu "Jadwal Mengajar" di kolom kanan kini sejajar sempurna pada batas atas horizontal yang sama.
+   - Wrapper kartu sambutan tidak lagi memiliki padding top internal terpisah; padding container grid (`pt-6 sm:pt-8 md:pt-10`) menampung pop-out astronot secara alami tanpa membuat kedua kartu tidak sejajar.
+2. **Perampingan Ukuran Tombol Aksi (Compact Sleek Buttons):**
+   - Tombol `Presensi Kilat 15 Detik`, `+ Foto Absen AI`, dan `Perangkat Ajar` disesuaikan menjadi proporsional, sleek, dan elegan (`px-3.5 py-2 text-xs font-mono font-bold rounded-xl`).
+3. **Pembersihan Total Data Palsu (Strictly Zero Fake KPI / 0 ya 0):**
+   - `PerformanceBarChart`: Menghapus fallback mock 6 kelas (10-RPL 1 92.4%, dll). Jika belum ada penilaian semester berjalan, kartu menampilkan status riil `0% Belum Ada Nilai Masuk` dengan ajakan tindakan `+ Input Penilaian`.
+   - `AttentionQueueCard`: Menghapus fallback mock siswa (Ahmad Fauzi 10-RPL 1, Dewi Sartika, Rian Hidayat). Jika tidak ada siswa terflag, kartu menampilkan status riil `Semua Siswa Terpantau Optimal`.
+   - `TeacherDashboard`: Rekap presensi menghitung sesi aktual hari ini secara riil. Bila belum ada KBM, menampilkan `0% Belum Ada KBM Dimulai` dengan 4 donut gauge pada `0%`.
+4. **Eliminasi Kotak Abu-abu Kusam (Deep Blue Glass in Dark Mode):**
+   - Kotak "Tidak Ada Jadwal Mengajar Hari Ini" dan kartu agenda diubah dari abu-abu dashed menjadi gradasi kaca biru gelap transparan berkilau (`dark:from-blue-950/40 dark:via-slate-900/70 dark:to-blue-900/30 dark:border-blue-500/30`).
+5. **Onboarding Card Guru Baru (Langkah Mudah Memulai):**
+   - Ketika `totalRombel === 0` (seperti saat guru baru pertama kali login), dashboard menampilkan kartu sambutan awal *Panduan Cepat Guru Baru: Mulai Kelas Anda dalam 2 Menit 🚀* dengan opsi langsung: `+ Foto Absen AI (15 Detik)` dan `+ Tambah Kelas Manual`.
+6. **Perombakan Halaman Profil Guru (`/profil`):**
+   - Avatar guru berbentuk lingkaran besar di tengah kartu (`size-28 sm:size-32 rounded-full overflow-hidden shadow-xl ring-4 ring-blue-500/20 mx-auto`).
+   - Tombol kamera bertengger elegan di sudut kanan bawah avatar.
+   - Badge teks "Guru Pengampu" dihapus sesuai instruksi.
+   - Badge status "Aktif" diletakkan sejajar di samping `@username`.
+   - Seluruh elemen form dan kartu mengadopsi styling Academic Glass UI v1.2 dengan kontras teks putih terang di dark mode.
+7. **Halaman Kelas Saya (`/kelas-saya`) & Modal Tambah Kelas Manual:**
+   - Menyediakan tombol `+ Tambah Kelas Manual` (Primary Blue) dan `+ Foto Absen AI` pada toolbar.
+   - Input pencarian dibuat proporsional (`w-72 sm:w-80`) tidak lagi meregang berlebihan.
+   - Komponen modal mandiri `ManualCreateClassModal` dengan server action `createManualClassAction` untuk membuat rombel, mapel, penugasan mengajar, dan daftar siswa (per baris) tanpa harus melalui foto AI.
+   - State kosong pada `/kelas-saya` menampilkan panduan interaktif dan tombol aksi cepat.
+8. **Verifikasi Kualitas:**
+   - TypeScript `tsc --noEmit`: 0 error (PASS).
+   - Vitest: 95 test suite lulus (515 unit & integration tests, 100% PASS).
+   - 6 Screenshot Visual QA tersimpan di `docs/phases/screenshots/teacher-cockpit-mockup/`:
+     - `01-teacher-cockpit-light-mode.png`
+     - `02-teacher-cockpit-dark-mode.png` (Membuktikan horizontal alignment, tombol sleek, 0% genuine data, dan deep blue glass)
+     - `03-teacher-cockpit-mobile-dark.png`
+     - `04-teacher-profile-dark-mode.png` (Membuktikan avatar bulat tengah, badge aktif sejajar username, dark mode)
+     - `05-teacher-classes-dark-mode.png` (Membuktikan search bar seimbang, tombol manual class, dark mode)
+     - `06-manual-create-class-modal.png` (Membuktikan form modal tambah kelas mandiri)
+
+### Pembaruan Halaman Landing Terinspirasi Camply (M23.1):
+1. **Pembersihan Total Emoji AI Slop:**
+   - Seluruh emoji AI slop (`📚`, `🛡️`, `📊`, `⚡`, `🗓️`, `🏛️`) pada landing page telah dihilangkan total.
+   - Digantikan dengan 3 custom-crafted 3D claymorphic icons:
+     - `feature-lms-3d.png`: Tumpukan buku & tablet LMS biru.
+     - `feature-cbt-3d.png`: Monitor CBT & gembok emas keamanan ujian digital.
+     - `feature-leger-3d.png`: Lembar nilai rapor & leger kurikulum merdeka hijau-emas.
+2. **Layout Trio Fitur Camply:**
+   - Sisi Kiri: Aksen 3 sinar radiant biru (`\ | /`), judul tebal berkarakter "Solusi Cerdas Sekolah Modern!", dan paragraf deskripsi font-century yang ringkas.
+   - Sisi Kanan: 3 pilar fitur berjajar dengan ikon 3D claymorphic menonjol, judul tebal, dan penjelasan singkat.
+3. **Peta Dunia Dotted Halftone Terbuka (Open Canvas):**
+   - Menghilangkan container kotak card yang membatasi peta, sehingga peta SVG titik-titik (1.145 dots) mengalir bebas (*open bleed*) menyambung langsung ke section berikutnya.
+   - Kepulauan Indonesia ditonjolkan dengan titik biru royal (`#2563EB`) dan benua dunia dengan slate grey (`#64748B`).
+   - Dilengkapi pin foto kampus berbingkai biru menyala serta radar suar oranye/amber (`RadarBeacon`) dengan satelit heksagonal berkedip.
+4. **Aliran Mulus ke Section Testimoni:**
+   - Mempertahankan background gradient mesh soft (`bg-[#F8FAFD]` / dark mode `bg-[#070B14]`) yang sejuk tanpa garis pemisah kaku.
+   - Section `#testimoni` diletakkan persis di bawah peta: judul di kiri dengan aksen, tombol panah bundar (`<-` / `->`) di kanan, serta 3 kartu testimonial putih bergaya Academic Glass dengan tanda kutip pembuka biru besar (`“`), avatar gradien inisial, peran & sekolah, dan 5 bintang amber menyala.
+5. **Quality Gates:**
+   - TypeScript `tsc --noEmit`: 0 error (PASS).
+   - Vitest suite `src/test/marketing/`: 10/10 tests PASS (100%).
+   - Visual QA terverifikasi di desktop & mobile (`docs/phases/screenshots/camply-landing-walkthrough/`).

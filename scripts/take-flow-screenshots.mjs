@@ -15,7 +15,10 @@ async function run() {
     { url: "http://localhost:3000/ganti-password", name: "flow-02-ganti-password" },
     { url: "http://localhost:3000/register", name: "flow-03-register" },
     { url: "http://localhost:3000/onboarding/pilih-avatar", name: "flow-04-pilih-avatar" },
-    { url: "http://localhost:3000/onboarding/selesai?avatar=kapten-kosmik", name: "flow-05-selesai" },
+    {
+      url: "http://localhost:3000/onboarding/selesai?avatar=kapten-kosmik",
+      name: "flow-05-selesai",
+    },
     { url: "http://localhost:3000/login?reset=success", name: "flow-06-login-reset-success" },
   ];
 

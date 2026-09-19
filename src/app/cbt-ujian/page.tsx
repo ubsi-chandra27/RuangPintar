@@ -26,7 +26,7 @@ export default async function CbtUjianPage() {
   const isSuperAdmin = role === "SUPER_ADMIN";
 
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

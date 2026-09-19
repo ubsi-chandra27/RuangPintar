@@ -45,6 +45,16 @@ export function StaffDashboard({ user, capabilities = [] }: StaffDashboardProps)
         desc: "Rekapitulasi nilai, rapor & buku induk",
         href: "/dashboard",
       },
+      HOMEROOM_TEACHER: {
+        label: "Wali Kelas",
+        desc: "Monitoring rombel & bimbingan siswa",
+        href: "/wali-kelas",
+      },
+      LEADERSHIP_ROLE: {
+        label: "Pimpinan Sekolah",
+        desc: "Portal kepemimpinan & analitik sekolah",
+        href: "/pimpinan",
+      },
     };
 
   return (

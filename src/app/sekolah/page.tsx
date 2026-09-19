@@ -26,9 +26,9 @@ export default async function SchoolManagementPage() {
     redirect("/dashboard");
   }
 
-  // Ambil capability bundle jika peran adalah SCHOOL_STAFF
+  // Ambil capability bundle jika peran adalah SCHOOL_STAFF atau TEACHER
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

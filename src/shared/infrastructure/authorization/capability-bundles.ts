@@ -68,6 +68,15 @@ export const CAPABILITY_BUNDLE_PERMISSIONS: Record<
     "report.attendance.view",
     "report.export",
   ],
+
+  HOMEROOM_TEACHER: ["monitoring.student.view", "monitoring.homeroom.view"],
+
+  LEADERSHIP_ROLE: [
+    "report.school.view",
+    "report.academic.view",
+    "report.attendance.view",
+    "report.export",
+  ],
 };
 
 /**
@@ -94,6 +103,8 @@ export function isValidCapabilityBundle(code: string): code is CapabilityBundle 
     code === "SYSTEM_ADMIN" ||
     code === "ACADEMIC_OPERATOR" ||
     code === "STUDENT_DATA_OPERATOR" ||
-    code === "REPORT_OPERATOR"
+    code === "REPORT_OPERATOR" ||
+    code === "HOMEROOM_TEACHER" ||
+    code === "LEADERSHIP_ROLE"
   );
 }

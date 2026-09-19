@@ -31,8 +31,10 @@ export function ForgotPasswordForm() {
           </div>
           <p className="text-xs sm:text-[13px] text-emerald-700 leading-relaxed">
             Instruksi dan tautan pemulihan kata sandi telah dikirim ke{" "}
-            <strong className="font-semibold text-emerald-900">{emailOrUsername || "email Anda"}</strong>.
-            Silakan periksa kotak masuk atau folder spam Anda.
+            <strong className="font-semibold text-emerald-900">
+              {emailOrUsername || "email Anda"}
+            </strong>
+            . Silakan periksa kotak masuk atau folder spam Anda.
           </p>
         </div>
 
@@ -98,7 +100,8 @@ export function ForgotPasswordForm() {
         <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 flex items-start gap-2.5">
           <ShieldCheck className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
           <p className="text-[11px] text-slate-600 leading-relaxed">
-            Akun Anda dilindungi enkripsi platform. Jika Anda tidak memiliki akses email, hubungi Administrator / Operator Sekolah Anda.
+            Akun Anda dilindungi enkripsi platform. Jika Anda tidak memiliki akses email, hubungi
+            Administrator / Operator Sekolah Anda.
           </p>
         </div>
       </div>

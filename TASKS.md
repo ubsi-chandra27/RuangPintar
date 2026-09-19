@@ -1,43 +1,91 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 16.0  
-**Current Active Phase:** ALL PHASES (PHASE 01 - 22) COMPLETED & APPROVED  
-**Status:** APPROVED BY HUMAN (18 September 2026)  
+**Versi:** 18.0  
+**Current Active Phase:** PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT  
+**Status:** READY FOR HUMAN REVIEW  
 
 ---
 
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 22 — SAAS GROWTH ENGINE, LANDING PAGE & LIVE DEVICE TRACKING (M22) [APPROVED BY HUMAN (18 September 2026)]
+PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT [READY FOR HUMAN REVIEW]
 ```
 
 Tujuan:
-> Mentransformasikan antarmuka publik dan kapabilitas SaaS Ruang Pintar menjadi mesin akuisisi & retensi pengguna yang siap rilis:
-> 1. Landing Page Publik Berbasis Academic Glass UI (`/`):
->    - Hero Section: Solusi "Otomasi Absensi & Nilai Sekolah dalam 5 Detik" dengan Photo-to-Class Vision AI.
->    - Testimoni Nyata Guru & Kepala Sekolah (Ibu Wardah Ulfah Fauzziyah, S.Pd., Pak Eri Chandra Apriyadi, S.Kom., dan Mitra Kepala Sekolah Drs. H. Suryadi, M.M.).
->    - Transparansi Biaya & Lisensi: Guru Starter (Coba Gratis 30 Hari, Rp 0), Paket Guru Pro (Rp 15.000 / bulan), dan Lisensi Sekolah Resmi (Rp 1,5 Juta - 3 Juta, Dana BOS Ready).
->    - FAQ seputar keamanan data dan juknis pengadaan resmi via Dana BOS.
-> 2. Live Presence & Device Tracking:
->    - Parser User-Agent (`device-detector.ts`) untuk deteksi brand HP (Samsung Galaxy, iPhone, Xiaomi, Oppo), Komputer PC, OS, dan browser.
->    - Indikator Status Online (🟢 Online Sekarang / 🟡 Aktif X Menit Lalu / Offline) di daftar pendidik (`/guru-pengajaran`).
->    - Widget Distribusi Perangkat Pengguna di Dashboard Super Admin (Ponsel HP % vs Komputer % & Live Audit).
-> 3. Dokumen Usulan Pengadaan Lisensi Sekolah (Dana BOS B2B Proposal Modal):
->    - Modal & dokumen cetak/simpan PDF dengan KOP resmi institusi (RUANG PINTAR EDUTECH INDONESIA), justifikasi hukum pemanfaatan BOS, rincian biaya, dan kelengkapan SPJ (Invoice, Kuitansi, BAST).
->    - Integrasi langsung pada tombol "Cetak Usulan ke Kepsek" di Trial Banner dashboard guru.
-> 4. Quality Gates & Verification:
->    - TypeScript typecheck: 0 errors
->    - ESLint: 0 errors
->    - Prettier: 100% compliant
->    - Vitest targeted tests (11/11 tests pass) & full regression suite passing
->    - Next.js production build passing (26 dynamic + static routes)
->    - Playwright automated visual walkthrough (6/6 screenshots captured)
+> Mengintegrasikan gerbang pembayaran digital otomatis dan perangkat pemasaran resmi untuk meluncurkan Ruang Pintar ke pasar:
+> 1. Otomasi Pembayaran QRIS Berlangganan (Midtrans Snap & Resilient Simulator):
+>    - Model database `TransaksiLangganan` untuk pencatatan order ID, nominal Rp 15.000/bln, status pembayaran (`PENDING` -> `PAID`), dan tanggal aktif lisensi.
+>    - Adapter API Midtrans Snap dengan dual-mode: Real Production/Sandbox API & Interactive Simulator (memungkinkan pengujian instan tanpa API key).
+>    - Webhook Publik (`/api/billing/midtrans-webhook`) dengan verifikasi keamanan SHA-512 Signature untuk aktivasi otomatis paket *Guru Pro* secara instan.
+>    - Modal Checkout QRIS Interaktif (`SubscriptionCheckoutModal`) dengan barcode dinamis dan polling status pembayaran.
+> 2. Go-To-Market Marketing Kit & Panduan Operasional Guru:
+>    - Halaman & Dokumen `/panduan`: Panduan ringkas 1 halaman (*Quick Start User Guide*) cara onboarding 30 detik & foto absensi AI.
+>    - Template Pesan Siaran WhatsApp (*1-Click Copy*): 3 sudut pandang persuasif (Guru Perorangan, Komunitas MGMP, dan Kepala Sekolah/Tim BOS).
+> 3. Quality Gates:
+>    - TypeScript, Linting, Prettier, Unit Tests, Build, dan Playwright Visual Walkthrough.
 
 ---
 
-# 2. Checklist Phase 22 — SaaS Growth Engine & Live Device Tracking (M22)
+# 2. Checklist Phase 23 — SaaS Monetization & Marketing Kit (M23)
+
+## Domain & Invariants
+```text
+[x] Idempotent Payment Webhook: Penanganan webhook anti-duplikasi dengan lock transaksi
+[x] Resilient Dual-Mode Gateway: Simulasi interaktif saat sandbox API key belum dipasang
+[x] Seamless Subscription Provisioning: Peningkatan otomatis status akun ke PRO setelah bayar
+[x] 1-Click Copy Marketing Copywriting: Template broadcast siap pakai untuk penetrasi pasar
+```
+
+## Data Layer & Application Services
+```text
+[x] Model TransaksiLangganan pada schema.prisma & database migration
+[x] Midtrans Snap Service Adapter (Real API + Simulator)
+[x] Subscription Application Service & Webhook Handler
+[x] Server Actions: initiateProCheckoutAction, checkOrderStatusAction, simulatePaymentSuccessAction
+```
+
+## Presentation Layer (Academic Glass UI v1.2)
+```text
+[x] SubscriptionCheckoutModal (Barcode QRIS dinamis, countdown, rincian biaya Rp 15.000)
+[x] Integrasi Checkout pada Landing Page (/ & #biaya) dan Trial Banner Dashboard
+[x] Halaman & Modal Panduan Pengguna & Marketing Kit (/panduan)
+```
+
+## Quality Gates & Verification
+```text
+[x] Typecheck: TypeScript tsc --noEmit 0 errors
+[x] Lint check: ESLint 0 errors
+[x] Format check: Prettier 100% clean
+[x] Targeted Tests: Unit & component tests passing (12/12 PASS)
+[x] Build: Next.js production build passing (28 routes generated)
+[x] Playwright Visual Walkthrough: 5 visual screenshots captured (docs/phases/screenshots/phase-23-walkthrough/)
+```
+
+## Teacher Cockpit UI Refinements, Profile Overhaul & Manual Class Creation
+```text
+[x] Horizontal Baseline Alignment: Hero Card dan Kartu Jadwal Mengajar kini sejajar sempurna di garis horizontal atas
+[x] Compact Elegant Buttons: Tombol Presensi Kilat 15 Detik, Foto Absen AI, dan Perangkat Ajar disesuaikan lebih sleek (rounded-xl, text-xs font-bold)
+[x] Purge Fake KPI & 0 is 0: Ketuntasan Penilaian dan Rekap Presensi menampilkan data riil (0% bila belum ada KBM / nilai), bebas dari mock RPL 1
+[x] Attention Queue Clean State: Siswa Perlu Perhatian menampilkan status riil "Semua Siswa Terpantau Optimal" tanpa data siswa dummy
+[x] Glowing Dark Blue Glass: Menghilangkan seluruh kotak abu-abu kusam, diganti deep translucent navy/blue gradient sesuai tema sidebar
+[x] Onboarding Card Guru Baru: Saat totalRombel === 0, panduan cepat 2 menit ditampilkan untuk membimbing guru baru
+[x] Profile Page Overhaul (/profil): Avatar lingkaran besar di tengah (size-28), icon kamera di sudut, hapus badge Guru Pengampu, badge Aktif sejajar @username, styling Academic Glass dark mode
+[x] Manual Class Creation (/kelas-saya & Modal): Form modal tambah kelas mandiri (nama rombel, tingkat, mapel, siswa per baris) tanpa bergantung AI
+[x] Classes Page Toolbar (/kelas-saya): Search bar proporsional (w-80) dengan tombol aksi + Tambah Kelas Manual dan + Foto Absen AI
+## Camply-Inspired Landing Page Overhaul & Visual Perfection (M23.1)
+```text
+[x] Hero Atmosphere & Soft Gradient Mesh: Mempertahankan background gradient mesh soft (bg-[#F8FAFD] / dark:bg-[#070B14]) tanpa batas kotak kaku
+[x] Minimalist Mobile Header: Tombol masuk akun diganti icon login sleek ([->]) dengan tooltip hover saat jari mendekat
+[x] Elimination of AI Slop Emojis: Seluruh emoji fitur (📚, 🛡️, 📊, dsb.) diganti total dengan ikon 3D claymorphic custom-crafted
+[x] Features Trio Layout: Heading "Solusi Cerdas Sekolah Modern!" dengan aksen 3 sinar (\ | /) dan 3 pilar fitur (Administrasi & LMS, CBT Anti-Curang, Leger Rapor Merdeka)
+[x] Open-Bleed Dotted World Map: Peta titik-titik (halftone SVG) terbuka tanpa border card, menyambung langsung dan mengalir ke section testimoni
+[x] Interactive School Pins & Pulsing Radar Beacons: Pin sekolah melayang dengan foto kampus riil, ring aktif biru, dan radar suar oranye/amber berkedip
+[x] Camply Testimonial Showcase: Ditempatkan langsung setelah peta, dilengkapi tombol slider panah bulat (<- / ->), kutipan biru pembuka ("“"), avatar gradien, peran & nama sekolah, serta rating 5 bintang amber
+[x] Quality Gates: Typecheck clean (0 errors), Vitest suite 100% PASS (10/10 tests), responsif mobile & desktop terverifikasi visual
+```
+
 
 ## Domain & Invariants
 ```text
@@ -92,11 +140,14 @@ Tujuan:
 
 [x] Milestone I — SaaS Growth & Market Readiness (Phase 22) [APPROVED BY HUMAN (18 September 2026)]
     └── [x] Phase 22 — SaaS Growth Engine, Landing Page & Live Device Tracking (M22) [APPROVED BY HUMAN (18 September 2026)]
+
+[ ] Milestone J — SaaS Monetization & Go-To-Market (Phase 23) [READY FOR HUMAN REVIEW]
+    └── [ ] Phase 23 — SaaS Monetization & Go-To-Market: Midtrans QRIS Checkout, Subscription Webhook & Marketing Kit (M23) [READY FOR HUMAN REVIEW]
 ```
 
 ---
 
-# 4. Milestone I Historical Quality Gates
+# 4. Milestone I & J Historical Quality Gates
 
 ```text
 [x] Phase 22 Quality Gates:
@@ -108,5 +159,15 @@ Tujuan:
     - Build: Next.js production compilation 100% PASS (26 routes generated)
     - End-to-End Walkthrough: Playwright automated test & 6 visual screenshots PASS (scripts/qa-phase22-visual-walkthrough.mjs)
     - Human Approval: APPROVED BY HUMAN (18 September 2026)
+
+[x] Phase 23 Quality Gates:
+    - Domain Invariants: Pay-per-Transaction Zero-Cost Admin Guard, Dual-Mode Resilient Gateway (Production API & Interactive Simulator), Idempotent Signature-Protected Webhook, 1-Click Copy Multi-Persona Copywriting
+    - Format check: Prettier 100% clean
+    - Lint check: 0 errors (npm run lint)
+    - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
+    - Tests: 12 unit & component tests passing (src/test/billing/, src/test/marketing/, src/test/smoke.test.tsx)
+    - Build: Next.js production compilation 100% PASS (28 routes generated)
+    - End-to-End Walkthrough: Playwright automated test & 5 visual screenshots PASS (scripts/qa-phase23-visual-walkthrough.mjs)
+    - Status: READY FOR HUMAN REVIEW
 ```
 

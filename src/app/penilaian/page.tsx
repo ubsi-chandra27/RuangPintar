@@ -22,7 +22,7 @@ export default async function PenilaianPage() {
   const isSuperAdmin = user.peran_dasar === "SUPER_ADMIN";
 
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

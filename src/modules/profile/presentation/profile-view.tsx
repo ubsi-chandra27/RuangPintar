@@ -27,7 +27,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { updateProfileSelfAction } from "@/app/actions/profile-actions";
-import { Badge } from "@/shared/components/ui/badge";
 
 export interface ProfileViewProps {
   user: {
@@ -192,36 +191,6 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
     .join("")
     .toUpperCase();
 
-  const getRoleBadgeVariant = (role: string): "academic" | "cobalt" | "warning" | "neutral" => {
-    switch (role) {
-      case "SUPER_ADMIN":
-        return "academic";
-      case "TEACHER":
-        return "cobalt";
-      case "STUDENT":
-        return "warning";
-      default:
-        return "neutral";
-    }
-  };
-
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case "SUPER_ADMIN":
-        return "Super Administrator";
-      case "TEACHER":
-        return "Guru Pengampu";
-      case "SCHOOL_STAFF":
-        return "Staf Sekolah / TU";
-      case "STUDENT":
-        return "Siswa";
-      case "GUARDIAN":
-        return "Wali Murid";
-      default:
-        return role;
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFeedback(null);
@@ -244,14 +213,14 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
         <div
           className={`p-4 rounded-2xl border flex items-center gap-3 transition-all ${
             feedback.type === "success"
-              ? "bg-emerald-50/90 border-emerald-200 text-emerald-800"
-              : "bg-rose-50/90 border-rose-200 text-rose-800"
+              ? "bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
+              : "bg-rose-50/90 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300"
           }`}
         >
           {feedback.type === "success" ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
+            <AlertCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />
           )}
           <span className="text-xs font-semibold">{feedback.message}</span>
         </div>
@@ -262,10 +231,11 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
         {/* LEFT COLUMN: IDENTITAS & QUICK SHORTCUTS    */}
         {/* ========================================== */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Identity Card */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-5 text-center sm:text-left flex flex-col items-center sm:items-start">
-            <div className="relative group">
-              <div className="size-24 rounded-3xl bg-gradient-to-tr from-[#1E40AF] to-[#3B82F6] text-white flex items-center justify-center text-3xl font-extrabold shadow-lg shadow-blue-500/25 ring-4 ring-white overflow-hidden">
+          {/* Identity Card — Centered Avatar + No Role Badge + Status aligned with @username */}
+          <div className="p-6 sm:p-7 rounded-[28px] bg-white dark:bg-slate-900/75 dark:backdrop-blur-xl border border-slate-200/80 dark:border-blue-500/20 shadow-xs dark:shadow-[0_0_30px_-5px_rgba(37,99,235,0.16)] space-y-5 text-center flex flex-col items-center">
+            {/* Centered Large Circle Avatar */}
+            <div className="relative group mx-auto">
+              <div className="size-28 sm:size-32 rounded-full bg-gradient-to-tr from-[#1E40AF] via-[#2563EB] to-[#3B82F6] text-white flex items-center justify-center text-3xl sm:text-4xl font-extrabold shadow-xl shadow-blue-500/25 ring-4 ring-blue-500/20 dark:ring-blue-400/30 overflow-hidden">
                 {photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photo} alt={user.nama_lengkap} className="size-full object-cover" />
@@ -277,54 +247,55 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 title="Pilih & Unggah Foto Profil"
-                className="absolute -bottom-1 -right-1 p-2 rounded-2xl bg-[#2563EB] hover:bg-blue-700 text-white shadow-md cursor-pointer transition-all hover:scale-110 border-2 border-white flex items-center justify-center"
+                className="absolute bottom-0 right-0 p-2.5 rounded-full bg-[#2563EB] hover:bg-blue-700 text-white shadow-md cursor-pointer transition-all hover:scale-110 border-2 border-white dark:border-slate-900 flex items-center justify-center"
               >
-                <Camera className="h-3.5 w-3.5" />
+                <Camera className="h-4 w-4" />
               </button>
-              <div
-                title="Akun Aktif"
-                className="absolute -top-1 -right-1 size-4 rounded-full bg-emerald-500 ring-2 ring-white"
-              />
             </div>
 
-            <div className="space-y-1 w-full">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <Badge variant={getRoleBadgeVariant(user.peran_dasar)}>
-                  {getRoleLabel(user.peran_dasar)}
-                </Badge>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+            {/* Name + Username & Aktif aligned together */}
+            <div className="space-y-1 w-full text-center">
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+                {formattedTeacherName}
+              </h2>
+              <div className="flex items-center justify-center gap-2 pt-0.5">
+                <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
+                  @{user.username}
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200/60 dark:border-emerald-800/60">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {user.status_akun}
                 </span>
               </div>
-
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-snug pt-1">
-                {formattedTeacherName}
-              </h2>
-              <p className="text-xs font-mono font-medium text-slate-400">@{user.username}</p>
             </div>
 
-            <div className="w-full pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-600">
-              <div className="flex items-center gap-2 text-slate-500">
-                <School className="h-4 w-4 text-[#2563EB] shrink-0" />
-                <span className="font-semibold text-slate-700 truncate">{schoolName}</span>
+            <div className="w-full pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs text-slate-600 dark:text-slate-300 text-left">
+              <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <School className="h-4 w-4 text-[#2563EB] dark:text-blue-400 shrink-0" />
+                <span className="font-semibold text-slate-700 dark:text-slate-200 truncate">
+                  {schoolName}
+                </span>
               </div>
 
               {teacherProfile?.nip && (
-                <div className="flex items-center justify-between text-[11px] py-1 px-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 font-medium">NIP Resmi</span>
-                  <span className="font-mono font-bold text-slate-700">{teacherProfile.nip}</span>
+                <div className="flex items-center justify-between text-[11px] py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-400 font-medium">NIP Resmi</span>
+                  <span className="font-mono font-bold text-slate-700 dark:text-slate-200">
+                    {teacherProfile.nip}
+                  </span>
                 </div>
               )}
 
               {teacherProfile?.nuptk && (
-                <div className="flex items-center justify-between text-[11px] py-1 px-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 font-medium">NUPTK</span>
-                  <span className="font-mono font-bold text-slate-700">{teacherProfile.nuptk}</span>
+                <div className="flex items-center justify-between text-[11px] py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-400 font-medium">NUPTK</span>
+                  <span className="font-mono font-bold text-slate-700 dark:text-slate-200">
+                    {teacherProfile.nuptk}
+                  </span>
                 </div>
               )}
 
-              <div className="flex items-center gap-2 text-slate-400 text-[11px] pt-1">
+              <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 text-[11px] pt-1">
                 <Calendar className="h-3.5 w-3.5 shrink-0" />
                 <span>
                   Bergabung sejak{" "}
@@ -337,10 +308,10 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
             </div>
 
             {/* Quick Links */}
-            <div className="w-full pt-3 border-t border-slate-100 space-y-2">
+            <div className="w-full pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
               <Link
                 href="/ganti-password"
-                className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200/80 hover:border-blue-300 text-xs font-bold text-slate-700 hover:text-[#2563EB] transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 dark:bg-slate-800/60 dark:hover:bg-blue-950/40 border border-slate-200/80 hover:border-blue-300 dark:border-slate-700/60 dark:hover:border-blue-500/40 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-[#2563EB] dark:hover:text-blue-400 transition-colors"
               >
                 <KeyRound className="h-4 w-4 text-slate-400 group-hover:text-[#2563EB]" />
                 <span>Ganti Kata Sandi</span>
@@ -364,14 +335,14 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
         {/* ========================================== */}
         <div className="lg:col-span-8 space-y-5">
           {/* Navigation Tab Bar */}
-          <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs w-fit">
+          <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-slate-900/75 dark:backdrop-blur-xl border border-slate-200/80 dark:border-blue-500/20 shadow-2xs w-fit">
             <button
               type="button"
               onClick={() => setActiveTab("KONTAK")}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === "KONTAK"
                   ? "bg-[#2563EB] text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
               <User className="h-4 w-4" />
@@ -385,7 +356,7 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activeTab === "AKADEMIK"
                     ? "bg-[#2563EB] text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
                 <GraduationCap className="h-4 w-4" />
@@ -396,10 +367,12 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
 
           {/* TAB 1: FORMULIR DATA AKUN & KONTAK */}
           {activeTab === "KONTAK" && (
-            <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-6">
+            <div className="p-6 sm:p-7 rounded-[28px] bg-white dark:bg-slate-900/75 dark:backdrop-blur-xl border border-slate-200/80 dark:border-blue-500/20 shadow-xs dark:shadow-[0_0_30px_-5px_rgba(37,99,235,0.16)] space-y-6">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Data Akun & Kontak Personal</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Data Akun & Kontak Personal
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Perbarui username dan informasi kontak pribadi Anda untuk keperluan komunikasi
                   sekolah.
                 </p>
@@ -407,8 +380,8 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Foto Profil Upload Section */}
-                <div className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 flex flex-col sm:flex-row items-center gap-4">
-                  <div className="relative size-16 rounded-2xl overflow-hidden shrink-0 ring-2 ring-white shadow-sm bg-gradient-to-tr from-[#1E40AF] to-[#3B82F6] text-white flex items-center justify-center text-xl font-bold">
+                <div className="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="relative size-16 rounded-2xl overflow-hidden shrink-0 ring-2 ring-white dark:ring-slate-700 shadow-sm bg-gradient-to-tr from-[#1E40AF] to-[#3B82F6] text-white flex items-center justify-center text-xl font-bold">
                     {photo ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={photo} alt="Foto Profil" className="size-full object-cover" />
@@ -419,14 +392,16 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
 
                   <div className="space-y-1.5 text-center sm:text-left flex-1 min-w-0">
                     <div className="flex items-center justify-center sm:justify-start gap-2">
-                      <h4 className="text-xs font-bold text-slate-800">Foto Profil Akun</h4>
+                      <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        Foto Profil Akun
+                      </h4>
                       {photo && (
-                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                        <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200/60 dark:border-emerald-800/60">
                           Terpasang
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                       Format didukung: JPG, PNG, atau WebP (maks. 5MB). Foto otomatis dioptimalkan
                       untuk tampilan tajam.
                     </p>
@@ -434,9 +409,9 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs cursor-pointer transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold shadow-2xs cursor-pointer transition-colors"
                       >
-                        <Upload className="h-3.5 w-3.5 text-[#2563EB]" />
+                        <Upload className="h-3.5 w-3.5 text-[#2563EB] dark:text-blue-400" />
                         <span>{photo ? "Ganti Foto" : "Unggah Foto"}</span>
                       </button>
 
@@ -444,7 +419,7 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                         <button
                           type="button"
                           onClick={handleRemovePhoto}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors cursor-pointer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 text-xs font-bold transition-colors cursor-pointer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           <span>Hapus Foto</span>
@@ -469,10 +444,10 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                 {/* Read-Only Official Name */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                       Nama Lengkap Resmi
                     </label>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
                       <Lock className="h-3 w-3" />
                       Terproteksi (Dikelola TU)
                     </span>
@@ -481,14 +456,14 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                     type="text"
                     disabled
                     value={formattedTeacherName}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/80 text-xs font-semibold text-slate-500 cursor-not-allowed"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Editable Username */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Username Login <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
@@ -503,18 +478,18 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                         maxLength={30}
                         value={username}
                         onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                        className="w-full pl-7 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                        className="w-full pl-7 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
                         placeholder="username_anda"
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                       Digunakan untuk login (huruf kecil, angka, garis bawah).
                     </p>
                   </div>
 
                   {/* Editable Email */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Email Kontak & Pemulihan
                     </label>
                     <div className="relative">
@@ -524,11 +499,11 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
                         placeholder="guru@sekolah.sch.id"
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                       Untuk notifikasi dan reset kata sandi mandiri.
                     </p>
                   </div>
@@ -539,7 +514,7 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Editable Phone / WhatsApp */}
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                           Nomor WhatsApp / Handphone
                         </label>
                         <div className="relative">
@@ -549,11 +524,11 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                             name="telepon"
                             value={telepon}
                             onChange={(e) => setTelepon(e.target.value)}
-                            className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                            className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
                             placeholder="081234567890"
                           />
                         </div>
-                        <p className="text-[11px] text-slate-400 mt-1">
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                           Kontak aktif untuk koordinasi dan komunikasi sekolah.
                         </p>
                       </div>
@@ -561,10 +536,10 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                       {/* Status Kepegawaian (Read-Only) */}
                       <div>
                         <div className="flex items-center justify-between mb-1">
-                          <label className="block text-xs font-semibold text-slate-700">
+                          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                             Status Kepegawaian
                           </label>
-                          <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                             Resmi
                           </span>
                         </div>
@@ -572,14 +547,14 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                           type="text"
                           disabled
                           value={teacherProfile?.status_kepegawaian || "TETAP"}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/80 text-xs font-semibold text-slate-500 cursor-not-allowed"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed"
                         />
                       </div>
                     </div>
 
                     {/* Editable Address */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Alamat Domisili
                       </label>
                       <div className="relative">
@@ -589,7 +564,7 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                           rows={2}
                           value={alamat}
                           onChange={(e) => setAlamat(e.target.value)}
-                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
+                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB]"
                           placeholder="Alamat tempat tinggal saat ini..."
                         />
                       </div>
@@ -598,7 +573,7 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                 )}
 
                 {/* Submit Button */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
                   <button
                     type="submit"
                     disabled={isPending}
@@ -616,11 +591,11 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
           {activeTab === "AKADEMIK" && teacherProfile && (
             <div className="space-y-5">
               {/* Notice Banner */}
-              <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-start gap-3">
-                <ShieldCheck className="h-5 w-5 text-[#2563EB] shrink-0 mt-0.5" />
-                <div className="text-xs text-blue-900">
+              <div className="p-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/50 flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 text-[#2563EB] dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-xs text-blue-900 dark:text-blue-200">
                   <p className="font-bold">Data Resmi Kepegawaian Sekolah</p>
-                  <p className="text-blue-700 mt-0.5 leading-relaxed">
+                  <p className="text-blue-700 dark:text-blue-300 mt-0.5 leading-relaxed">
                     Data di bawah ini tercatat dalam sistem administrasi kepegawaian dan
                     diverifikasi oleh Bagian Tata Usaha (TU). Untuk mengajukan pembaruan NIP, gelar
                     akademik, atau SK penugasan mengajar, silakan berkoordinasi dengan staf
@@ -630,53 +605,61 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
               </div>
 
               {/* Grid Identitas Kepegawaian */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
-                <h4 className="text-sm font-bold text-slate-900">Data Administrasi Kepegawaian</h4>
+              <div className="p-6 sm:p-7 rounded-[28px] bg-white dark:bg-slate-900/75 dark:backdrop-blur-xl border border-slate-200/80 dark:border-blue-500/20 shadow-xs dark:shadow-[0_0_30px_-5px_rgba(37,99,235,0.16)] space-y-4">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Data Administrasi Kepegawaian
+                </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">NIP Pegawai</span>
-                    <p className="text-xs font-bold text-slate-800 font-mono">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
+                      NIP Pegawai
+                    </span>
+                    <p className="text-xs font-bold text-slate-800 dark:text-white font-mono">
                       {teacherProfile.nip || "Belum tercatat"}
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">NUPTK</span>
-                    <p className="text-xs font-bold text-slate-800 font-mono">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
+                      NUPTK
+                    </span>
+                    <p className="text-xs font-bold text-slate-800 dark:text-white font-mono">
                       {teacherProfile.nuptk || "Belum tercatat"}
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
                       Status Kepegawaian
                     </span>
-                    <p className="text-xs font-bold text-[#2563EB]">
+                    <p className="text-xs font-bold text-[#2563EB] dark:text-blue-400">
                       {teacherProfile.status_kepegawaian}
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">Jenis Kelamin</span>
-                    <p className="text-xs font-bold text-slate-800">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
+                      Jenis Kelamin
+                    </span>
+                    <p className="text-xs font-bold text-slate-800 dark:text-white">
                       {teacherProfile.jenis_kelamin === "L" ? "Laki-laki" : "Perempuan"}
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
                       Gelar Depan / Belakang
                     </span>
-                    <p className="text-xs font-bold text-slate-800">
+                    <p className="text-xs font-bold text-slate-800 dark:text-white">
                       {teacherProfile.gelar_depan || "-"} / {teacherProfile.gelar_belakang || "-"}
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-400">
                       Tempat, Tanggal Lahir
                     </span>
-                    <p className="text-xs font-bold text-slate-800">
+                    <p className="text-xs font-bold text-slate-800 dark:text-white">
                       {teacherProfile.tempat_lahir || "-"}
                       {teacherProfile.tanggal_lahir
                         ? `, ${new Date(teacherProfile.tanggal_lahir).toLocaleDateString("id-ID")}`
@@ -687,20 +670,20 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
               </div>
 
               {/* Daftar Penugasan Mengajar Aktif */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+              <div className="p-6 sm:p-7 rounded-[28px] bg-white dark:bg-slate-900/75 dark:backdrop-blur-xl border border-slate-200/80 dark:border-blue-500/20 shadow-xs dark:shadow-[0_0_30px_-5px_rgba(37,99,235,0.16)] space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                       Penugasan Mengajar Aktif ({teacherProfile.penugasan_mengajar.length})
                     </h4>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Rombongan belajar dan mata pelajaran yang diampu pada tahun ajaran ini
                     </p>
                   </div>
                 </div>
 
                 {teacherProfile.penugasan_mengajar.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 italic">
                     Belum ada penugasan mengajar aktif.
                   </p>
                 ) : (
@@ -708,17 +691,17 @@ export function ProfileView({ user, schoolName, teacherProfile }: ProfileViewPro
                     {teacherProfile.penugasan_mengajar.map((p) => (
                       <div
                         key={p.id}
-                        className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-center justify-between gap-3"
+                        className="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-slate-100/90 dark:bg-gradient-to-r dark:from-slate-900/80 dark:to-blue-950/40 border border-slate-200/70 dark:border-blue-500/20 flex items-center justify-between gap-3 shadow-2xs"
                       >
                         <div className="space-y-0.5 min-w-0">
-                          <p className="text-xs font-bold text-slate-900 truncate">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {p.mata_pelajaran.nama}
                           </p>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400">
                             Kelas {p.rombel.nama} • {p.rombel.tingkat?.nama || "Tingkat"}
                           </p>
                         </div>
-                        <span className="px-2 py-1 rounded-lg bg-blue-50 text-[#2563EB] text-[11px] font-bold shrink-0">
+                        <span className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 text-[11px] font-bold shrink-0 border border-blue-100 dark:border-blue-900/50">
                           {p.jumlah_jam_minggu} JP/mgg
                         </span>
                       </div>

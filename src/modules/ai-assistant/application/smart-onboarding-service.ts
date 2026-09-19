@@ -51,7 +51,10 @@ export class SmartOnboardingService {
     }
 
     // Buat username ramah dari input pengguna atau email
-    const requestedUsername = dto.username?.trim().toLowerCase().replace(/[^a-zA-Z0-9_]/g, "");
+    const requestedUsername = dto.username
+      ?.trim()
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9_]/g, "");
     if (requestedUsername) {
       const existingUser = await prisma.pengguna.findUnique({
         where: { username: requestedUsername },
@@ -63,10 +66,12 @@ export class SmartOnboardingService {
       }
     }
 
-    const baseUsername = requestedUsername || normalizedEmail
-      .split("@")[0]
-      .replace(/[^a-zA-Z0-9_]/g, "_")
-      .substring(0, 20);
+    const baseUsername =
+      requestedUsername ||
+      normalizedEmail
+        .split("@")[0]
+        .replace(/[^a-zA-Z0-9_]/g, "_")
+        .substring(0, 20);
     let username = baseUsername;
     let counter = 1;
     while (await prisma.pengguna.findUnique({ where: { username } })) {

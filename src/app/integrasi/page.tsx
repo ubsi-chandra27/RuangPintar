@@ -22,7 +22,7 @@ export default async function IntegrasiPage() {
   }
 
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

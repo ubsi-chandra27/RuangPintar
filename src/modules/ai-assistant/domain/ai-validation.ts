@@ -23,8 +23,12 @@ export const SmartOnboardingRegistrationSchema = z.object({
     .refine((val) => !val || /^[0-9+ -]{8,20}$/.test(val), "Nomor telepon / WhatsApp tidak valid"),
   password: z
     .string()
-    .min(6, "Kata sandi minimal 6 karakter")
-    .max(100, "Kata sandi maksimal 100 karakter"),
+    .min(8, "Kata sandi minimal 8 karakter")
+    .max(100, "Kata sandi maksimal 100 karakter")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/,
+      "Kata sandi wajib memadukan huruf besar, huruf kecil, angka, dan simbol"
+    ),
   nama_sekolah: z
     .string()
     .min(3, "Nama sekolah minimal 3 karakter")

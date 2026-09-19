@@ -16,27 +16,57 @@
   --card-border: rgba(30, 41, 59, 0.8);
 }
 
+@theme {
+  --font-century:
+    "Century Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Plus Jakarta Sans",
+    sans-serif;
+  --font-sans:
+    "Century Gothic", var(--font-sans), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  --font-mono: var(--font-mono), "Space Mono", monospace;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(
-    --font-sans,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif
-  );
+  font-family: var(--font-century), var(--font-sans);
   min-height: 100vh;
   transition:
     background-color 0.25s ease,
     color 0.25s ease;
+}
+
+/* Academic Glass Card & Glow */
+.glass-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+.dark .glass-card {
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  box-shadow:
+    0 0 30px -5px rgba(37, 99, 235, 0.16),
+    0 8px 24px -4px rgba(0, 0, 0, 0.45);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+}
+
+.dark .glass-card-hover:hover {
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow:
+    0 0 38px -2px rgba(59, 130, 246, 0.28),
+    0 14px 30px -5px rgba(0, 0, 0, 0.6);
 }
 
 /* Curved Notch Inverted Radius for Active Sidebar Item */
@@ -116,4 +146,133 @@ body {
 
 .animate-fade-up-3 {
   animation: scrollFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 36s linear infinite;
+}
+
+/* Camply-inspired Motion Entrance & Floating Animations */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoomInInward {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes glideFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatReverse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.animate-nav-1 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+}
+.animate-nav-2 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+.animate-nav-3 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+.animate-nav-4 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+.animate-nav-5 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+.animate-nav-6 {
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+}
+.animate-nav-cta {
+  animation: slideInRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+}
+
+.animate-inward-motion {
+  animation: zoomInInward 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.animate-glide-left {
+  animation: glideFromLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 5s ease-in-out infinite;
+}
+
+/* Looping Sway / Tilt Shake Motion (Camply iPad Mockup) */
+@keyframes mockupSwayLoop {
+  0% {
+    transform: rotate(0deg) translateY(0px);
+  }
+  25% {
+    transform: rotate(1.8deg) translateY(-5px);
+  }
+  50% {
+    transform: rotate(0deg) translateY(0px);
+  }
+  75% {
+    transform: rotate(-1.8deg) translateY(5px);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0px);
+  }
+}
+
+.animate-mockup-sway {
+  animation: mockupSwayLoop 6s ease-in-out infinite;
+  transform-origin: 50% 85%;
 }

@@ -29,7 +29,7 @@ export default async function KelasSayaPage() {
   const isAdmin = user.peran_dasar === "SUPER_ADMIN" || user.peran_dasar === "SCHOOL_STAFF";
 
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 
@@ -80,16 +80,16 @@ export default async function KelasSayaPage() {
       ]}
     >
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 sm:pb-4 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
                 {isAdmin ? "Supervisi Kelas & Pembelajaran" : "Kelas Saya"}
               </h1>
               {isAdmin ? (
                 <Badge
                   variant="info"
-                  className="gap-1.5 bg-indigo-50 text-indigo-700 border-indigo-200 text-xs"
+                  className="gap-1.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 text-xs"
                 >
                   <ShieldCheck className="h-3.5 w-3.5" />
                   <span>Supervisi Admin</span>
@@ -97,14 +97,14 @@ export default async function KelasSayaPage() {
               ) : (
                 <Badge
                   variant="info"
-                  className="gap-1.5 bg-blue-50 text-[#2563EB] border-blue-200 text-xs"
+                  className="gap-1.5 bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-blue-400 border-blue-200 dark:border-blue-900/50 text-xs"
                 >
                   <BookOpen className="h-3.5 w-3.5" />
                   <span>Workspace Guru</span>
                 </Badge>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 hidden sm:block">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 hidden sm:block">
               {isAdmin
                 ? "Direktori supervisi kurikulum, modul materi, tugas, dan rekam jurnal KBM seluruh guru dan rombel sekolah"
                 : "Ruang kerja pembelajaran terpadu untuk mengelola Lingkup Materi (BAB), modul bacaan, tugas, dan jurnal KBM"}

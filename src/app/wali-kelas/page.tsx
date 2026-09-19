@@ -6,6 +6,8 @@ import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { MonitoringService } from "@/modules/monitoring/application/monitoring-service";
 import { HomeroomDashboardView } from "@/modules/monitoring/presentation/homeroom-dashboard-view";
 
+import { resolveUserCapabilities } from "@/shared/infrastructure/authorization/staff-capability-service";
+
 export const metadata = {
   title: "Portal Wali Kelas — Ruang Pintar",
   description: "Pusat monitoring siswa, absensi, ketuntasan tugas, dan pembinaan rombel",
@@ -22,6 +24,7 @@ export default async function WaliKelasPage({ searchParams }: WaliKelasPageProps
     redirect("/dashboard");
   }
 
+  const capabilities = await resolveUserCapabilities(user);
   const { rombelId } = await searchParams;
 
   const breadcrumbItems = [
@@ -50,19 +53,21 @@ export default async function WaliKelasPage({ searchParams }: WaliKelasPageProps
 
   if (errorMsg || !overview) {
     return (
-      <AcademicShell user={user} breadcrumbItems={breadcrumbItems}>
-        <div className="max-w-2xl mx-auto my-12 p-8 rounded-3xl bg-white border border-slate-200 shadow-xl text-center space-y-4">
-          <div className="h-16 w-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto border border-amber-200">
+      <AcademicShell user={user} userCapabilities={capabilities} breadcrumbItems={breadcrumbItems}>
+        <div className="max-w-2xl mx-auto my-12 p-8 rounded-3xl bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl border border-slate-200 dark:border-amber-500/20 shadow-xl text-center space-y-4">
+          <div className="h-16 w-16 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto border border-amber-200 dark:border-amber-900/50">
             <ShieldAlert className="h-8 w-8" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900">Portal Wali Kelas Belum Aktif</h2>
-          <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            Portal Wali Kelas Belum Aktif
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
             {errorMsg || "Data monitoring rombel tidak tersedia."}
           </p>
           <div className="pt-4">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-blue-600 text-white text-xs font-bold hover:bg-slate-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Dashboard Utama</span>
@@ -74,7 +79,7 @@ export default async function WaliKelasPage({ searchParams }: WaliKelasPageProps
   }
 
   return (
-    <AcademicShell user={user} breadcrumbItems={breadcrumbItems}>
+    <AcademicShell user={user} userCapabilities={capabilities} breadcrumbItems={breadcrumbItems}>
       <HomeroomDashboardView
         initialData={overview}
         activeRombelsList={activeRombelsList}

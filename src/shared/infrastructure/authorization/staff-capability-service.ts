@@ -20,7 +20,45 @@ export class StaffCapabilityService {
       select: { kode_kemampuan: true },
     });
 
-    return records.map((r) => r.kode_kemampuan).filter(isValidCapabilityBundle);
+    const bundles: CapabilityBundle[] = records
+      .map((r) => r.kode_kemampuan)
+      .filter(isValidCapabilityBundle);
+
+    // Resolusi dinamis penugasan wali kelas
+    const guru = await prisma.guru.findFirst({
+      where: { pengguna_id: userId },
+      select: { id: true, sekolah_id: true },
+    });
+
+    if (guru) {
+      const activeHomeroom = await prisma.penugasanWaliKelas.findFirst({
+        where: { guru_id: guru.id, sekolah_id: guru.sekolah_id, status: "AKTIF" },
+        select: { id: true },
+      });
+      if (activeHomeroom) {
+        bundles.push("HOMEROOM_TEACHER");
+      }
+    }
+
+    // Resolusi dinamis penugasan jabatan kepemimpinan (Kepsek, Wakasek, Kaprog)
+    const positionConditions: Array<{ personil_id: string; status: string }> = [
+      { personil_id: userId, status: "AKTIF" },
+    ];
+    if (guru) {
+      positionConditions.push({ personil_id: guru.id, status: "AKTIF" });
+    }
+
+    const activePosition = await prisma.penugasanJabatan.findFirst({
+      where: {
+        OR: positionConditions,
+      },
+      select: { id: true },
+    });
+    if (activePosition) {
+      bundles.push("LEADERSHIP_ROLE");
+    }
+
+    return Array.from(new Set(bundles));
   }
 
   /**
@@ -129,3 +167,17 @@ export class StaffCapabilityService {
 }
 
 export const staffCapabilityService = new StaffCapabilityService();
+
+/**
+ * Resolves effective user capabilities for navigation and access control.
+ * Supports TEACHER (Homeroom, Leadership) and SCHOOL_STAFF (Assigned capabilities).
+ */
+export async function resolveUserCapabilities(user: {
+  id: string;
+  peran_dasar: string;
+}): Promise<CapabilityBundle[]> {
+  if (user.peran_dasar === "TEACHER" || user.peran_dasar === "SCHOOL_STAFF") {
+    return staffCapabilityService.getUserCapabilities(user.id);
+  }
+  return [];
+}

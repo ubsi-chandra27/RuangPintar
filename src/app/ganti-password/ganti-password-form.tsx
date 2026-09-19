@@ -66,7 +66,10 @@ export function GantiPasswordForm({
       {/* Current Password (only shown if user is logged in and not mandatory first reset) */}
       {hasSession && !isMandatory && (
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="oldPassword" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+          <label
+            htmlFor="oldPassword"
+            className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+          >
             Kata Sandi Saat Ini
           </label>
           <PasswordInput
@@ -82,7 +85,10 @@ export function GantiPasswordForm({
 
       {/* New Password */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="newPassword" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+        <label
+          htmlFor="newPassword"
+          className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+        >
           Kata Sandi Baru
         </label>
         <PasswordInput
@@ -146,4 +152,3 @@ export function GantiPasswordForm({
     </form>
   );
 }
-

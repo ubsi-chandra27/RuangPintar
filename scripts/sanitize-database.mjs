@@ -262,7 +262,7 @@ async function main() {
   for (let i = 0; i < KELAS_X_NAMES.length; i++) {
     const namaKelas = KELAS_X_NAMES[i];
     const rombelId = `01M2R5ROMBEL0000000000000${(i + 1).toString().padStart(2, "0")}`;
-    
+
     const r = await prisma.rombel.create({
       data: {
         id: rombelId,

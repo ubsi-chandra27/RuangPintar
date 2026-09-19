@@ -28,7 +28,7 @@ export default async function ProfilPage() {
 
   const [schoolProfile, staffCapabilities, userDb] = await Promise.all([
     schoolProfileService.getProfile(user.sekolah_id),
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? staffCapabilityService.getUserCapabilities(user.id)
       : Promise.resolve([]),
     prisma.pengguna.findUnique({

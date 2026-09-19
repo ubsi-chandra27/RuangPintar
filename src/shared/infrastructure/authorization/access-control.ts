@@ -120,19 +120,23 @@ export class AccessControlEngine {
         permission.startsWith("cbt.exam.manage");
 
       if (isClassroomMutationOrGrading) {
-        // Wajib memiliki Teaching Assignment aktif yang sesuai dengan rombel & mapel
-        const assignments = context.teachingAssignments || [];
-        const hasMatchingTeachingAssignment = assignments.some((ta) =>
-          evaluateTeachingAssignmentScope(actor.id, ta, resource, evalDate)
-        );
+        // Jika terdapat target spesifik rombel atau mapel, wajib memiliki Teaching Assignment aktif yang sesuai
+        const hasSpecificTarget = Boolean(resource.rombel_id || resource.subject_id);
 
-        if (!hasMatchingTeachingAssignment) {
-          return {
-            allowed: false,
-            reason: "Teacher has no active Teaching Assignment for the requested class/subject.",
-            actorId: actor.id,
-            baseRole: actor.peran_dasar,
-          };
+        if (hasSpecificTarget) {
+          const assignments = context.teachingAssignments || [];
+          const hasMatchingTeachingAssignment = assignments.some((ta) =>
+            evaluateTeachingAssignmentScope(actor.id, ta, resource, evalDate)
+          );
+
+          if (!hasMatchingTeachingAssignment) {
+            return {
+              allowed: false,
+              reason: "Teacher has no active Teaching Assignment for the requested class/subject.",
+              actorId: actor.id,
+              baseRole: actor.peran_dasar,
+            };
+          }
         }
 
         return {

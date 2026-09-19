@@ -50,3 +50,9 @@ next-env.d.ts
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Temporary scratch and downloaded reference files
+/scripts/*.png
+/scripts/*.jpg
+/scripts/*.html
+/scripts/behance_ref/

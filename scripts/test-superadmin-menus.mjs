@@ -18,7 +18,10 @@ async function run() {
 
   // Capture Dashboard screenshot
   await page.waitForTimeout(1000);
-  await page.screenshot({ path: "docs/phases/screenshots/superadmin-clean-dashboard.png", fullPage: true });
+  await page.screenshot({
+    path: "docs/phases/screenshots/superadmin-clean-dashboard.png",
+    fullPage: true,
+  });
   console.log("Saved dashboard screenshot.");
 
   // Test navigating to each menu
@@ -40,7 +43,9 @@ async function run() {
     await page.goto(`http://localhost:3000${menu.path}`, { waitUntil: "networkidle" });
     const currentUrl = page.url();
     const isRedirectedToDashboard = currentUrl.endsWith("/dashboard") && menu.path !== "/dashboard";
-    console.log(`Menu [${menu.name}] -> Requested: ${menu.path} | Actual: ${currentUrl} | Status: ${isRedirectedToDashboard ? "BLOCKED/REDIRECTED TO DASHBOARD" : "SUCCESS (PAGE LOADED)"}`);
+    console.log(
+      `Menu [${menu.name}] -> Requested: ${menu.path} | Actual: ${currentUrl} | Status: ${isRedirectedToDashboard ? "BLOCKED/REDIRECTED TO DASHBOARD" : "SUCCESS (PAGE LOADED)"}`
+    );
   }
 
   await browser.close();

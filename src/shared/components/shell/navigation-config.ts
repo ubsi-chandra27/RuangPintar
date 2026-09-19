@@ -130,6 +130,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         href: "/wali-kelas",
         iconName: "ShieldAlert",
         roles: ["TEACHER"],
+        requiredCapability: "HOMEROOM_TEACHER",
         isPhaseDeferred: false,
       },
       {
@@ -138,6 +139,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         href: "/pimpinan",
         iconName: "BarChart3",
         roles: ["TEACHER"],
+        requiredCapability: "LEADERSHIP_ROLE",
         isPhaseDeferred: false,
       },
       {
@@ -497,8 +499,8 @@ export function getFilteredNavigation(
         continue;
       }
 
-      // 2. Jika user adalah SCHOOL_STAFF dan item butuh capability bundle tertentu
-      if (userRole === "SCHOOL_STAFF" && item.requiredCapability) {
+      // 2. Jika item butuh capability bundle tertentu
+      if (item.requiredCapability) {
         if (!userCapabilities.includes(item.requiredCapability)) {
           continue;
         }

@@ -119,76 +119,76 @@ export function UserMenu({ user }: UserMenuProps) {
       {/* Dropdown Menu (Academic Glass UI selaras dengan ThemeSwitcher, tanpa backdrop blur) */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-1.5 shadow-2xl border border-slate-200/80 dark:border-slate-800 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
-            {/* Identity Header */}
-            <div className="p-3 border-b border-slate-100 dark:border-slate-800 mb-1 flex items-center gap-2.5">
-              <div className="size-10 rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
-                {user.foto_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={user.foto_url}
-                    alt={user.nama_lengkap}
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  initials
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] font-medium text-slate-400">Akun Aktif</span>
-                  <Badge variant={roleMeta.variant}>{roleMeta.label}</Badge>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
-                  {user.nama_lengkap}
-                </p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                  @{user.username}
-                </p>
-              </div>
+          {/* Identity Header */}
+          <div className="p-3 border-b border-slate-100 dark:border-slate-800 mb-1 flex items-center gap-2.5">
+            <div className="size-10 rounded-full bg-gradient-to-tr from-[#1D4ED8] to-[#3B82F6] text-white text-xs font-extrabold flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+              {user.foto_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.foto_url}
+                  alt={user.nama_lengkap}
+                  className="size-full object-cover"
+                />
+              ) : (
+                initials
+              )}
             </div>
-
-            {/* Navigation Links */}
-            <div className="space-y-0.5">
-              <Link
-                href="/profil"
-                onClick={() => setIsOpen(false)}
-                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
-              >
-                <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <User className="h-4 w-4" />
-                </div>
-                <span className="text-xs font-semibold">Profil Saya</span>
-              </Link>
-
-              <Link
-                href="/ganti-password"
-                onClick={() => setIsOpen(false)}
-                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
-              >
-                <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <KeyRound className="h-4 w-4" />
-                </div>
-                <span className="text-xs font-semibold">Ganti Kata Sandi</span>
-              </Link>
-
-              <div className="border-t border-slate-100 dark:border-slate-800 my-1 pt-1" />
-
-              {/* Logout Trigger Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  setIsLogoutModalOpen(true);
-                }}
-                className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 group cursor-pointer"
-              >
-                <div className="h-7 w-7 rounded-lg bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 transition-colors">
-                  <LogOut className="h-4 w-4" />
-                </div>
-                <span className="text-xs font-semibold">Keluar dari Akun</span>
-              </button>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[10px] font-medium text-slate-400">Akun Aktif</span>
+                <Badge variant={roleMeta.variant}>{roleMeta.label}</Badge>
+              </div>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                {user.nama_lengkap}
+              </p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                @{user.username}
+              </p>
             </div>
           </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-0.5">
+            <Link
+              href="/profil"
+              onClick={() => setIsOpen(false)}
+              className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
+            >
+              <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <User className="h-4 w-4" />
+              </div>
+              <span className="text-xs font-semibold">Profil Saya</span>
+            </Link>
+
+            <Link
+              href="/ganti-password"
+              onClick={() => setIsOpen(false)}
+              className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 group cursor-pointer"
+            >
+              <div className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <KeyRound className="h-4 w-4" />
+              </div>
+              <span className="text-xs font-semibold">Ganti Kata Sandi</span>
+            </Link>
+
+            <div className="border-t border-slate-100 dark:border-slate-800 my-1 pt-1" />
+
+            {/* Logout Trigger Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                setIsLogoutModalOpen(true);
+              }}
+              className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 group cursor-pointer"
+            >
+              <div className="h-7 w-7 rounded-lg bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 transition-colors">
+                <LogOut className="h-4 w-4" />
+              </div>
+              <span className="text-xs font-semibold">Keluar dari Akun</span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Logout Confirmation Modal Dialog (Portaled to document.body for true viewport centering) */}

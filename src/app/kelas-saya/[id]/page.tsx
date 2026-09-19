@@ -39,7 +39,7 @@ export default async function ClassWorkspacePage({ params, searchParams }: PageP
   const isAdmin = isSuperAdmin || user.peran_dasar === "SCHOOL_STAFF";
 
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

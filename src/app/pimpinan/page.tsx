@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
-import { staffCapabilityService } from "@/shared/infrastructure/authorization/staff-capability-service";
+import { resolveUserCapabilities } from "@/shared/infrastructure/authorization/staff-capability-service";
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { leadershipAnalyticsService } from "@/modules/reporting/application/leadership-analytics-service";
 import { LeadershipPortalView } from "@/modules/reporting/presentation/leadership-portal-view";
@@ -23,10 +23,7 @@ export const metadata: Metadata = {
 export default async function LeadershipPage() {
   const user = await requireAuth();
 
-  let capabilities: any[] = [];
-  if (user.peran_dasar === "SCHOOL_STAFF") {
-    capabilities = await staffCapabilityService.getUserCapabilities(user.id);
-  }
+  const capabilities = await resolveUserCapabilities(user);
 
   const breadcrumbItems = [
     { label: "Dashboard", href: "/dashboard" },
@@ -69,20 +66,20 @@ export default async function LeadershipPage() {
   return (
     <AcademicShell user={user} userCapabilities={capabilities} breadcrumbItems={breadcrumbItems}>
       {authError || !leadershipContext ? (
-        <div className="rounded-2xl bg-white border border-rose-200/80 p-8 text-center max-w-xl mx-auto my-12 shadow-sm">
-          <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4">
-            <ShieldAlert className="h-6 w-6" />
+        <div className="rounded-3xl bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl border border-rose-200/80 dark:border-rose-500/20 p-8 text-center max-w-xl mx-auto my-12 shadow-sm">
+          <div className="h-14 w-14 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto mb-4 border border-rose-200 dark:border-rose-900/50">
+            <ShieldAlert className="h-7 w-7" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 mb-2">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
             Akses Kepemimpinan Ditolak (403 Forbidden)
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
             {authError ??
               "Halaman ini hanya dapat diakses oleh personil yang memegang Penugasan Jabatan struktural aktif (Kepala Sekolah, Wakasek, atau Kepala Program Keahlian) dan Super Admin."}
           </p>
           <a
             href="/dashboard"
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-colors"
+            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-colors"
           >
             Kembali ke Dashboard Utama
           </a>

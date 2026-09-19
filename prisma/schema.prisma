@@ -80,6 +80,7 @@ model Sekolah {
   endpoint_webhook          EndpointWebhook[]
   log_pengiriman_integrasi  LogPengirimanIntegrasi[]
   permintaan_setup_ai       PermintaanSetupKelasAi[]
+  transaksi_langganan       TransaksiLangganan[]
 
   @@map("sekolah")
 }
@@ -260,6 +261,7 @@ model Pengguna {
   tindak_lanjut_ditugaskan   TindakLanjutMonitoring[] @relation("PenanggungJawabTindakLanjut")
   ekspor_laporan             RiwayatEksporLaporan[]   @relation("PembuatEksporLaporan")
   permintaan_setup_ai        PermintaanSetupKelasAi[]
+  transaksi_langganan        TransaksiLangganan[]
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -1721,3 +1723,36 @@ model PermintaanSetupKelasAi {
   @@index([pengguna_id])
   @@map("permintaan_setup_kelas_ai")
 }
+
+/// M23 — SaaS Monetization: Transaksi Pembayaran & Langganan (Midtrans QRIS / BOS)
+model TransaksiLangganan {
+  id                      String    @id
+  order_id                String    @unique
+  pengguna_id             String
+  sekolah_id              String?
+  paket                   String    @default("GURU_PRO_BULANAN") // GURU_PRO_BULANAN | GURU_PRO_TAHUNAN | SEKOLAH_BOS
+  nominal                 Int
+  biaya_admin             Int       @default(0)
+  total_bayar             Int
+  metode_pembayaran       String    @default("QRIS") // QRIS | BANK_TRANSFER | MANUAL
+  status                  String    @default("PENDING") // PENDING | PAID | EXPIRED | CANCELLED
+  snap_token              String?
+  snap_redirect_url       String?
+  qris_url                String?
+  waktu_transaksi         DateTime  @default(now())
+  dibayar_pada            DateTime?
+  kadaluarsa_pada         DateTime?
+  durasi_bulan            Int       @default(1)
+  payload_notifikasi_json String?
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Restrict)
+  sekolah  Sekolah?  @relation(fields: [sekolah_id], references: [id], onDelete: SetNull)
+
+  @@index([pengguna_id])
+  @@index([status])
+  @@index([order_id])
+  @@map("transaksi_langganan")
+}
+

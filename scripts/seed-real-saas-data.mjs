@@ -267,7 +267,8 @@ async function main() {
     data: {
       id: ulid(),
       judul: "Selamat Datang di Ruang Pintar — SMK OTOMINDO",
-      konten: "Sistem digitalisasi sekolah Ruang Pintar resmi aktif untuk SMK OTOMINDO. Tahun Ajaran 2026/2027.",
+      konten:
+        "Sistem digitalisasi sekolah Ruang Pintar resmi aktif untuk SMK OTOMINDO. Tahun Ajaran 2026/2027.",
       kategori: "AKADEMIK",
       status: "DITERBITKAN",
       dipublikasikan_pada: new Date(),

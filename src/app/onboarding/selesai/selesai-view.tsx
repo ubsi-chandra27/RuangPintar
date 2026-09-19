@@ -9,26 +9,22 @@ import { AVATAR_LIST, AvatarSvgIllustration } from "../pilih-avatar/avatar-picke
 export function SelesaiView() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [userName, setUserName] = useState<string>("Guru Hebat");
-  const [avatarId, setAvatarId] = useState<string>("kapten-kosmik");
-
-  useEffect(() => {
-    const queryAvatar = searchParams.get("avatar");
-    if (queryAvatar) {
-      setAvatarId(queryAvatar);
-    } else if (typeof window !== "undefined") {
-      const storedAvatar = sessionStorage.getItem("rp_selected_avatar");
-      if (storedAvatar) setAvatarId(storedAvatar);
-    }
-
+  const queryAvatar = searchParams.get("avatar");
+  const [userName] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      const storedName = sessionStorage.getItem("rp_user_name");
-      if (storedName) setUserName(storedName);
+      return sessionStorage.getItem("rp_user_name") || "Guru Hebat";
     }
-  }, [searchParams]);
+    return "Guru Hebat";
+  });
+  const [avatarId] = useState<string>(() => {
+    if (queryAvatar) return queryAvatar;
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("rp_selected_avatar") || "kapten-kosmik";
+    }
+    return "kapten-kosmik";
+  });
 
-  const currentAvatar =
-    AVATAR_LIST.find((a) => a.id === avatarId) || AVATAR_LIST[0];
+  const currentAvatar = AVATAR_LIST.find((a) => a.id === avatarId) || AVATAR_LIST[0];
 
   return (
     <div className="flex flex-col items-center text-center w-full py-2 sm:py-4">
@@ -66,7 +62,9 @@ export function SelesaiView() {
           Selamat Datang, {userName}!
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-          Karakter <strong className="text-blue-600">{currentAvatar.name}</strong> kini resmi mewakili akun Anda. Bersiaplah mengelola kelas dan pembelajaran dengan lebih mudah dan cerdas.
+          Karakter <strong className="text-blue-600">{currentAvatar.name}</strong> kini resmi
+          mewakili akun Anda. Bersiaplah mengelola kelas dan pembelajaran dengan lebih mudah dan
+          cerdas.
         </p>
       </div>
 

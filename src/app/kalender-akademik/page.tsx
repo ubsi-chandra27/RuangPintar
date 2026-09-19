@@ -32,9 +32,9 @@ export default async function KalenderAkademikPage() {
     redirect("/dashboard");
   }
 
-  // Capability bundle if SCHOOL_STAFF
+  // Capability bundle if SCHOOL_STAFF or TEACHER
   const staffCapabilities =
-    user.peran_dasar === "SCHOOL_STAFF"
+    user.peran_dasar === "SCHOOL_STAFF" || user.peran_dasar === "TEACHER"
       ? await staffCapabilityService.getUserCapabilities(user.id)
       : [];
 

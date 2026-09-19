@@ -22,13 +22,25 @@ export function RegisterForm() {
     const password = formData.get("password")?.toString() ?? "";
     const confirmPassword = formData.get("confirmPassword")?.toString() ?? "";
 
-    if (password.length < 6) {
-      setErrorMessage("Kata sandi minimal 6 karakter.");
+    if (password.length < 8) {
+      setErrorMessage("Kata sandi minimal 8 karakter.");
+      return;
+    }
+
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+    if (!hasUpper || !hasLower || !hasNumber || !hasSymbol) {
+      setErrorMessage(
+        "Kata sandi wajib memadukan huruf besar, huruf kecil, angka, dan simbol (misal: RuangPintar@2026)."
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("Konfirmasi kata sandi tidak sesuai.");
+      setErrorMessage("Konfirmasi kata sandi tidak cocok.");
       return;
     }
 
@@ -69,7 +81,10 @@ export function RegisterForm() {
 
       {/* Nama Lengkap */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="nama_lengkap" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+        <label
+          htmlFor="nama_lengkap"
+          className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+        >
           Nama Lengkap & Gelar
         </label>
         <Input
@@ -78,14 +93,17 @@ export function RegisterForm() {
           type="text"
           required
           disabled={isPending}
-          placeholder="cth: Eri Chandra Apriyadi, S.Kom"
+          placeholder="cth: Drs. Budi Setiawan, M.Pd"
           className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
         />
       </div>
 
       {/* Email */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+        <label
+          htmlFor="email"
+          className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+        >
           Email Akun
         </label>
         <Input
@@ -102,7 +120,10 @@ export function RegisterForm() {
       {/* Username Akun */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <label htmlFor="username" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+          <label
+            htmlFor="username"
+            className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+          >
             Username Akun
           </label>
           <span className="text-[11px] text-slate-500 font-medium">Bisa otomatis dari email</span>
@@ -112,14 +133,17 @@ export function RegisterForm() {
           name="username"
           type="text"
           disabled={isPending}
-          placeholder="cth: wardahulfa (opsional, untuk login)"
+          placeholder="cth: budisetiawan (opsional, untuk login)"
           className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
         />
       </div>
 
       {/* Nama Sekolah */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="nama_sekolah" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+        <label
+          htmlFor="nama_sekolah"
+          className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+        >
           Asal Sekolah / Institusi
         </label>
         <Input
@@ -128,7 +152,7 @@ export function RegisterForm() {
           type="text"
           required
           disabled={isPending}
-          placeholder="cth: SMK Otomindo Jakarta"
+          placeholder="cth: SMA Negeri 1 Nusantara"
           className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
         />
       </div>
@@ -136,7 +160,10 @@ export function RegisterForm() {
       {/* Kata Sandi & Konfirmasi Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
-          <label htmlFor="password" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+          <label
+            htmlFor="password"
+            className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+          >
             Kata Sandi
           </label>
           <PasswordInput
@@ -144,13 +171,16 @@ export function RegisterForm() {
             name="password"
             required
             disabled={isPending}
-            placeholder="Minimal 6 karakter"
+            placeholder="Min. 8 karakter (huruf, angka & simbol)"
             className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="confirmPassword" className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none">
+          <label
+            htmlFor="confirmPassword"
+            className="text-xs sm:text-sm font-semibold text-[#0F172A] select-none"
+          >
             Konfirmasi Sandi
           </label>
           <PasswordInput
@@ -158,7 +188,7 @@ export function RegisterForm() {
             name="confirmPassword"
             required
             disabled={isPending}
-            placeholder="Ketik ulang sandi"
+            placeholder="Ulangi kata sandi"
             className="h-10 sm:h-11 bg-white! text-slate-900! border-slate-200! placeholder:text-slate-400! shadow-xs text-[13px] sm:text-[14px]"
           />
         </div>

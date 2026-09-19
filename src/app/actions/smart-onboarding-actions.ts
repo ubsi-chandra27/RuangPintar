@@ -186,3 +186,67 @@ export async function getTeacherTrialStatusAction(): Promise<ActionResult<Teache
     };
   }
 }
+
+/**
+ * 5. Action: Tambah Kelas Manual (Tanpa AI)
+ */
+export async function createManualClassAction(
+  formData: FormData
+): Promise<ActionResult<ConfirmClassResult>> {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.sekolah_id) {
+      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
+    }
+
+    const nama_kelas = formData.get("nama_kelas")?.toString()?.trim() || "";
+    const tingkat_kelas = formData.get("tingkat_kelas")?.toString()?.trim() || "10";
+    const mata_pelajaran = formData.get("mata_pelajaran")?.toString()?.trim() || "";
+    const siswa_raw = formData.get("siswa_list")?.toString() || "";
+
+    if (!nama_kelas || nama_kelas.length < 2) {
+      return {
+        success: false,
+        error: "Nama kelas wajib diisi minimal 2 karakter (contoh: 10-A, X RPL 1).",
+      };
+    }
+    if (!mata_pelajaran || mata_pelajaran.length < 2) {
+      return {
+        success: false,
+        error:
+          "Mata pelajaran wajib diisi minimal 2 karakter (contoh: Pemrograman Web, Matematika).",
+      };
+    }
+
+    // Ekstraksi nama siswa per baris jika ada
+    const studentLines = siswa_raw
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+
+    const siswa = studentLines.map((nama) => ({
+      nama_lengkap: nama,
+      jenis_kelamin: "L" as const,
+    }));
+
+    const result = await smartOnboardingService.confirmAndCreateClass(user.id, user.sekolah_id, {
+      nama_kelas,
+      tingkat_kelas,
+      mata_pelajaran,
+      siswa,
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/kelas-saya");
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || "Gagal membuat kelas secara manual.",
+    };
+  }
+}

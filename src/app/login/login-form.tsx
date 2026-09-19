@@ -131,10 +131,7 @@ export function LoginForm({ status }: { status?: string }) {
         <div className="text-center pt-3 border-t border-slate-200/80">
           <p className="text-[12px] sm:text-[13px] text-slate-600">
             Guru baru?{" "}
-            <Link
-              href="/register"
-              className="text-[#2563EB] font-semibold hover:underline"
-            >
+            <Link href="/register" className="text-[#2563EB] font-semibold hover:underline">
               Coba Gratis 30 Hari (Daftar Mandiri)
             </Link>
           </p>

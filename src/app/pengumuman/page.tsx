@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
+import { resolveUserCapabilities } from "@/shared/infrastructure/authorization/staff-capability-service";
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { CommunicationService } from "@/modules/communication/application/communication-service";
 import { AnnouncementDirectoryView } from "@/modules/communication/presentation/announcement-directory-view";
@@ -16,6 +17,7 @@ interface PengumumanPageProps {
 
 export default async function PengumumanPage({ searchParams }: PengumumanPageProps) {
   const user = await requireAuth();
+  const capabilities = await resolveUserCapabilities(user);
   const { id: selectedId } = await searchParams;
 
   const breadcrumbItems = [
@@ -55,7 +57,7 @@ export default async function PengumumanPage({ searchParams }: PengumumanPagePro
   }
 
   return (
-    <AcademicShell user={user} breadcrumbItems={breadcrumbItems}>
+    <AcademicShell user={user} userCapabilities={capabilities} breadcrumbItems={breadcrumbItems}>
       <AnnouncementDirectoryView
         announcements={announcements}
         canManage={canManage}

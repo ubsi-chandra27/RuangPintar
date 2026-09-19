@@ -86,7 +86,13 @@ export const AVATAR_LIST: AvatarOption[] = [
   },
 ];
 
-export function AvatarSvgIllustration({ avatar, size = 64 }: { avatar: AvatarOption; size?: number }) {
+export function AvatarSvgIllustration({
+  avatar,
+  size = 64,
+}: {
+  avatar: AvatarOption;
+  size?: number;
+}) {
   return (
     <div
       className={`relative rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-gradient-to-br ${avatar.bgGradient} shadow-md`}
@@ -108,7 +114,15 @@ export function AvatarSvgIllustration({ avatar, size = 64 }: { avatar: AvatarOpt
       >
         {/* Antenna */}
         <circle cx="50" cy="14" r="4" fill="#E2E8F0" />
-        <line x1="50" y1="18" x2="50" y2="26" stroke="#CBD5E1" strokeWidth="3" strokeLinecap="round" />
+        <line
+          x1="50"
+          y1="18"
+          x2="50"
+          y2="26"
+          stroke="#CBD5E1"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
 
         {/* Helmet Outer Shell */}
         <rect
@@ -152,7 +166,14 @@ export function AvatarSvgIllustration({ avatar, size = 64 }: { avatar: AvatarOpt
 
         {/* Visor Gradient Defs */}
         <defs>
-          <linearGradient id="visor-grad" x1="28" y1="32" x2="72" y2="64" gradientUnits="userSpaceOnUse">
+          <linearGradient
+            id="visor-grad"
+            x1="28"
+            y1="32"
+            x2="72"
+            y2="64"
+            gradientUnits="userSpaceOnUse"
+          >
             <stop stopColor="#38BDF8" />
             <stop offset="0.5" stopColor="#0284C7" />
             <stop offset="1" stopColor="#0F172A" />
@@ -236,9 +257,7 @@ export function AvatarPicker() {
                 {avatar.name}
               </div>
 
-              <div className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                {avatar.title}
-              </div>
+              <div className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{avatar.title}</div>
             </button>
           );
         })}

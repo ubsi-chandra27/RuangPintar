@@ -16,12 +16,16 @@ import { AiPreviewTableModal } from "./ai-preview-table-modal";
 import { ClassExtractionResult, TeacherTrialStatusDTO } from "../domain/ai-types";
 import { getTeacherTrialStatusAction } from "@/app/actions/smart-onboarding-actions";
 import { SchoolProposalModal } from "@/modules/school/presentation/school-proposal-modal";
+import { SubscriptionCheckoutModal } from "@/modules/billing/presentation/subscription-checkout-modal";
+import { QrCode } from "lucide-react";
 
 export function TrialBanner() {
   const [trialStatus, setTrialStatus] = useState<TeacherTrialStatusDTO | null>(null);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [nearExpiryModalOpen, setNearExpiryModalOpen] = useState(false);
   const [extractionResult, setExtractionResult] = useState<ClassExtractionResult | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
@@ -29,10 +33,34 @@ export function TrialBanner() {
     async function loadStatus() {
       const res = await getTeacherTrialStatusAction();
       if (res.success && res.data) {
-        setTrialStatus(res.data as TeacherTrialStatusDTO);
+        const data = res.data as TeacherTrialStatusDTO;
+        setTrialStatus(data);
+
+        // Jika trial tersisa <= 3 hari dan belum pernah di-dismiss sesi ini, buka modal notifikasi
+        if (data.is_trial && data.days_remaining <= 3) {
+          const dismissed = sessionStorage.getItem("rp_dismissed_trial_alert");
+          if (!dismissed) {
+            setNearExpiryModalOpen(true);
+          }
+        }
       }
     }
     loadStatus();
+
+    // Event listeners agar tombol di komponen lain bisa memicu modal
+    const handleOpenPhoto = () => setPhotoModalOpen(true);
+    const handleOpenCheckout = () => setCheckoutModalOpen(true);
+    const handleOpenProposal = () => setProposalModalOpen(true);
+
+    window.addEventListener("open-ai-photo-modal", handleOpenPhoto);
+    window.addEventListener("open-subscription-modal", handleOpenCheckout);
+    window.addEventListener("open-proposal-modal", handleOpenProposal);
+
+    return () => {
+      window.removeEventListener("open-ai-photo-modal", handleOpenPhoto);
+      window.removeEventListener("open-subscription-modal", handleOpenCheckout);
+      window.removeEventListener("open-proposal-modal", handleOpenProposal);
+    };
   }, []);
 
   function handleExtractionComplete(res: ClassExtractionResult) {
@@ -45,85 +73,97 @@ export function TrialBanner() {
     setPreviewModalOpen(false);
     setSuccessToast(`Kelas "${namaRombel}" berhasil diterbitkan dan siap diabsen!`);
 
-    // Reload status
     getTeacherTrialStatusAction().then((res) => {
       if (res.success && res.data) {
         setTrialStatus(res.data as TeacherTrialStatusDTO);
       }
     });
 
-    // Refresh halaman setelah 1 detik
     setTimeout(() => {
       window.location.reload();
     }, 1200);
   }
 
-  function handlePrintProposal() {
-    window.print();
-  }
-
-  // Jika bukan trial/freemium, sembunyikan banner atau tampilkan versi ringkas
-  if (!trialStatus || !trialStatus.is_trial) return null;
+  const handleDismissExpiryModal = () => {
+    sessionStorage.setItem("rp_dismissed_trial_alert", "1");
+    setNearExpiryModalOpen(false);
+  };
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900/90 via-sky-950/30 to-emerald-950/30 border border-sky-500/20 p-4 sm:p-5 shadow-xl backdrop-blur-md mb-6">
-        {/* Ambient Glow */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Floating Success Toast */}
+      {successToast && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-emerald-600 text-white text-xs font-bold shadow-2xl flex items-center gap-3 animate-fade-up">
+          <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-200" />
+          <span>{successToast}</span>
+          <button
+            onClick={() => setSuccessToast(null)}
+            className="ml-2 text-emerald-200 hover:text-white text-xs"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
-                Paket Guru Mandiri — Uji Coba Gratis
-              </span>
-              <span className="text-xs text-slate-400">
-                • {trialStatus.days_remaining} hari tersisa
-              </span>
+      {/* Near Expiry Academic Glass Modal (Hanya muncul jika masa uji coba <= 3 hari) */}
+      {nearExpiryModalOpen && trialStatus && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-up">
+          <div className="w-full max-w-md rounded-[28px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-blue-500/30 p-6 sm:p-7 shadow-2xl space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shrink-0 shadow-xs">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#2563EB] dark:text-blue-400">
+                  Pemberitahuan Lisensi
+                </span>
+                <h3 className="font-mono text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  Masa Uji Coba Tersisa {trialStatus.days_remaining} Hari
+                </h3>
+              </div>
             </div>
 
-            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              Buku Kerja Digital & Asisten Cerdas Guru
-            </h3>
-
-            <p className="text-xs text-slate-400 max-w-2xl">
-              Gunakan kuota Anda ({trialStatus.current_rombel_count} / {trialStatus.max_rombel}{" "}
-              kelas) untuk absensi kilat 15 detik dan cetak rekapitulasi Kurikulum Merdeka.
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Masa uji coba gratis Guru Mandiri Anda akan segera berakhir. Anda dapat mengaktifkan
+              Guru Pro secara mandiri atau mencetak surat usulan resmi untuk diajukan ke Kepala
+              Sekolah.
             </p>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            <button
-              onClick={() => setPhotoModalOpen(true)}
-              disabled={!trialStatus.can_create_rombel}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-white font-bold text-xs shadow-lg shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Camera className="w-4 h-4" />
-              <span>+ Buat Kelas via Foto AI</span>
-            </button>
+            <div className="space-y-2.5 pt-1">
+              <button
+                onClick={() => {
+                  setNearExpiryModalOpen(false);
+                  setCheckoutModalOpen(true);
+                }}
+                className="w-full py-3 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <QrCode className="h-4 w-4" />
+                <span>Upgrade Guru Pro (Rp 15.000 / bln)</span>
+              </button>
 
-            <button
-              onClick={() => setProposalModalOpen(true)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-medium transition-colors cursor-pointer"
-              title="Cetak Surat Usulan Lisensi Sekolah"
-            >
-              <FileDown className="w-4 h-4 text-emerald-400" />
-              <span>Cetak Usulan ke Kepsek</span>
-            </button>
+              <button
+                onClick={() => {
+                  setNearExpiryModalOpen(false);
+                  setProposalModalOpen(true);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <FileDown className="h-4 w-4 text-emerald-500" />
+                <span>Cetak Usulan ke Kepala Sekolah</span>
+              </button>
+
+              <button
+                onClick={handleDismissExpiryModal}
+                className="w-full py-2 text-center text-xs font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
+              >
+                Nanti Saja (Lanjutkan Mengajar)
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Success Toast */}
-        {successToast && (
-          <div className="mt-3 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{successToast}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Modals */}
+      {/* Sub-Modals */}
       <SmartPhotoOnboardingModal
         isOpen={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}
@@ -138,6 +178,11 @@ export function TrialBanner() {
       />
 
       <SchoolProposalModal isOpen={proposalModalOpen} onClose={() => setProposalModalOpen(false)} />
+
+      <SubscriptionCheckoutModal
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+      />
     </>
   );
 }
