@@ -108,6 +108,15 @@ Base UI
 Academic Glass UI v1.2
 ```
 
+## Mobile & Tablet First Mandate (Wajib Ditaati)
+
+```text
+Prioritas Desain: Mobile View (360px–430px) & Tablet View (768px–1024px)
+Aturan Badge: Dilarang keras teks badge terpotong atau membungkus 2 baris (wajib whitespace-nowrap, padding proporsional).
+Aturan Tabel: Pada mobile (sm:hidden), dilarang memaksakan tabel multi-kolom yang sempit; wajib gunakan Responsive Card List yang lapang, rapi, dan profesional. Gunakan tabel hanya di desktop (hidden sm:block).
+Aturan Header: Pastikan safe-area clearance memadai agar elemen tidak tertabrak topbar atau dynamic island di HP.
+```
+
 ## Database
 
 ```text

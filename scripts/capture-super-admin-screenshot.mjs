@@ -73,53 +73,51 @@ async function run() {
   await page.goto("http://localhost:3000/dashboard", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
 
-  // 1. Capture full dashboard overview
+  // 1. Capture full desktop dashboard overview
   const overviewPath = path.join(targetDir, "super-admin-academic-glass.png");
   await page.screenshot({ path: overviewPath, fullPage: true });
-  console.log("Saved:", overviewPath);
+  console.log("Saved desktop:", overviewPath);
 
-  // 2. Open User Menu to verify Power (Off) icon
-  const userMenuBtn = page.locator('button[aria-label="Menu Pengguna"]');
-  if (await userMenuBtn.isVisible()) {
-    await userMenuBtn.click();
-    await page.waitForTimeout(400);
-    const userMenuPath = path.join(targetDir, "super-admin-user-menu-power.png");
-    await page.screenshot({ path: userMenuPath });
-    console.log("Saved:", userMenuPath);
+  // 2. Mobile viewport screenshot (iPhone 14 Pro: 393 x 852)
+  const mobileContext = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+  });
+  await mobileContext.addCookies([
+    {
+      name: "ruang_pintar_session",
+      value: rawToken,
+      domain: "localhost",
+      path: "/",
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    },
+  ]);
+  const mobilePage = await mobileContext.newPage();
+  await mobilePage.goto("http://localhost:3000/dashboard", { waitUntil: "networkidle" });
+  await mobilePage.waitForTimeout(1000);
 
-    // Click "Keluar dari Akun" to trigger smooth zoom-in modal
-    const logoutBtn = page.locator('button:has-text("Keluar dari Akun")');
-    if (await logoutBtn.isVisible()) {
-      await logoutBtn.click();
-      await page.waitForTimeout(400);
-      const modalLogoutPath = path.join(targetDir, "super-admin-logout-modal-zoom.png");
-      await page.screenshot({ path: modalLogoutPath });
-      console.log("Saved:", modalLogoutPath);
+  const mobileOverviewPath = path.join(targetDir, "super-admin-mobile-verified.png");
+  await mobilePage.screenshot({ path: mobileOverviewPath, fullPage: true });
+  console.log("Saved mobile full page:", mobileOverviewPath);
 
-      // Close modal
-      const batalBtn = page.locator('button:has-text("Batal")');
-      if (await batalBtn.isVisible()) {
-        await batalBtn.click();
-        await page.waitForTimeout(300);
-      }
-    }
+  const mobileViewportPath = path.join(targetDir, "super-admin-mobile-viewport.png");
+  await mobilePage.screenshot({ path: mobileViewportPath });
+  console.log("Saved mobile top viewport:", mobileViewportPath);
+
+  // Scroll to "Performa Rombongan Belajar & KBM" to verify the exact section from the user's report
+  const rombelSection = mobilePage.locator("text=Performa Rombongan Belajar & KBM");
+  if (await rombelSection.isVisible()) {
+    await rombelSection.scrollIntoViewIfNeeded();
+    await mobilePage.waitForTimeout(400);
+    const mobileRombelPath = path.join(targetDir, "super-admin-mobile-rombel.png");
+    await mobilePage.screenshot({ path: mobileRombelPath });
+    console.log("Saved mobile rombel section:", mobileRombelPath);
   }
 
-  // 3. Switch to Audit Log tab & Open Activity Details Modal
-  const auditTab = page.locator('button:has-text("Audit Log Sistem")');
-  if (await auditTab.isVisible()) {
-    await auditTab.click();
-    await page.waitForTimeout(500);
-
-    const auditDetailBtn = page.locator('button:has-text("Detail")').first();
-    if (await auditDetailBtn.isVisible()) {
-      await auditDetailBtn.click();
-      await page.waitForTimeout(400);
-      const modalAuditPath = path.join(targetDir, "super-admin-audit-modal-zoom.png");
-      await page.screenshot({ path: modalAuditPath });
-      console.log("Saved:", modalAuditPath);
-    }
-  }
+  await mobileContext.close();
 
   // Clean up test session
   await prisma.sesiPengguna.delete({ where: { id: sessionId } });

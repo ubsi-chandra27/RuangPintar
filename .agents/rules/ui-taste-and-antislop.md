@@ -34,3 +34,12 @@ Dokumen ini mengintegrasikan standar dari:
 - **Kejujuran Data & Metrik:**
   - Tidak menampilkan angka atau klaim palsu.
   - Seluruh tautan navigasi dan tombol interaktif harus fungsional atau memiliki fallback yang jelas.
+
+---
+
+### 2. Standar Responsif & Mobile-First (Mobile & Tablet Excellence)
+- **Mobile-First Priority:** Pengguna aplikasi sekolah 70%+ menggunakan ponsel (guru mencatat presensi di kelas, kepala sekolah memantau via HP, wali murid melihat rapor anak). Prioritaskan pengujian pada layar HP (360px–430px) dan tablet (768px–1024px).
+- **Badge & Pill Formatting:** Dilarang keras teks badge terpotong atau membungkus menjadi 2 baris (misal: "0 Sesi\nKBM" terpotong di oval pill). Wajib menggunakan `whitespace-nowrap`, padding proporsional (`px-2.5 py-0.5 text-[11px] font-semibold`), dan ukuran ringkas.
+- **Tabel Responsif:** Jangan memaksa tabel HTML multi-kolom diperas ke layar 360px–430px hingga teks bertumpuk. Pada mobile (`sm:hidden`), tampilkan dalam format kartu daftar (card list) yang lapang, rapi, dan mudah dibaca; gunakan tabel hanya pada layar desktop (`hidden sm:table`).
+- **SafeArea & Header Clearance:** Jarak atas pada mobile tidak boleh tertabrak oleh topbar atau dynamic island; berikan padding yang nyaman (`pt-3` s.d. `pt-4`).
+
