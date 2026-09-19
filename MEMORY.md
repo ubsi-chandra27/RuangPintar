@@ -1203,13 +1203,59 @@ Status: **READY FOR HUMAN REVIEW**
    - Menghilangkan tampilan tabel mentah yang sebelumnya sesak di layar smartphone.
    - Mengubah tampilan rombel pada smartphone menjadi **LMS Course Card** mandiri: dilengkapi inisial avatar kelas (misal: `XD` untuk X DKV 1), nama wali/guru pengampu, status KBM non-wrapping, dan jumlah siswa terdaftar.
    - Menyajikan *Empty State* Academic Glass yang anggun dan terkalibrasi ketika belum ada kelas terdaftar di database.
-
-4. **Verifikasi Teknis & Visual QA:**
    - TypeScript `npm run typecheck` (`tsc --noEmit`): 0 error (PASS).
    - ESLint `npm run lint`: 0 error (PASS).
    - Prettier: 100% compliant.
-   - Visual QA tersimpan di `docs/phases/screenshots/`:
-     - `inspect-pengumuman-desktop-dark.png` (Desktop 1440x900)
-     - `inspect-pengumuman-mobile-dark.png` (Mobile Dark 393x852)
-     - `inspect-pengumuman-mobile-light.png` (Mobile Light 393x852)
-     - `verify-rombel-light-mobile.png` (Mobile Light Rombel Section)
+    - Visual QA tersimpan di `docs/phases/screenshots/`:
+      - `inspect-pengumuman-desktop-dark.png` (Desktop 1440x900)
+      - `inspect-pengumuman-mobile-dark.png` (Mobile Dark 393x852)
+      - `inspect-pengumuman-mobile-light.png` (Mobile Light 393x852)
+      - `verify-rombel-light-mobile.png` (Mobile Light Rombel Section)
+
+---
+
+# 46. Dukungan SaaS Multi-Tenant Super Admin: Menu Sekolah & Lisensi serta Guru & Penugasan
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Penyelesaian Masalah Menu Tidak Merespons / Mental ke Dashboard:**
+   - **Akar Masalah:** Rute `/sekolah` dan `/guru-pengajaran` sebelumnya selalu mengecek `user.sekolah_id`. Karena akun `SUPER_ADMIN` bertindak sebagai operator platform SaaS global (`user.sekolah_id = null`), server sebelumnya langsung me-redirect kembali ke `/dashboard`. Dari perspektif pengguna, menu tampak mati/tidak bisa diklik.
+   - **Solusi Arsitektur Dual-Mode:**
+     - **Mode 1 (Super Admin Global Directory):** Jika Super Admin mengakses `/sekolah` atau `/guru-pengajaran` tanpa parameter `sekolahId`, sistem menyajikan direktori multi-tenant seluruh sekolah/guru di platform.
+     - **Mode 2 (Super Admin Drill-down per Sekolah):** Jika Super Admin mengeklik tombol `Kelola` / `Kelola di Sekolah` (`?sekolahId={id}`), sistem membuka tampilan pengelolaan detail sekolah tersebut, lengkap dengan tombol `← Kembali ke Direktori`.
+     - **Mode 3 (Staf Sekolah Reguler):** Staf sekolah tetap langsung diarahkan ke sekolah institusinya masing-masing.
+
+2. **Direktori Sekolah & Lisensi SaaS Multi-Tenant (`/sekolah`):**
+   - Komponen: `SuperAdminSchoolDirectoryView` (`src/modules/school/presentation/super-admin-school-directory-view.tsx`).
+   - 4 Kartu KPI: Total Tenant Terdaftar, Lisensi Penuh Institusi, Paket Freemium (Trial Aktif), dan Sekolah Aktif Berjalan.
+   - Filter & Pencarian: Pencarian nama/NPSN/kota, filter tipe lisensi, filter jenjang pendidikan (`SD`, `SMP`, `SMA`, `SMK`, `UMUM`).
+   - Modal Registrasi Sekolah Baru: `CreateSchoolModal` (`src/modules/school/presentation/create-school-modal.tsx`) terhubung ke Server Action `createSchoolTenantAction` (`src/app/actions/school-actions.ts`) dengan validasi NPSN unik dan audit logging.
+   - Tampilan adaptif: Tabel lengkap di desktop (`hidden sm:block`) dan kartu sentuh rapi di smartphone (`sm:hidden`).
+   - Penyesuaian Sidebar: Badge `"Multi-Tenant"` dipersingkat menjadi `"Tenant"` agar judul menu `"Sekolah & Lisensi"` tidak terpotong (ellipsis).
+
+3. **Direktori Guru & Penugasan SaaS Multi-Tenant (`/guru-pengajaran`):**
+   - Komponen: `SuperAdminTeacherDirectoryView` (`src/modules/teacher/presentation/super-admin-teacher-directory-view.tsx`).
+   - 4 Kartu KPI: Total Pendidik Terdaftar, Pendidik Aktif Mengajar, Penugasan KBM Aktif, dan Institusi Sekolah Terhubung.
+   - Filter & Pencarian: Filter nama guru, NIP/NUPTK, dropdown pemilihan sekolah mitra, dan filter status aktif/nonaktif.
+   - Modal Pendaftaran Pendidik: Super Admin dapat mendaftarkan akun guru langsung ke sekolah mitra yang dipilih melalui Server Action `createTeacherAction`.
+   - Drill-down: Tombol `Kelola di Sekolah` menavigasi ke `TeacherManagementTabs` spesifik sekolah terkait dengan tombol `← Kembali ke Direktori Guru`.
+   - Penyesuaian Sidebar: Judul menu diselaraskan menjadi `"Guru & Penugasan SaaS"`.
+
+4. **Verifikasi Kualitas Teknis & Pengujian E2E:**
+   - TypeScript `npm run typecheck` (`tsc --noEmit`): **0 error (PASS)**.
+   - ESLint `npm run lint`: **0 error (PASS)**.
+   - Playwright E2E:
+     - `scripts/verify-school-directory.mjs`: Lulus 100% (navigasi HTTP 200, modal buka-tutup, screenshot terverifikasi).
+     - `scripts/test-create-school.mjs`: Lulus 100% (registrasi sekolah baru, muncul di tabel, navigasi drilldown).
+     - `scripts/verify-teacher-directory.mjs`: Lulus 100% (navigasi HTTP 200, registrasi guru ke sekolah, navigasi drilldown).
+   - Tangkapan Layar Visual QA tersimpan di `docs/phases/screenshots/`:
+     - `super-admin-sekolah-desktop.png` (Tampilan kosong direktori sekolah desktop)
+     - `super-admin-sekolah-modal.png` (Modal pendaftaran sekolah baru)
+     - `super-admin-sekolah-mobile.png` (Tampilan mobile direktori sekolah)
+     - `super-admin-sekolah-with-data.png` (Tabel direktori dengan sekolah terdaftar)
+     - `super-admin-sekolah-drilldown.png` (Halaman drilldown tata kelola sekolah)
+     - `super-admin-guru-desktop.png` (Tampilan kosong direktori guru desktop)
+     - `super-admin-guru-with-data.png` (Tabel direktori guru dengan data pendidik)
+     - `super-admin-guru-drilldown.png` (Halaman drilldown manajemen guru sekolah)
+     - `super-admin-guru-mobile.png` (Tampilan mobile direktori guru)
+   - Git Hash: `d150f99` dan `fbfd87e` telah di-push ke branch `origin/main`.
