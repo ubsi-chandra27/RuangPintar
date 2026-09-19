@@ -138,9 +138,10 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
     };
   });
 
-  const totalSesiTerdata = sesiPenggunaTerbaru.length || 1;
-  const mobilePct = Math.round(((mobileCount + tabletCount) / totalSesiTerdata) * 100);
-  const desktopPct = 100 - mobilePct;
+  const totalSesiTerdata = sesiPenggunaTerbaru.length;
+  const mobilePct =
+    totalSesiTerdata > 0 ? Math.round(((mobileCount + tabletCount) / totalSesiTerdata) * 100) : 0;
+  const desktopPct = totalSesiTerdata > 0 ? 100 - mobilePct : 0;
 
   // Format Rombel Riil (Zero Fake Performance)
   const rombelList = rombelListReal.map((r) => {
@@ -179,6 +180,7 @@ export async function SuperAdminDashboard({ user }: SuperAdminDashboardProps) {
   // Format Audit Logs Riil (Dari SQLite LogAudit)
   const auditLogs = auditLogsReal.map((log) => {
     const dibuatDate = new Date(log.dibuat_pada);
+    // eslint-disable-next-line react-hooks/purity
     const diffMs = Math.max(0, Date.now() - dibuatDate.getTime());
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMinutes / 60);

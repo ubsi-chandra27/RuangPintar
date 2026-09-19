@@ -64,7 +64,6 @@ function DoodleRays({ className = "" }: { className?: string }) {
   );
 }
 
-
 // Hand-Drawn Doodle Squiggle Underline (Camply reference)
 function DoodleUnderline({ className = "" }: { className?: string }) {
   return (
@@ -202,12 +201,13 @@ function RevealOnScroll({
   className?: string;
   delay?: number;
 }) {
-  const [isVisible, setIsVisible] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window)
+  );
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
-      setIsVisible(true);
       return;
     }
 
@@ -237,9 +237,7 @@ function RevealOnScroll({
         transitionDelay: `${Math.min(delay, 120)}ms`,
       }}
       className={`transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-transform ${
-        isVisible
-          ? "opacity-100 translate-y-0"
-          : "opacity-85 sm:opacity-70 translate-y-5"
+        isVisible ? "opacity-100 translate-y-0" : "opacity-85 sm:opacity-70 translate-y-5"
       } ${className}`}
     >
       {children}
@@ -672,7 +670,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
 
               {/* Subtitle: simple, clean, and punchy */}
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed font-century">
-                Platform digital sekolah terpadu: Administrasi guru otomatis, CBT ujian anti-curang, dan presensi AI dalam satu genggaman tanpa ribet.
+                Platform digital sekolah terpadu: Administrasi guru otomatis, CBT ujian anti-curang,
+                dan presensi AI dalam satu genggaman tanpa ribet.
               </p>
 
               {/* Key Platform Capability Badges — Symmetrical 2x2 Grid on Mobile, Seamless Row on Desktop */}
@@ -897,17 +896,23 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                 </svg>
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold font-century text-slate-900 dark:text-white tracking-tight leading-[1.12]">
-                Solusi Cerdas<br />Sekolah Modern!
+                Solusi Cerdas
+                <br />
+                Sekolah Modern!
               </h2>
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-century leading-relaxed max-w-sm pt-1">
-                Nikmati berbagai kemudahan ekosistem digital terpadu untuk KBM, ujian, dan administrasi tanpa ribet.
+                Nikmati berbagai kemudahan ekosistem digital terpadu untuk KBM, ujian, dan
+                administrasi tanpa ribet.
               </p>
             </RevealOnScroll>
 
             {/* Right: 3 Feature Pillars with Custom 3D Clay Icons */}
             <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
               {/* Feature 1: Administrasi & LMS */}
-              <RevealOnScroll delay={100} className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all">
+              <RevealOnScroll
+                delay={100}
+                className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all"
+              >
                 <div className="relative size-16 sm:size-20 mb-4 flex-shrink-0 transition-transform duration-300 group-hover:-translate-y-1.5">
                   <Image
                     src="/images/features/feature-lms-3d.png"
@@ -922,12 +927,16 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                   Administrasi & LMS
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-century leading-relaxed">
-                  Jurnal KBM harian, silabus otomatis, dan modul penugasan mandiri siswa tersinkronisasi tanpa kertas.
+                  Jurnal KBM harian, silabus otomatis, dan modul penugasan mandiri siswa
+                  tersinkronisasi tanpa kertas.
                 </p>
               </RevealOnScroll>
 
               {/* Feature 2: CBT Anti-Curang */}
-              <RevealOnScroll delay={200} className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all">
+              <RevealOnScroll
+                delay={200}
+                className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all"
+              >
                 <div className="relative size-16 sm:size-20 mb-4 flex-shrink-0 transition-transform duration-300 group-hover:-translate-y-1.5">
                   <Image
                     src="/images/features/feature-cbt-3d.png"
@@ -942,12 +951,16 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                   CBT Anti-Curang
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-century leading-relaxed">
-                  Ujian digital terkunci aman anti-buka tab baru dengan acak butir soal dan koreksi nilai instan.
+                  Ujian digital terkunci aman anti-buka tab baru dengan acak butir soal dan koreksi
+                  nilai instan.
                 </p>
               </RevealOnScroll>
 
               {/* Feature 3: Leger Rapor Merdeka */}
-              <RevealOnScroll delay={300} className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all">
+              <RevealOnScroll
+                delay={300}
+                className="group text-left flex flex-col items-start p-2 rounded-2xl transition-all"
+              >
                 <div className="relative size-16 sm:size-20 mb-4 flex-shrink-0 transition-transform duration-300 group-hover:-translate-y-1.5">
                   <Image
                     src="/images/features/feature-leger-3d.png"
@@ -962,7 +975,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                   Leger Rapor Merdeka
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-century leading-relaxed">
-                  Kalkulasi otomatis bobot TP formatif & sumatif sesuai juknis, siap cetak dan 1-klik ekspor Excel.
+                  Kalkulasi otomatis bobot TP formatif & sumatif sesuai juknis, siap cetak dan
+                  1-klik ekspor Excel.
                 </p>
               </RevealOnScroll>
             </div>
@@ -1005,8 +1019,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                         isHero
                           ? "ring-blue-500 shadow-blue-500/25 scale-105"
                           : isSelected
-                          ? "ring-amber-500 shadow-amber-500/25"
-                          : "ring-white dark:ring-slate-700 shadow-slate-900/15"
+                            ? "ring-amber-500 shadow-amber-500/25"
+                            : "ring-white dark:ring-slate-700 shadow-slate-900/15"
                       }`}
                     >
                       <div
@@ -1082,7 +1096,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                     Jangkauan Lengkap, Dari Guru Hingga Kepala Sekolah.
                   </h3>
                   <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-century">
-                    Jelajahi bagaimana setiap pemangku kepentingan di sekolah mendapatkan otomasi tanpa sekat birokrasi.
+                    Jelajahi bagaimana setiap pemangku kepentingan di sekolah mendapatkan otomasi
+                    tanpa sekat birokrasi.
                   </p>
                 </div>
 
@@ -1165,10 +1180,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       {/* ─────────────────────────────────────────────────────────────
           5. TESTIMONIALS & RATING (Clean & Simple, 100% Borderless, Seamless Flow from Map)
       ───────────────────────────────────────────────────────────── */}
-      <section
-        id="testimoni"
-        className="pt-4 sm:pt-8 pb-10 sm:pb-20 relative overflow-hidden"
-      >
+      <section id="testimoni" className="pt-4 sm:pt-8 pb-10 sm:pb-20 relative overflow-hidden">
         {/* Continuous Dotted World Map & Atmospheric Ambient Flow */}
         <div className="absolute inset-0 -mx-4 sm:-mx-8 lg:-mx-16 flex items-start justify-center opacity-25 dark:opacity-15 pointer-events-none select-none overflow-hidden">
           <Image
@@ -1206,7 +1218,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                 Guru & Pimpinan Sekolah yang Puas Adalah Bukti Nyata Kami.
               </h2>
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-century leading-relaxed">
-                Dengarkan langsung cerita para pendidik dan kepala sekolah yang telah merasakan kemudahan otomasi digital Ruang Pintar tanpa kerumitan birokrasi.
+                Dengarkan langsung cerita para pendidik dan kepala sekolah yang telah merasakan
+                kemudahan otomasi digital Ruang Pintar tanpa kerumitan birokrasi.
               </p>
             </div>
 
@@ -1247,7 +1260,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                       <div className="flex items-center gap-1">
                         <div className="flex items-center gap-0.5 text-amber-400">
                           {[...Array(t.rating)].map((_, starIdx) => (
-                            <Star key={starIdx} className="size-3.5 fill-amber-400 text-amber-400" />
+                            <Star
+                              key={starIdx}
+                              className="size-3.5 fill-amber-400 text-amber-400"
+                            />
                           ))}
                         </div>
                         <span className="ml-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -1291,10 +1307,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
       {/* ─────────────────────────────────────────────────────────────
           6. COMMUNITY & INTEGRATION ECOSYSTEM ("Community Service Is Calling..." in Video)
       ───────────────────────────────────────────────────────────── */}
-      <section
-        id="ekosistem"
-        className="py-10 sm:py-20 relative overflow-hidden"
-      >
+      <section id="ekosistem" className="py-10 sm:py-20 relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Headline with Doodle Rays & CTA */}
@@ -1331,7 +1344,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
             </RevealOnScroll>
 
             {/* Right Column: Orbiting Ecosystem Badges (Matching Camply Avatar Cluster) */}
-            <RevealOnScroll delay={150} className="lg:col-span-6 relative flex items-center justify-center p-8 sm:p-14">
+            <RevealOnScroll
+              delay={150}
+              className="lg:col-span-6 relative flex items-center justify-center p-8 sm:p-14"
+            >
               {/* Center Teacher Avatar */}
               <div className="relative z-10 size-24 sm:size-28 rounded-full border-4 border-white dark:border-slate-800 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-600/30">
                 <GraduationCap className="size-12" />
@@ -1499,7 +1515,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
 
           <div className="mt-14 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch text-left">
             {/* Plan 1: 30-Day Free Trial */}
-            <RevealOnScroll delay={100} className="rounded-[32px] border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-sm">
+            <RevealOnScroll
+              delay={100}
+              className="rounded-[32px] border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-sm"
+            >
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -1552,7 +1571,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
             </RevealOnScroll>
 
             {/* Plan 2: Guru Pro Mandiri (Rp 15.000 / bln) */}
-            <RevealOnScroll delay={200} className="rounded-[32px] border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-xl relative scale-105">
+            <RevealOnScroll
+              delay={200}
+              className="rounded-[32px] border-2 border-blue-600 dark:border-blue-500 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-xl relative scale-105"
+            >
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-blue-600 text-white text-[11px] font-extrabold tracking-wide shadow-md">
                 PILIHAN PALING POPULER
               </div>
@@ -1611,7 +1633,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
             </RevealOnScroll>
 
             {/* Plan 3: Lisensi Sekolah Terpadu (Akses Multi-Guru & Tata Usaha) */}
-            <RevealOnScroll delay={300} className="rounded-[32px] border border-indigo-200 dark:border-indigo-800/80 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-lg relative overflow-hidden">
+            <RevealOnScroll
+              delay={300}
+              className="rounded-[32px] border border-indigo-200 dark:border-indigo-800/80 bg-white dark:bg-slate-900 p-8 flex flex-col justify-between shadow-lg relative overflow-hidden"
+            >
               <div className="absolute top-0 right-0 bg-gradient-to-l from-indigo-500 to-blue-600 text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase tracking-wider font-century">
                 Institusi Sekolah
               </div>
@@ -1636,9 +1661,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                     <span className="text-3xl sm:text-4xl font-black text-indigo-600 dark:text-indigo-400 font-century">
                       Akses Sekolah
                     </span>
-                    <span className="text-xs text-slate-500 font-medium font-century">
-                      / tahun
-                    </span>
+                    <span className="text-xs text-slate-500 font-medium font-century">/ tahun</span>
                   </div>
                   <span className="text-[11px] text-slate-400 dark:text-slate-500 font-century">
                     Tersedia untuk jenjang SD, SMP, SMA/SMK, hingga Yayasan Terpadu

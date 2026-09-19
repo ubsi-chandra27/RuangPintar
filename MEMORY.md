@@ -1140,3 +1140,44 @@ Status: **READY FOR HUMAN REVIEW**
 
 3. **Verifikasi Teknis:**
    - TypeScript `npm run typecheck` (`tsc --noEmit`): 0 error (PASS).
+
+---
+
+# 44. Super Admin Single-Canvas Dashboard Refinement & Clean Slate Database Reset (Option 1)
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Pembersihan Database Bersih Murni (Clean Slate Database Reset — Opsi 1):**
+   - Mengosongkan akumulasi data mock/uji coba lama dari 67 tabel SQLite (`prisma/data/ruang-pintar.db`) setelah membuat snapshot backup aman di `prisma/data/backups/`.
+   - Mengukuhkan 1 akun `SUPER_ADMIN` tunggal yang sah dan bersih:
+     - Username: `superadmin`
+     - Email: `superadmin@ruangpintar.id`
+     - Peran: `SUPER_ADMIN`
+     - Password hash: bcrypt terenkripsi (`Password123#`)
+     - Sekolah ID: `null` (Super Admin bertindak sebagai operator SaaS global, tidak terikat pada satu sekolah)
+     - Status: `AKTIF`
+   - Verifikasi hitungan basis data riil:
+     - `Total Siswa Terdata`: **0**
+     - `Guru Terdaftar (SaaS)`: **0**
+     - `Total Sekolah Pengguna`: **0**
+     - `Total Rombel / Kelas`: **0**
+     - `Sesi Aktif & Presensi`: **0**
+
+2. **Penyelarasan Dashboard Super Admin Single-Canvas (Sara Ibrahim Reference Alignment):**
+   - Menghilangkan 5 tab bar artifisial ("Ringkasan Utama | Manajemen Pengajar | Rombel | Keuangan | Audit Log"). Seluruh instrumen pemantauan kini mengalir vertikal dalam satu canvas (*single unified surface*).
+   - Sidebar navigasi Super Admin dirampingkan: item operasional mikro internal sekolah dihapus dari pandangan Super Admin platform.
+   - Mengadopsi Academic Glass UI v1.2 dark mode bernuansa deep blue slate, visualisasi concentric ring gauge kehadiran, grafik aktivitas dual-wave SVG riil, serta modal audit log detail.
+
+3. **Kepatuhan Mobile & Tablet First Mandate:**
+   - Pada layar smartphone (`sm:hidden`), tabel rombel dan sekolah digantikan dengan susunan kartu (*responsive card list*) yang nyaman disentuh.
+   - Seluruh badge status (termasuk `0 Sesi KBM`, `Real Siswa`, `0 Guru`, `0 Institusi`) diproteksi dengan `whitespace-nowrap` sehingga tidak akan pernah pecah membungkus menjadi 2 baris.
+
+4. **Kualitas Teknis & Verifikasi:**
+   - TypeScript `npm run typecheck` (`tsc --noEmit`): 0 error (PASS).
+   - ESLint `npm run lint`: 0 error (PASS).
+   - Prettier: 100% compliant pada seluruh berkas yang dimodifikasi.
+   - Login UI via Playwright: 100% berhasil login dan diarahkan ke `/dashboard`.
+   - Tangkapan Layar Visual QA tersimpan di `docs/phases/screenshots/`:
+     - `super-admin-academic-glass.png` (Desktop 1440x900)
+     - `super-admin-mobile-verified.png` (Mobile iPhone 14 Pro 393x852)
+     - `super-admin-mobile-rombel.png` (Detail Section Card List Mobile)

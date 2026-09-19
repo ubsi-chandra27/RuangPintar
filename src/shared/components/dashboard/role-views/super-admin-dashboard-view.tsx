@@ -320,16 +320,12 @@ export function SuperAdminDashboardView({
                       {item.sessionCount > 0 ? `${item.completion}% Kehadiran` : "0 Sesi KBM"}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {item.guruNama}
-                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">{item.guruNama}</div>
                   <div className="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100 dark:border-slate-700/40 pt-2 mt-0.5">
                     <span className="font-medium text-slate-600 dark:text-slate-300">
                       {item.siswaCount} Siswa Terdaftar
                     </span>
-                    <span className="text-slate-400 truncate max-w-[140px]">
-                      {item.mapelNama}
-                    </span>
+                    <span className="text-slate-400 truncate max-w-[140px]">{item.mapelNama}</span>
                   </div>
                 </div>
               ))
@@ -371,23 +367,17 @@ export function SuperAdminDashboardView({
                         <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm group-hover:text-blue-600 transition-colors">
                           {item.nama}
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          {item.guruNama}
-                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">{item.guruNama}</div>
                       </td>
                       <td className="py-3.5 pr-4">
                         <div className="font-semibold text-slate-700 dark:text-slate-300">
                           {item.siswaCount} Siswa Terdaftar
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          {item.mapelNama}
-                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">{item.mapelNama}</div>
                       </td>
                       <td className="py-3.5 text-right whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                          {item.sessionCount > 0
-                            ? `${item.completion}% Kehadiran`
-                            : "0 Sesi KBM"}
+                          {item.sessionCount > 0 ? `${item.completion}% Kehadiran` : "0 Sesi KBM"}
                         </span>
                       </td>
                     </tr>
@@ -431,9 +421,7 @@ export function SuperAdminDashboardView({
                 subtitle=""
                 centerValue={attendance.hadirPct}
                 centerLabel={
-                  attendance.totalPresensiRecorded > 0
-                    ? "Rata-rata Kehadiran"
-                    : "0 Sesi Masuk"
+                  attendance.totalPresensiRecorded > 0 ? "Rata-rata Kehadiran" : "0 Sesi Masuk"
                 }
                 segments={[
                   {
@@ -492,11 +480,7 @@ export function SuperAdminDashboardView({
                     className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-700/50"
                   >
                     <div className="size-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center shrink-0">
-                      {log.aksi === "CREATE"
-                        ? "+"
-                        : log.aksi === "DELETE"
-                        ? "×"
-                        : "✎"}
+                      {log.aksi === "CREATE" ? "+" : log.aksi === "DELETE" ? "×" : "✎"}
                     </div>
                     <div className="min-w-0 flex-1 text-left">
                       <p className="text-xs text-slate-700 dark:text-slate-300 leading-snug truncate">
@@ -508,9 +492,7 @@ export function SuperAdminDashboardView({
                           {log.tipe_sumber}
                         </span>
                       </p>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">
-                        {log.timeAgo}
-                      </span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">{log.timeAgo}</span>
                     </div>
                     <Eye className="size-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   </div>
@@ -560,9 +542,33 @@ export function SuperAdminDashboardView({
                 </defs>
 
                 {/* Horizontal grid lines */}
-                <line x1="0" y1="25" x2="500" y2="25" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
-                <line x1="0" y1="65" x2="500" y2="65" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
-                <line x1="0" y1="105" x2="500" y2="105" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
+                <line
+                  x1="0"
+                  y1="25"
+                  x2="500"
+                  y2="25"
+                  stroke="currentColor"
+                  className="text-slate-100 dark:text-slate-800"
+                  strokeDasharray="3 3"
+                />
+                <line
+                  x1="0"
+                  y1="65"
+                  x2="500"
+                  y2="65"
+                  stroke="currentColor"
+                  className="text-slate-100 dark:text-slate-800"
+                  strokeDasharray="3 3"
+                />
+                <line
+                  x1="0"
+                  y1="105"
+                  x2="500"
+                  y2="105"
+                  stroke="currentColor"
+                  className="text-slate-100 dark:text-slate-800"
+                  strokeDasharray="3 3"
+                />
 
                 {/* Area path */}
                 <path
@@ -642,38 +648,44 @@ export function SuperAdminDashboardView({
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
               Sesi Pendidik Terakhir
             </span>
-            {deviceStats.sesiList.slice(0, 3).map((s) => (
-              <div
-                key={s.id}
-                className="p-2.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 flex items-center justify-between gap-2 border border-slate-200/40 dark:border-slate-700/40"
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="size-7 rounded-lg bg-blue-100/60 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
-                    {s.deviceType === "mobile" ? (
-                      <Smartphone className="size-3.5" />
-                    ) : s.deviceType === "tablet" ? (
-                      <Tablet className="size-3.5" />
-                    ) : (
-                      <Laptop className="size-3.5" />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate">
-                      {s.nama}
-                    </span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
-                      {s.deviceBrand} • {s.sekolah}
-                    </span>
-                  </div>
-                </div>
-                <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 ${s.presenceBadgeClass}`}
+            {deviceStats.sesiList.length > 0 ? (
+              deviceStats.sesiList.slice(0, 3).map((s) => (
+                <div
+                  key={s.id}
+                  className="p-2.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 flex items-center justify-between gap-2 border border-slate-200/40 dark:border-slate-700/40"
                 >
-                  <span className={`size-1 rounded-full ${s.presenceDotClass}`} />
-                  <span>{s.presenceLabel}</span>
-                </span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="size-7 rounded-lg bg-blue-100/60 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                      {s.deviceType === "mobile" ? (
+                        <Smartphone className="size-3.5" />
+                      ) : s.deviceType === "tablet" ? (
+                        <Tablet className="size-3.5" />
+                      ) : (
+                        <Laptop className="size-3.5" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate">
+                        {s.nama}
+                      </span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                        {s.deviceBrand} • {s.sekolah}
+                      </span>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 ${s.presenceBadgeClass}`}
+                  >
+                    <span className={`size-1 rounded-full ${s.presenceDotClass}`} />
+                    <span>{s.presenceLabel}</span>
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-xs text-slate-400">
+                Belum ada sesi aktif tercatat saat ini.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -741,7 +753,9 @@ export function SuperAdminDashboardView({
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                    <span>{sekolah.jenjang} • {sekolah.rombelCount} Kelas</span>
+                    <span>
+                      {sekolah.jenjang} • {sekolah.rombelCount} Kelas
+                    </span>
                     <span className="font-medium truncate max-w-[140px]">{sekolah.guruKontak}</span>
                   </div>
                 </div>
@@ -938,19 +952,13 @@ export function SuperAdminDashboardView({
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="size-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
-                  {selectedLog.aksi === "CREATE"
-                    ? "+"
-                    : selectedLog.aksi === "DELETE"
-                    ? "×"
-                    : "✎"}
+                  {selectedLog.aksi === "CREATE" ? "+" : selectedLog.aksi === "DELETE" ? "×" : "✎"}
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                     Rincian Audit Log
                   </h4>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    ID: {selectedLog.id}
-                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">ID: {selectedLog.id}</span>
                 </div>
               </div>
               <button
