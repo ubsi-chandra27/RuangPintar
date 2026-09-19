@@ -250,7 +250,7 @@ export const CANONICAL_NAVIGATION_CONFIG: NavGroup[] = [
         href: "/sekolah",
         iconName: "Building2",
         roles: ["SUPER_ADMIN"],
-        badge: "Multi-Tenant",
+        badge: "Tenant",
         isPhaseDeferred: false,
       },
       {

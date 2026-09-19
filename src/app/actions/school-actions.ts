@@ -21,6 +21,9 @@ import { positionService } from "@/modules/school/application/position-service";
 import { positionAssignmentService } from "@/modules/school/application/position-assignment-service";
 import { AuditContext } from "@/modules/school/infrastructure/school-repository";
 import { ZodError } from "zod";
+import { prisma } from "@/shared/infrastructure/database/prisma";
+import { generateUlid } from "@/shared/lib/ulid";
+import { recordAuditEvent } from "@/shared/infrastructure/audit/audit-logger";
 
 async function getAuditContext(actor: { id: string; peran_dasar: string }): Promise<AuditContext> {
   const h = await headers();
@@ -402,3 +405,102 @@ export async function cancelPositionAssignmentAction(
     return handleActionError(error);
   }
 }
+
+// -----------------------------------------------------------------------------
+// 5. REGISTRASI TENANT SEKOLAH MULTI-TENANT (SUPER_ADMIN ONLY)
+// -----------------------------------------------------------------------------
+
+export async function createSchoolTenantAction(formData: FormData): Promise<ActionResponse> {
+  try {
+    const actor = await requireAuth();
+    if (actor.peran_dasar !== "SUPER_ADMIN") {
+      return {
+        success: false,
+        error: "Akses ditolak: Hanya Super Admin SaaS yang dapat mendaftarkan institusi sekolah baru.",
+        code: "FORBIDDEN",
+      };
+    }
+
+    const auditContext = await getAuditContext(actor);
+
+    const nama = String(formData.get("nama") ?? "").trim();
+    const npsnRaw = formData.get("npsn") ? String(formData.get("npsn")).trim() : null;
+    const npsn = npsnRaw && npsnRaw.length > 0 ? npsnRaw : null;
+    const jenjang = String(formData.get("jenjang") ?? "SMA").trim();
+    const tipeLisensi = String(formData.get("tipe_lisensi") ?? "FREEMIUM").trim();
+    const alamatRaw = formData.get("alamat") ? String(formData.get("alamat")).trim() : null;
+    const alamat = alamatRaw && alamatRaw.length > 0 ? alamatRaw : null;
+    const teleponRaw = formData.get("telepon") ? String(formData.get("telepon")).trim() : null;
+    const telepon = teleponRaw && teleponRaw.length > 0 ? teleponRaw : null;
+    const emailRaw = formData.get("email") ? String(formData.get("email")).trim() : null;
+    const email = emailRaw && emailRaw.length > 0 ? emailRaw : null;
+
+    if (nama.length < 3) {
+      return {
+        success: false,
+        error: "Nama institusi sekolah minimal 3 karakter.",
+        code: "VALIDATION_ERROR",
+      };
+    }
+
+    if (npsn) {
+      const existing = await prisma.sekolah.findUnique({
+        where: { npsn },
+      });
+      if (existing) {
+        return {
+          success: false,
+          error: `Sekolah dengan NPSN ${npsn} sudah terdaftar (${existing.nama}).`,
+          code: "DUPLICATE_NPSN",
+        };
+      }
+    }
+
+    const schoolId = generateUlid();
+    const trialBerakhir =
+      tipeLisensi === "FREEMIUM"
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        : null;
+
+    const createdSchool = await prisma.sekolah.create({
+      data: {
+        id: schoolId,
+        nama,
+        npsn,
+        jenjang,
+        tipe_lisensi: tipeLisensi,
+        trial_berakhir_pada: trialBerakhir,
+        alamat,
+        telepon,
+        email,
+        zona_waktu: "Asia/Jakarta",
+        status_aktif: true,
+      },
+    });
+
+    await recordAuditEvent({
+      sekolah_id: schoolId,
+      aktor_id: actor.id,
+      aktor_role: actor.peran_dasar,
+      aksi: "CREATE",
+      tipe_sumber: "SEKOLAH",
+      id_sumber: schoolId,
+      payload_sebelum: null,
+      payload_sesudah: createdSchool as unknown as Record<string, unknown>,
+      ip_address: auditContext.ip_address,
+      user_agent: auditContext.user_agent,
+    });
+
+    revalidatePath("/sekolah");
+    revalidatePath("/dashboard");
+
+    return {
+      success: true,
+      data: createdSchool,
+      message: `Sekolah ${nama} berhasil didaftarkan ke platform SaaS.`,
+    };
+  } catch (error) {
+    return handleActionError(error);
+  }
+}
+

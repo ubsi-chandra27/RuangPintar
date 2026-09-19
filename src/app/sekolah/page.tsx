@@ -1,29 +1,59 @@
 /**
  * Ruang Pintar — School & Organization Management Page (/sekolah)
  *
- * Server Component yang dilindungi requireAuth() dan otorisasi M02.
+ * Mendukung 2 mode operasional:
+ * 1. Platform SaaS Multi-Tenant (SUPER_ADMIN): Menampilkan direktori seluruh sekolah & lisensi
+ *    jika diakses tanpa parameter sekolahId.
+ * 2. Institusi Sekolah Tunggal: Menampilkan profil, unit kerja, struktur jabatan & penugasan personil
+ *    untuk sekolah aktif staf institusi atau sekolah yang dipilih oleh SUPER_ADMIN.
  */
 
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Building2, Sparkles, School } from "lucide-react";
+import { Building2, Sparkles, School, ArrowLeft } from "lucide-react";
 import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
 import { checkPermission } from "@/shared/infrastructure/authorization/authz-guard";
 import { staffCapabilityService } from "@/shared/infrastructure/authorization/staff-capability-service";
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { SchoolManagementTabs } from "@/modules/school/presentation/school-management-tabs";
+import { SuperAdminSchoolDirectoryView } from "@/modules/school/presentation/super-admin-school-directory-view";
 import { schoolProfileService } from "@/modules/school/application/school-profile-service";
 import { organizationUnitService } from "@/modules/school/application/organization-unit-service";
 import { positionService } from "@/modules/school/application/position-service";
 import { positionAssignmentService } from "@/modules/school/application/position-assignment-service";
+import { prisma } from "@/shared/infrastructure/database/prisma";
 
-export default async function SchoolManagementPage() {
+interface SchoolManagementPageProps {
+  searchParams?: Promise<{ sekolahId?: string }>;
+}
+
+export default async function SchoolManagementPage(props: SchoolManagementPageProps) {
   const user = await requireAuth();
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
+  const isSuperAdmin = user.peran_dasar === "SUPER_ADMIN";
 
-  if (!user.sekolah_id) {
-    redirect("/dashboard");
+  // Mode 1: SUPER_ADMIN membuka direktori multi-tenant sekolah & lisensi
+  if (isSuperAdmin && !searchParams?.sekolahId) {
+    const rawSchools = await prisma.sekolah.findMany({
+      orderBy: { created_at: "desc" },
+    });
+
+    return (
+      <AcademicShell user={user} userCapabilities={[]}>
+        <SuperAdminSchoolDirectoryView schools={rawSchools} />
+      </AcademicShell>
+    );
+  }
+
+  // Mode 2: Halaman detail institusi sekolah tunggal
+  const effectiveSekolahId = isSuperAdmin
+    ? searchParams?.sekolahId ?? user.sekolah_id
+    : user.sekolah_id;
+
+  if (!effectiveSekolahId) {
+    redirect(isSuperAdmin ? "/sekolah" : "/dashboard");
   }
 
   // Ambil capability bundle jika peran adalah SCHOOL_STAFF atau TEACHER
@@ -33,40 +63,49 @@ export default async function SchoolManagementPage() {
       : [];
 
   // Evaluasi Hak Akses Server-Side
-  const canViewSchool = await checkPermission("academic.school.view", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canViewSchool = isSuperAdmin
+    ? true
+    : await checkPermission("academic.school.view", { sekolah_id: effectiveSekolahId });
 
-  const canManageSchool = await checkPermission("academic.school.manage", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canManageSchool = isSuperAdmin
+    ? true
+    : await checkPermission("academic.school.manage", { sekolah_id: effectiveSekolahId });
 
-  const canViewStructure = await checkPermission("academic.structure.view", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canViewStructure = isSuperAdmin
+    ? true
+    : await checkPermission("academic.structure.view", { sekolah_id: effectiveSekolahId });
 
-  const canManageStructure = await checkPermission("academic.structure.manage", {
-    sekolah_id: user.sekolah_id,
-  });
+  const canManageStructure = isSuperAdmin
+    ? true
+    : await checkPermission("academic.structure.manage", { sekolah_id: effectiveSekolahId });
 
   // Jika tidak memiliki izin lihat profil maupun struktur -> redirect
   if (!canViewSchool && !canViewStructure) {
     redirect("/dashboard");
   }
 
-  // Pengambilan Data Sesuai Izin
-  const profile = await schoolProfileService.getProfile(user.sekolah_id);
+  // Pengambilan Data Sesuai Izin dengan penanganan graceful jika ID sekolah tidak ditemukan
+  let profile;
+  try {
+    profile = await schoolProfileService.getProfile(effectiveSekolahId);
+  } catch {
+    redirect(isSuperAdmin ? "/sekolah" : "/dashboard");
+  }
 
-  const units = canViewStructure ? await organizationUnitService.getUnits(user.sekolah_id) : [];
+  const units = canViewStructure
+    ? await organizationUnitService.getUnits(effectiveSekolahId)
+    : [];
 
-  const positions = canViewStructure ? await positionService.getPositions(user.sekolah_id) : [];
+  const positions = canViewStructure
+    ? await positionService.getPositions(effectiveSekolahId)
+    : [];
 
   const assignments = canViewStructure
-    ? await positionAssignmentService.getAssignments(user.sekolah_id)
+    ? await positionAssignmentService.getAssignments(effectiveSekolahId)
     : [];
 
   const personnel = canManageStructure
-    ? await positionAssignmentService.getAssignablePersonnel(user.sekolah_id)
+    ? await positionAssignmentService.getAssignablePersonnel(effectiveSekolahId)
     : [];
 
   return (
@@ -81,16 +120,41 @@ export default async function SchoolManagementPage() {
             {/* Left Content */}
             <div className="w-full md:max-w-[60%] lg:max-w-[66%] space-y-3.5">
               {/* Breadcrumb Navigation */}
-              <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
-                  Dashboard
-                </Link>
-                <span>/</span>
-                <span className="text-slate-700 font-semibold">Manajemen Sekolah</span>
-              </div>
+              {isSuperAdmin ? (
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                  <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
+                    Dashboard
+                  </Link>
+                  <span>/</span>
+                  <Link href="/sekolah" className="hover:text-[#2563EB] transition-colors">
+                    Sekolah & Lisensi
+                  </Link>
+                  <span>/</span>
+                  <span className="text-slate-700 font-semibold truncate max-w-[200px]">
+                    {profile.nama}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                  <Link href="/dashboard" className="hover:text-[#2563EB] transition-colors">
+                    Dashboard
+                  </Link>
+                  <span>/</span>
+                  <span className="text-slate-700 font-semibold">Manajemen Sekolah</span>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2.5">
+                  {isSuperAdmin && (
+                    <Link
+                      href="/sekolah"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors mr-1"
+                    >
+                      <ArrowLeft className="size-3.5" />
+                      <span>Kembali ke Direktori</span>
+                    </Link>
+                  )}
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
                     {profile.nama}
                   </h1>
