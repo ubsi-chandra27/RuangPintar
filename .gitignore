@@ -56,3 +56,5 @@ Thumbs.db
 /scripts/*.jpg
 /scripts/*.html
 /scripts/behance_ref/
+*.exe
+
