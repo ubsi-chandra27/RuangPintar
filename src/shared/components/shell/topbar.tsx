@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Menu, Search, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeft } from "lucide-react";
 import { UserMenu } from "./user-menu";
 import { NotificationEntry } from "./notification-entry";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -72,25 +72,10 @@ export function Topbar({
         </div>
       </div>
 
-      {/* Right side: Compact Pill Search Bar + Theme Switcher + Notifications + User Menu */}
-      <div className="flex items-center gap-1.5 sm:gap-3 flex-1 justify-end max-w-xl min-w-0">
-        {/* Compact & Refined Pill Search Bar */}
-        <div className="relative flex items-center justify-between h-9 sm:h-10 w-28 xs:w-36 sm:w-56 md:w-64 lg:w-72 rounded-full bg-white dark:bg-slate-850 border border-slate-200/90 dark:border-slate-750 shadow-2xs hover:shadow-xs focus-within:border-blue-500 dark:focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500/15 pl-3 sm:pl-4 pr-2.5 transition-all duration-200 shrink">
-          <input
-            type="text"
-            placeholder="Cari..."
-            className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none text-xs sm:text-[13px] block sm:hidden"
-          />
-          <input
-            type="text"
-            placeholder="Cari data, kelas, atau menu..."
-            className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none text-xs sm:text-[13px] hidden sm:block"
-          />
-          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 dark:text-slate-500 shrink-0 ml-1.5 pointer-events-none" />
-        </div>
-
-        {/* Action Controls Cluster (shrink-0 mutlak agar tidak terpotong di Android) */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+      {/* Right side: Theme Switcher + Notifications + User Menu */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5 flex-1 justify-end min-w-0">
+        {/* Action Controls Cluster */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Theme Mode Switcher (Ikon bersih tanpa lingkaran) */}
           <ThemeSwitcher />
 

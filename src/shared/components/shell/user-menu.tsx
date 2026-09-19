@@ -3,7 +3,7 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { User, LogOut, KeyRound, ChevronDown, Shield, X } from "lucide-react";
+import { User, Power, KeyRound, ChevronDown, Shield, X } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth-actions";
 import { Badge } from "../ui/badge";
 
@@ -28,7 +28,21 @@ export function UserMenu({ user }: UserMenuProps) {
   );
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = React.useState(false);
+  const [isClosingModal, setIsClosingModal] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement>(null);
+
+  const handleCloseLogoutModal = React.useCallback(() => {
+    if (process.env.NODE_ENV === "test") {
+      setIsLogoutModalOpen(false);
+      setIsClosingModal(false);
+      return;
+    }
+    setIsClosingModal(true);
+    setTimeout(() => {
+      setIsLogoutModalOpen(false);
+      setIsClosingModal(false);
+    }, 200);
+  }, []);
 
   // Close on outside click
   React.useEffect(() => {
@@ -50,7 +64,9 @@ export function UserMenu({ user }: UserMenuProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false);
-        setIsLogoutModalOpen(false);
+        if (isLogoutModalOpen) {
+          handleCloseLogoutModal();
+        }
       }
     }
     if (isOpen || isLogoutModalOpen) {
@@ -59,7 +75,7 @@ export function UserMenu({ user }: UserMenuProps) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, isLogoutModalOpen]);
+  }, [isOpen, isLogoutModalOpen, handleCloseLogoutModal]);
 
   const roleLabelMap: Record<
     string,
@@ -173,7 +189,7 @@ export function UserMenu({ user }: UserMenuProps) {
 
             <div className="border-t border-slate-100 dark:border-slate-800 my-1 pt-1" />
 
-            {/* Logout Trigger Button */}
+            {/* Logout Trigger Button with Power Off Icon */}
             <button
               type="button"
               onClick={() => {
@@ -183,7 +199,7 @@ export function UserMenu({ user }: UserMenuProps) {
               className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 group cursor-pointer"
             >
               <div className="h-7 w-7 rounded-lg bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 transition-colors">
-                <LogOut className="h-4 w-4" />
+                <Power className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold">Keluar dari Akun</span>
             </button>
@@ -191,7 +207,7 @@ export function UserMenu({ user }: UserMenuProps) {
         </div>
       )}
 
-      {/* Logout Confirmation Modal Dialog (Portaled to document.body for true viewport centering) */}
+      {/* Logout Confirmation Modal Dialog with Smooth Zoom-In / Zoom-Out */}
       {isMounted &&
         isLogoutModalOpen &&
         createPortal(
@@ -199,26 +215,32 @@ export function UserMenu({ user }: UserMenuProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="logout-modal-title"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in-0 duration-200"
-            onClick={() => setIsLogoutModalOpen(false)}
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md transition-opacity duration-200 ease-out ${
+              isClosingModal ? "opacity-0" : "opacity-100 animate-in fade-in-0"
+            }`}
+            onClick={handleCloseLogoutModal}
           >
             <div
-              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-6 sm:p-7 shadow-2xl border border-slate-100/80 dark:border-slate-800 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
+              className={`relative w-full max-w-md rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-6 sm:p-7 shadow-2xl border border-white/60 dark:border-slate-800 text-center flex flex-col items-center transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu ${
+                isClosingModal
+                  ? "scale-90 opacity-0"
+                  : "scale-100 opacity-100 animate-in zoom-in-95 duration-200"
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close X Button */}
               <button
                 type="button"
-                onClick={() => setIsLogoutModalOpen(false)}
+                onClick={handleCloseLogoutModal}
                 aria-label="Tutup Dialog"
                 className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="h-4.5 w-4.5" />
               </button>
 
-              {/* Warning Icon Badge */}
+              {/* Warning Power Off Icon Badge */}
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-100/80 dark:border-red-900/50 shadow-xs mb-4">
-                <LogOut className="h-6 w-6 ml-0.5" />
+                <Power className="h-6 w-6" />
               </div>
 
               {/* Title & Description */}
@@ -252,7 +274,7 @@ export function UserMenu({ user }: UserMenuProps) {
               <div className="flex items-center gap-3 w-full">
                 <button
                   type="button"
-                  onClick={() => setIsLogoutModalOpen(false)}
+                  onClick={handleCloseLogoutModal}
                   className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer"
                 >
                   Batal
@@ -260,9 +282,9 @@ export function UserMenu({ user }: UserMenuProps) {
                 <form action={logoutAction} className="flex-1">
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-[13px] font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-[13px] font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <Power className="h-4 w-4" />
                     Ya, Keluar
                   </button>
                 </form>
