@@ -1110,3 +1110,24 @@ Status: **READY FOR HUMAN REVIEW**
    - TypeScript `tsc --noEmit`: 0 error (PASS).
    - Vitest suite `src/test/marketing/`: 10/10 tests PASS (100%).
    - Visual QA terverifikasi di desktop & mobile (`docs/phases/screenshots/camply-landing-walkthrough/`).
+
+---
+
+# 43. Pengadopsian Skill UI/UX "Taste-Skill" & "Anti-Slop"
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Instalasi & Registrasi Custom Skills:**
+   - `.agents/skills/taste-skill/SKILL.md`: Repositori `https://github.com/leonxlnx/taste-skill` diadopsi sebagai standar keahlian rasa visual, tipografi terkalibrasi, variasi ritme layout (anti-template), disiplin gerak/motion, dan estetika premium tanpa klise AI.
+   - `.agents/skills/anti-slop/SKILL.md` & `antislop-core.md`: Repositori `https://github.com/miqdadbadjuber/anti-slop` diadopsi sebagai filter ketat anti-slop (aturan R-01 hingga R-38), eliminasi hiasan kosong tanpa tujuan (Purpose Test), pembatasan dosis glassmorphism, dan Checklist Delivery Gate.
+   - `.agents/rules/ui-taste-and-antislop.md`: Aturan aktif operasional untuk seluruh AI agent saat merancang atau mengedit UI/UX Ruang Pintar.
+   - `AGENTS.md`: Diperbarui pada Bagian 8 (UI Rule) untuk mengikat kedua skill secara otoritatif.
+
+2. **Implementasi Konkret pada Landing Page (`modern-landing-view.tsx`):**
+   - **Eliminasi AI Status Dots Palsu:** Menghilangkan dot berkedip (`animate-pulse`) tanpa status riil pada badge kategori hero; diganti dengan ikon institusi domain nyata (`School`).
+   - **Pembersihan Ikon Klise AI:** Menghapus ikon generic AI `Sparkles` pada tombol CTA dan badge Kurikulum Merdeka; diganti dengan tipografi mantap dan ikon domain yang relevan (`BookMarked`).
+   - **Feedback Taktil Konsisten:** Menambahkan `active:scale-95` pada seluruh tombol aksi utama dan sekunder untuk rasa fisik interaksi yang nyata.
+   - **Kontras & Keterbacaan:** Memastikan seluruh subheadline di bawah batas 20 kata (19 kata), padding viewport stabil, dan tidak ada elemen wrap yang merusak estetika di desktop maupun mobile.
+
+3. **Verifikasi Teknis:**
+   - TypeScript `npm run typecheck` (`tsc --noEmit`): 0 error (PASS).

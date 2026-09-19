@@ -166,6 +166,12 @@ Dilarang fake KPI.
 
 Dilarang redesign tanpa approval.
 
+UI Standards & Craftsmanship:
+- Taste Skill (.agents/skills/taste-skill/SKILL.md)
+- Anti-Slop Directive (.agents/skills/anti-slop/SKILL.md)
+- Active Rules: .agents/rules/ui-taste-and-antislop.md
+- Purpose Test: Setiap elemen visual wajib memiliki tujuan nyata (bukan sekadar hiasan klise AI).
+
 ---
 
 # 9. Domain Rule

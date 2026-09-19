@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Sparkles,
   Camera,
   CheckCircle2,
   Star,
@@ -65,23 +64,6 @@ function DoodleRays({ className = "" }: { className?: string }) {
   );
 }
 
-function DoodleSparkle({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      className={`inline-block pointer-events-none ${className}`}
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 // Hand-Drawn Doodle Squiggle Underline (Camply reference)
 function DoodleUnderline({ className = "" }: { className?: string }) {
@@ -557,9 +539,8 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
 
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 dark:bg-blue-600 hover:bg-black dark:hover:bg-blue-500 text-white px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold shadow-md shadow-slate-900/15 transition-all hover:scale-105 active:scale-95 font-century whitespace-nowrap"
+                  className="inline-flex items-center justify-center rounded-full bg-slate-900 dark:bg-blue-600 hover:bg-black dark:hover:bg-blue-500 text-white px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold shadow-md shadow-slate-900/15 transition-all hover:scale-102 active:scale-95 font-century whitespace-nowrap"
                 >
-                  <Sparkles className="size-3.5 text-amber-300 flex-shrink-0" />
                   <span className="sm:hidden">Coba Gratis</span>
                   <span className="hidden sm:inline">Coba Gratis 30 Hari</span>
                 </Link>
@@ -669,10 +650,10 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             {/* Left Column: Comprehensive School OS & LMS Headline */}
             <div className="lg:col-span-6 space-y-6 text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/80 dark:border-blue-800/80 bg-blue-50/80 dark:bg-blue-950/40 px-4 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 shadow-xs font-century animate-glide-left">
-                <span className="size-2 rounded-full bg-blue-600 animate-pulse" />
-                <span>Operating System Sekolah & LMS Terlengkap</span>
+              {/* Hero Category Badge - Academic & Purposeful */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/80 dark:border-blue-800/80 bg-blue-50/80 dark:bg-blue-950/40 px-3.5 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-xs font-century animate-glide-left">
+                <School className="size-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span>School Operating System & LMS Terpadu</span>
               </div>
 
               {/* Huge Headline with Playful Doodles (Camply ATM) */}
@@ -725,7 +706,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 px-7 py-4 text-base font-bold shadow-xs transition-all hover:scale-102 font-century"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 px-7 py-4 text-base font-bold shadow-xs transition-all hover:scale-102 active:scale-95 font-century"
                 >
                   <span>Sudah Punya Akun? Masuk</span>
                 </Link>
@@ -1395,7 +1376,7 @@ export function ModernLandingView({ user }: ModernLandingViewProps) {
               {/* Orbiting Badge 4: Kurikulum Merdeka */}
               <div className="absolute bottom-8 -left-2 z-20 rounded-2xl border border-amber-200 dark:border-amber-800 bg-white dark:bg-slate-900 p-2.5 shadow-lg flex items-center gap-2">
                 <div className="size-8 rounded-xl bg-amber-500 text-white flex items-center justify-center">
-                  <Sparkles className="size-4" />
+                  <BookMarked className="size-4" />
                 </div>
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                   Kurikulum Merdeka
