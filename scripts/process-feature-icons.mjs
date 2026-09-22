@@ -5,16 +5,16 @@ import path from "path";
 const images = [
   {
     src: "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/icon_lms_admin_1789788857678.jpg",
-    dest: "public/images/features/feature-lms-3d.png"
+    dest: "public/images/features/feature-lms-3d.png",
   },
   {
     src: "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/icon_cbt_exam_1789788882755.jpg",
-    dest: "public/images/features/feature-cbt-3d.png"
+    dest: "public/images/features/feature-cbt-3d.png",
   },
   {
     src: "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/icon_leger_rapor_1789788909002.jpg",
-    dest: "public/images/features/feature-leger-3d.png"
-  }
+    dest: "public/images/features/feature-leger-3d.png",
+  },
 ];
 
 async function processIcon(item) {
@@ -69,7 +69,7 @@ async function processIcon(item) {
       cx > 0 ? curr - 1 : -1,
       cx < width - 1 ? curr + 1 : -1,
       cy > 0 ? curr - width : -1,
-      cy < height - 1 ? curr + width : -1
+      cy < height - 1 ? curr + width : -1,
     ];
 
     for (let n = 0; n < 4; n++) {
@@ -106,7 +106,7 @@ async function processIcon(item) {
   }
 
   const buffer = await sharp(data, {
-    raw: { width, height, channels: 4 }
+    raw: { width, height, channels: 4 },
   })
     .trim({ threshold: 5 })
     .png({ compressionLevel: 8 })

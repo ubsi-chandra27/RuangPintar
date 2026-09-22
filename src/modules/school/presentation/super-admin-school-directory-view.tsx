@@ -100,7 +100,9 @@ export function SuperAdminSchoolDirectoryView({ schools }: SuperAdminSchoolDirec
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              Pusat orkestrasi seluruh institusi sekolah mitra yang terdaftar dalam ekosistem Ruang Pintar. Kelola pendaftaran tenant baru, paket langganan lisensi, dan status operasional.
+              Pusat orkestrasi seluruh institusi sekolah mitra yang terdaftar dalam ekosistem Ruang
+              Pintar. Kelola pendaftaran tenant baru, paket langganan lisensi, dan status
+              operasional.
             </p>
           </div>
 
@@ -311,7 +313,9 @@ export function SuperAdminSchoolDirectoryView({ schools }: SuperAdminSchoolDirec
                             <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-semibold">
                               Jenjang {school.jenjang}
                             </span>
-                            <span className="text-[11px] text-slate-400">ID: {school.id.slice(0, 8)}...</span>
+                            <span className="text-[11px] text-slate-400">
+                              ID: {school.id.slice(0, 8)}...
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -320,7 +324,9 @@ export function SuperAdminSchoolDirectoryView({ schools }: SuperAdminSchoolDirec
                     {/* NPSN & Alamat */}
                     <td className="py-4 px-4">
                       <div className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        {school.npsn || <span className="text-slate-400 font-sans italic">Tanpa NPSN</span>}
+                        {school.npsn || (
+                          <span className="text-slate-400 font-sans italic">Tanpa NPSN</span>
+                        )}
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px] mt-0.5">
                         {school.alamat || "-"}
@@ -343,7 +349,8 @@ export function SuperAdminSchoolDirectoryView({ schools }: SuperAdminSchoolDirec
                         </div>
                         {school.trial_berakhir_pada && (
                           <span className="text-[10px] text-slate-400">
-                            Trial s.d {new Date(school.trial_berakhir_pada).toLocaleDateString("id-ID")}
+                            Trial s.d{" "}
+                            {new Date(school.trial_berakhir_pada).toLocaleDateString("id-ID")}
                           </span>
                         )}
                       </div>

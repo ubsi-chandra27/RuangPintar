@@ -2,23 +2,24 @@ import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 
-const brainDir = "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c";
+const brainDir =
+  "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c";
 
 async function main() {
   console.log("=== CAPTURE DASHBOARD SUPER ADMIN & LANDING SCROLL MOTION ===");
   const browser = await chromium.launch({ headless: true });
-  
+
   // 1. Landing Page with Scroll Motion Animations
   const landingContext = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: 1.5,
   });
   const landingPage = await landingContext.newPage();
-  
+
   console.log("Loading landing page...");
   await landingPage.goto("http://localhost:3000", { waitUntil: "networkidle" });
   await landingPage.waitForTimeout(1000);
-  
+
   // Capture Top
   await landingPage.screenshot({
     path: path.join(brainDir, "landing_scroll_top.png"),

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import {
   X,
   PlusCircle,
@@ -11,6 +10,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  FileSpreadsheet,
+  Upload,
 } from "lucide-react";
 import { createManualClassAction } from "@/app/actions/smart-onboarding-actions";
 
@@ -23,11 +24,11 @@ export function ManualCreateClassModal({
   isOpen: controlledIsOpen,
   onClose: controlledOnClose,
 }: ManualCreateClassModalProps) {
-  const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [siswaText, setSiswaText] = useState<string>("");
 
   const isModalOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalOpen;
 
@@ -54,6 +55,42 @@ export function ManualCreateClassModal({
     };
   }, []);
 
+  const handleDownloadTemplate = () => {
+    const csvContent =
+      "\uFEFFsep=,\r\nNIS,Nama Siswa,Jenis Kelamin (L/P)\r\n1001,Ahmad Fauzi,L\r\n1002,Dewi Sartika,P\r\n1003,Rian Hidayat,L\r\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "template_siswa_rombel.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (!content) return;
+      const lines = content
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((line) => line && !/^sep\s*=\s*[,;|\t]$/i.test(line));
+      const dataLines =
+        lines.length > 0 &&
+        (lines[0].toLowerCase().includes("nama") || lines[0].toLowerCase().includes("nis"))
+          ? lines.slice(1)
+          : lines;
+      setSiswaText((prev) => (prev ? prev + "\n" + dataLines.join("\n") : dataLines.join("\n")));
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   if (!isModalOpen) return null;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,10 +104,15 @@ export function ManualCreateClassModal({
     startTransition(async () => {
       const res = await createManualClassAction(formData);
       if (res.success && res.data) {
-        setSuccessMsg(`Kelas ${res.data.namaRombel} berhasil dibuat!`);
+        const createdClass = res.data;
+        setSuccessMsg(`Kelas ${createdClass.namaRombel} berhasil dibuat!`);
         setTimeout(() => {
           handleClose();
-          router.refresh();
+          window.dispatchEvent(
+            new CustomEvent("manual-class-created", {
+              detail: { rombelId: createdClass.rombelId, namaRombel: createdClass.namaRombel },
+            })
+          );
         }, 1200);
       } else {
         setErrorMsg(res.error || "Gagal membuat kelas.");
@@ -95,7 +137,7 @@ export function ManualCreateClassModal({
                 Tambah Kelas Manual
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Buat rombel dan mata pelajaran secara mandiri tanpa foto
+                Buat rombel dan mata pelajaran secara mandiri untuk seluruh jenjang
               </p>
             </div>
           </div>
@@ -137,30 +179,38 @@ export function ManualCreateClassModal({
                 type="text"
                 name="nama_kelas"
                 required
-                placeholder="Misal: 10-A, X RPL 1, 7-B"
+                placeholder="Misal: 10-A, X RPL 1, 7-B, 1-A"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all"
               />
             </div>
 
-            {/* Tingkat Kelas */}
+            {/* Tingkat Kelas (SD, SMP, SMA) */}
             <div className="space-y-1.5">
               <label className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
-                Tingkat Kelas
+                Tingkat &amp; Fase
               </label>
               <select
                 name="tingkat_kelas"
                 defaultValue="10"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-bold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all cursor-pointer"
               >
-                <optgroup label="Jenjang SMA / SMK">
-                  <option value="10">Kelas 10 (Fase E)</option>
-                  <option value="11">Kelas 11 (Fase F)</option>
-                  <option value="12">Kelas 12 (Fase F)</option>
+                <optgroup label="Jenjang SD / MI (Fase A - C)">
+                  <option value="1">Kelas 1 (Fase A)</option>
+                  <option value="2">Kelas 2 (Fase A)</option>
+                  <option value="3">Kelas 3 (Fase B)</option>
+                  <option value="4">Kelas 4 (Fase B)</option>
+                  <option value="5">Kelas 5 (Fase C)</option>
+                  <option value="6">Kelas 6 (Fase C)</option>
                 </optgroup>
-                <optgroup label="Jenjang SMP / MTs">
+                <optgroup label="Jenjang SMP / MTs (Fase D)">
                   <option value="7">Kelas 7 (Fase D)</option>
                   <option value="8">Kelas 8 (Fase D)</option>
                   <option value="9">Kelas 9 (Fase D)</option>
+                </optgroup>
+                <optgroup label="Jenjang SMA / SMK / MA (Fase E - F)">
+                  <option value="10">Kelas 10 (Fase E)</option>
+                  <option value="11">Kelas 11 (Fase F)</option>
+                  <option value="12">Kelas 12 (Fase F)</option>
                 </optgroup>
               </select>
             </div>
@@ -175,27 +225,62 @@ export function ManualCreateClassModal({
                 type="text"
                 name="mata_pelajaran"
                 required
-                placeholder="Misal: Pemrograman Web"
+                placeholder="Misal: Pemrograman Web, Matematika"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all"
               />
             </div>
           </div>
 
-          {/* Daftar Siswa (Opsional) */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
+          {/* Daftar Siswa & Helper Download Excel */}
+          <div className="space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
               <label className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Users className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                <span>Daftar Nama Siswa (Opsional)</span>
+                <span>Daftar Siswa &amp; NIS (Opsional)</span>
               </label>
-              <span className="text-[10px] text-slate-400">1 baris per nama siswa</span>
+
+              {/* Action Tools: Download Template & Import File */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadTemplate}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Unduh file format Excel/CSV rapi untuk diisi"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Format Excel</span>
+                </button>
+
+                <label
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 text-[11px] font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Muat data siswa dari berkas CSV/Excel"
+                >
+                  <Upload className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Impor CSV</span>
+                  <input
+                    type="file"
+                    accept=".csv,.tsv,.txt"
+                    onChange={handleFileImport}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             </div>
+
             <textarea
               name="siswa_list"
-              rows={3}
-              placeholder="Contoh:&#10;Ahmad Fauzi&#10;Dewi Sartika&#10;Rian Hidayat&#10;(Bisa dikosongkan dan ditambahkan nanti)"
+              rows={4}
+              value={siswaText}
+              onChange={(e) => setSiswaText(e.target.value)}
+              placeholder={
+                "Format per baris: NIS, Nama Siswa, L/P\nContoh:\n1001, Ahmad Fauzi, L\n1002, Dewi Sartika, P\n1003, Rian Hidayat, L\n(Atau langsung copy-paste 2 kolom dari Excel)"
+              }
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all resize-none font-mono"
             />
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-tight">
+              Tips: Anda bisa langsung menyalin 2 kolom (NIS &amp; Nama) dari spreadsheet Excel lalu
+              tempelkan di kotak di atas.
+            </p>
           </div>
 
           {/* Buttons */}

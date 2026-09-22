@@ -19,6 +19,7 @@ import {
   Download,
   MapPin,
   CheckCircle2,
+  CalendarClock,
 } from "lucide-react";
 import { openClassSessionAction } from "@/app/actions/class-session-actions";
 import { HariBelajar, ScheduleEntryDTO } from "../domain/schedule-types";
@@ -28,6 +29,7 @@ interface MyScheduleViewProps {
   entries: ScheduleEntryDTO[];
   teacherName?: string;
   isTeacher: boolean;
+  initialScheduleRombelId?: string;
 }
 
 import { MergedScheduleBlock, mergeConsecutiveScheduleEntries } from "../domain/schedule-merger";
@@ -35,7 +37,12 @@ import { MergedScheduleBlock, mergeConsecutiveScheduleEntries } from "../domain/
 export type { MergedScheduleBlock };
 export { mergeConsecutiveScheduleEntries };
 
-export function MyScheduleView({ entries, teacherName, isTeacher }: MyScheduleViewProps) {
+export function MyScheduleView({
+  entries,
+  teacherName,
+  isTeacher,
+  initialScheduleRombelId,
+}: MyScheduleViewProps) {
   const router = useRouter();
   const [selectedHari, setSelectedHari] = useState<string>("ALL");
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
@@ -303,6 +310,22 @@ export function MyScheduleView({ entries, teacherName, isTeacher }: MyScheduleVi
               ? "Anda belum memiliki alokasi jadwal pada versi jadwal resmi aktif."
               : `Tidak ada jadwal mengajar pada hari ${selectedHari}.`}
           </p>
+          {isTeacher && initialScheduleRombelId && selectedHari === "ALL" && (
+            <button
+              type="button"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent("open-teacher-schedule-setup", {
+                    detail: { rombelId: initialScheduleRombelId },
+                  })
+                )
+              }
+              className="mx-auto mt-4 inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              <CalendarClock className="size-4" />
+              Atur jadwal mengajar pertama
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">

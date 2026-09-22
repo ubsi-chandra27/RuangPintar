@@ -24,6 +24,25 @@ describe("Authorization Engine (M02) — Five Base Roles Semantics", () => {
     expect(decision.matchedScope).toBe("GLOBAL");
   });
 
+  it("menolak resource tenant bila actor tidak memiliki tenant aktif", () => {
+    const tenantlessTeacher: ActorContext = {
+      id: "TEACHER_WITHOUT_ACTIVE_TENANT",
+      username: "guru_pending",
+      peran_dasar: "TEACHER",
+      status_akun: "AKTIF",
+      sekolah_id: null,
+    };
+
+    const decision = accessControlEngine.evaluate({
+      actor: tenantlessTeacher,
+      permission: "academic.school.view",
+      resource: { sekolah_id: schoolId },
+    });
+
+    expect(decision.allowed).toBe(false);
+    expect(decision.reason).toContain("Active tenant context");
+  });
+
   it("restricts SCHOOL_STAFF without capability bundles from administrative operations", () => {
     const unprivilegedStaff: ActorContext = {
       id: "STAFF_01",

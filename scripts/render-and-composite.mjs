@@ -7,12 +7,12 @@ async function main() {
   console.log("1. Rendering composite in Playwright...");
   const browser = await chromium.launch({
     headless: true,
-    args: ["--allow-file-access-from-files", "--disable-web-security"]
+    args: ["--allow-file-access-from-files", "--disable-web-security"],
   });
   const page = await browser.newPage({ viewport: { width: 896, height: 1200 } });
 
-  page.on("console", msg => console.log("PAGE LOG:", msg.text()));
-  page.on("pageerror", err => console.error("PAGE ERROR:", err.message));
+  page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+  page.on("pageerror", (err) => console.error("PAGE ERROR:", err.message));
 
   const htmlPath = "file:///" + path.resolve("scripts/composite-stage.html").replace(/\\/g, "/");
   await page.goto(htmlPath, { waitUntil: "networkidle" });
@@ -60,13 +60,19 @@ async function main() {
   for (let y = 0; y < height; y++) {
     // Left border
     const idxLeft = y * width;
-    if (isBgColor(data[idxLeft * 4], data[idxLeft * 4 + 1], data[idxLeft * 4 + 2]) && visited[idxLeft] === 0) {
+    if (
+      isBgColor(data[idxLeft * 4], data[idxLeft * 4 + 1], data[idxLeft * 4 + 2]) &&
+      visited[idxLeft] === 0
+    ) {
       visited[idxLeft] = 1;
       queue[tail++] = idxLeft;
     }
     // Right border
     const idxRight = y * width + (width - 1);
-    if (isBgColor(data[idxRight * 4], data[idxRight * 4 + 1], data[idxRight * 4 + 2]) && visited[idxRight] === 0) {
+    if (
+      isBgColor(data[idxRight * 4], data[idxRight * 4 + 1], data[idxRight * 4 + 2]) &&
+      visited[idxRight] === 0
+    ) {
       visited[idxRight] = 1;
       queue[tail++] = idxRight;
     }
@@ -82,7 +88,7 @@ async function main() {
       cx > 0 ? curr - 1 : -1,
       cx < width - 1 ? curr + 1 : -1,
       cy > 0 ? curr - width : -1,
-      cy < height - 1 ? curr + width : -1
+      cy < height - 1 ? curr + width : -1,
     ];
 
     for (let n = 0; n < 4; n++) {
@@ -115,13 +121,15 @@ async function main() {
   }
 
   const unclipped = await sharp(data, {
-    raw: { width, height, channels: 4 }
-  }).png({ compressionLevel: 8 }).toBuffer();
+    raw: { width, height, channels: 4 },
+  })
+    .png({ compressionLevel: 8 })
+    .toBuffer();
 
-  const outputPath = path.resolve("public/images/illustrations/astronaut-large-ipad-transparent.png");
-  const trimmed = await sharp(unclipped)
-    .trim({ threshold: 5 })
-    .toFile(outputPath);
+  const outputPath = path.resolve(
+    "public/images/illustrations/astronaut-large-ipad-transparent.png"
+  );
+  const trimmed = await sharp(unclipped).trim({ threshold: 5 }).toFile(outputPath);
 
   console.log("✓ Saved final trimmed transparent mockup:", trimmed);
 }

@@ -416,7 +416,8 @@ export async function createSchoolTenantAction(formData: FormData): Promise<Acti
     if (actor.peran_dasar !== "SUPER_ADMIN") {
       return {
         success: false,
-        error: "Akses ditolak: Hanya Super Admin SaaS yang dapat mendaftarkan institusi sekolah baru.",
+        error:
+          "Akses ditolak: Hanya Super Admin SaaS yang dapat mendaftarkan institusi sekolah baru.",
         code: "FORBIDDEN",
       };
     }
@@ -458,9 +459,7 @@ export async function createSchoolTenantAction(formData: FormData): Promise<Acti
 
     const schoolId = generateUlid();
     const trialBerakhir =
-      tipeLisensi === "FREEMIUM"
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : null;
+      tipeLisensi === "FREEMIUM" ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
 
     const createdSchool = await prisma.sekolah.create({
       data: {
@@ -503,4 +502,3 @@ export async function createSchoolTenantAction(formData: FormData): Promise<Acti
     return handleActionError(error);
   }
 }
-

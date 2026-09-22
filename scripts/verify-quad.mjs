@@ -11,7 +11,7 @@ async function main() {
     const py = Math.round(y);
     if (px < 0 || px >= info.width || py < 0 || py >= info.height) return null;
     const idx = (py * info.width + px) * 3;
-    return [data[idx], data[idx+1], data[idx+2]];
+    return [data[idx], data[idx + 1], data[idx + 2]];
   }
 
   console.log("TL interior (325, 160):", getPixel(325, 160));

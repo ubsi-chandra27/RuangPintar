@@ -296,8 +296,17 @@ export class SmartOnboardingService {
     const mapelId = generateUlid();
 
     await prisma.$transaction(async (tx) => {
-      // a. Dapatkan / Buat Fase Kurikulum Merdeka
-      const kodeFase = "FASE_" + (dto.tingkat_kelas === "10" ? "E" : "F");
+      // a. Dapatkan / Buat Fase Kurikulum Merdeka (SD: A, B, C | SMP: D | SMA/SMK: E, F)
+      const numTingkat = parseInt(dto.tingkat_kelas, 10);
+      let hurufFase = "E";
+      if (numTingkat === 1 || numTingkat === 2) hurufFase = "A";
+      else if (numTingkat === 3 || numTingkat === 4) hurufFase = "B";
+      else if (numTingkat === 5 || numTingkat === 6) hurufFase = "C";
+      else if (numTingkat >= 7 && numTingkat <= 9) hurufFase = "D";
+      else if (numTingkat === 10) hurufFase = "E";
+      else hurufFase = "F";
+
+      const kodeFase = "FASE_" + hurufFase;
       let fase = await tx.fase.findFirst({
         where: { sekolah_id: sekolahId, kode: kodeFase },
       });
@@ -307,7 +316,7 @@ export class SmartOnboardingService {
             id: generateUlid(),
             sekolah_id: sekolahId,
             kode: kodeFase,
-            nama: `Fase ${dto.tingkat_kelas === "10" ? "E" : "F"}`,
+            nama: `Fase ${hurufFase}`,
           },
         });
       }

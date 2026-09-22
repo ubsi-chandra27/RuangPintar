@@ -12,8 +12,6 @@ import {
   CheckCircle2,
   Bell,
   ChevronRight,
-  Camera,
-  PlusCircle,
 } from "lucide-react";
 import { AuthenticatedUser } from "@/shared/infrastructure/auth/auth-service";
 import { BaseRole } from "@/shared/infrastructure/authorization/types";
@@ -40,6 +38,7 @@ import { AttentionQueueCard } from "../cockpit/attention-queue-card";
 import { TeachingTimelineRail } from "../cockpit/teaching-timeline-rail";
 import { TeacherHeroActions } from "../cockpit/teacher-hero-actions";
 import { TeacherTrialPill } from "../cockpit/teacher-trial-pill";
+import { TeacherFirstClassSetupModal } from "../cockpit/teacher-first-class-setup-modal";
 import { AnimatedCounter } from "@/shared/components/motion/animated-counter";
 
 export interface TeacherDashboardProps {
@@ -173,6 +172,7 @@ export async function TeacherDashboard({
       {/* 1. Modal Managers (Invisibly mounted, only opens on demand) */}
       <TrialBanner />
       <ManualCreateClassModal />
+      <TeacherFirstClassSetupModal shouldOpen={totalRombel === 0} />
 
       {/* 2. Main Teaching Cockpit Grid: 12 Columns (8 Col Workspace, 4 Col Right Rail) */}
       {/* Padding top on container ensures both columns start at the exact same horizontal baseline */}
@@ -223,39 +223,7 @@ export async function TeacherDashboard({
             </div>
           </div>
 
-          {/* B. New Teacher Onboarding Card (Only shown if totalRombel === 0) */}
-          {totalRombel === 0 && (
-            <div className="rounded-[28px] bg-gradient-to-br from-blue-950/40 via-slate-900/80 to-indigo-950/50 border border-blue-500/30 p-6 sm:p-7 shadow-[0_0_35px_-5px_rgba(37,99,235,0.2)] relative overflow-hidden space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-                <div className="space-y-2 max-w-xl">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 text-blue-400 text-xs font-mono font-bold border border-blue-500/30">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    <span>Panduan Cepat Guru Baru</span>
-                  </div>
-                  <h3 className="font-mono text-lg sm:text-xl font-extrabold text-white tracking-tight">
-                    Mulai Kelas Anda dalam 2 Menit 🚀
-                  </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Daftarkan rombel pertama Anda. Anda dapat mengunggah{" "}
-                    <strong>foto lembar absensi kertas</strong> agar AI mengekstrak data siswa
-                    otomatis, atau masukkan <strong>secara manual</strong>.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
-                  <Link
-                    href="/kelas-saya"
-                    className="px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-mono text-xs font-bold shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                    <span>+ Tambah Kelas Manual</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* C. Dual-Metric Cards (2 Columns: Performance Bar Chart + Attendance Donut Gauges) */}
+          {/* B. Dual-Metric Cards (2 Columns: Performance Bar Chart + Attendance Donut Gauges) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 items-stretch">
             {/* Card 1: Performance / Ketuntasan Penilaian */}
             <PerformanceBarChart
@@ -338,7 +306,7 @@ export async function TeacherDashboard({
             </div>
           </div>
 
-          {/* D. Action Queue: Siswa Perlu Perhatian */}
+          {/* C. Action Queue: Siswa Perlu Perhatian */}
           <AttentionQueueCard />
         </div>
 

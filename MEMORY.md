@@ -32,16 +32,16 @@ Documentation Baseline:
 SELESAI
 
 Current Implementation Phase:
-PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT
+PHASE SAAS-04 — MULTI-TENANT FOUNDATION IMPLEMENTATION
 
 Current Phase Status:
 READY FOR HUMAN REVIEW
 
 Last Human-Approved Implementation Phase:
-PHASE 22 — SAAS GROWTH ENGINE, LANDING PAGE & LIVE DEVICE TRACKING (M22)
+PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT
 
-Phase 22 Official Human Approval:
-APPROVED BY HUMAN (18 September 2026)
+Phase 23 Official Human Approval:
+APPROVED BY HUMAN (19 September 2026)
 ```
 
 ---
@@ -1259,3 +1259,39 @@ Status: **READY FOR HUMAN REVIEW**
      - `super-admin-guru-drilldown.png` (Halaman drilldown manajemen guru sekolah)
      - `super-admin-guru-mobile.png` (Tampilan mobile direktori guru)
    - Git Hash: `d150f99` dan `fbfd87e` telah di-push ke branch `origin/main`.
+
+---
+
+# 47. Phase SAAS-04 — Multi-Tenant Foundation Implementation
+
+Status: **READY FOR HUMAN REVIEW**
+
+1. **Latar Belakang & ADR Canonical:**
+   - Didasarkan pada `ADR-001-SAAS-MULTI-TENANT-FOUNDATION.md`, `ADR-002-TENANT-MEMBERSHIP-WORKFLOW.md`, `ADR-003-TRIAL-SUBSCRIPTION-ENTITLEMENT.md`, dan `docs/SAAS-ONBOARDING-SPECIFICATION.md`.
+   - Mengalihkan Ruang Pintar menjadi SaaS Multi-Tenant *shared database, shared schema* tanpa merusak modul akademik dan isolasi data sekolah yang telah stabil.
+
+2. **Domain & Data Architecture:**
+   - Model `KeanggotaanSekolah` (`keanggotaan_sekolah`): Memisahkan identitas global (`Pengguna`) dengan keanggotaan tenant sekolah. Relasi many-to-many dengan constraint unik `@@unique([pengguna_id, sekolah_id])`, lifecycle status (`PENDING`, `ACTIVE`, `REJECTED`, `SUSPENDED`, `REMOVED`), flag `is_owner`, dan audit sumber pendaftaran (`MIGRASI_LEGACY`, `OWNER_CREATE`, `INVITATION`, `JOIN_REQUEST`).
+   - Model `LanggananTenant` (`langganan_tenant`): Single source of truth untuk paket lisensi (`TRIAL`, `BASIC`, `PRO`, `ENTERPRISE`), status (`TRIAL_ACTIVE`, `ACTIVE`, `PAID`, `READ_ONLY`, `EXPIRED`), rentang tanggal aktif, dan snapshot entitlement JSON.
+   - Sesi Tenant Aktif: Kolom `sekolah_aktif_id` pada `SesiPengguna` (`sesi_pengguna`) menghubungkan sesi pengguna secara server-authoritative ke tenant sekolah yang aktif.
+   - Migrasi Database: `20260920120000_add_saas_multi_tenant_foundation` diterapkan forward secara aman, lengkap dengan skrip backfill legacy otomatis untuk akun dan sekolah lama.
+
+3. **Tenant Context & Otorisasi Server-Side:**
+   - Resolver `TenantContext` & `ActiveTenantMembership` (`src/shared/infrastructure/tenant/tenant-context.ts`).
+   - `TenantMembershipService`: Pengelolaan permohonan join tenant, persetujuan/penolakan oleh owner/operator, serta pencatatan audit.
+   - `TenantEntitlementService`: Evaluasi runtime status lisensi/trial, pemblokiran otomatis mutasi data saat masa aktif habis ke mode `READ_ONLY` tanpa menghapus data historis sekolah.
+   - Server Action `switchActiveTenantAction` (`src/app/actions/tenant-actions.ts`): Perpindahan tenant aktif yang sah dan diaudit, mencegah manipulasi tenant lewat modifikasi URL/parameter form klien.
+   - Anti-Data-Leakage Guard: Pengecekan otorisasi server-side memastikan `resource.sekolah_id` wajib cocok dengan `actor.tenantContext.sekolahId` (default-deny).
+
+4. **Resilience & UX Onboarding Guru Baru:**
+   - Komponen `TeacherOnboardingCard` & `TeacherFirstClassSetupModal`: Ditampilkan secara cerdas saat `totalRombel === 0` untuk memandu guru baru menyelesaikan inisialisasi kelas perdana.
+   - Integrasi modal `ManualCreateClassModal`: Pembuatan rombel, mata pelajaran, penugasan mengajar, dan daftar siswa per baris secara manual maupun foto AI.
+   - Penyelarasan tampilan responsif kartu jadwal mengajar di desktop dan mobile.
+
+5. **Quality Gates & Verifikasi Teknis:**
+   - TypeScript `npm run typecheck` (`tsc --noEmit`): **0 errors (PASS)**.
+   - ESLint `npm run lint`: **0 errors, 4 warnings non-blocking (PASS)**.
+   - Prettier `npm run format:check`: **100% compliant (PASS)**.
+   - Vitest: **99 test files, 538 tests passing (100% PASS)**, termasuk `src/test/saas/tenant-entitlement-foundation.test.ts` dan `src/test/ai-assistant/teacher-onboarding-flow.test.tsx`.
+   - Next.js Production Build (`npm run build`): **100% PASS (28 rute terkompilasi optimal)**.
+   - Database Migration Status: **23 migration verified up to date**.

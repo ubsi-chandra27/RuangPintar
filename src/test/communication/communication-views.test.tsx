@@ -97,7 +97,7 @@ describe("M16 & M17 Presentation Views — Academic Glass UI v1.2", () => {
   it("merender AnnouncementDirectoryView dengan benar", () => {
     render(<AnnouncementDirectoryView announcements={mockAnnouncements} canManage={true} />);
 
-    expect(screen.getByText("Pengumuman Sekolah")).toBeDefined();
+    expect(screen.getByText("Pengumuman & Edaran Resmi")).toBeDefined();
     expect(screen.getByText("Jadwal Asesmen Tengah Semester Ganjil")).toBeDefined();
     expect(screen.getByText("Workshop Guru Digital Learning")).toBeDefined();
     expect(screen.getByText("Buat Pengumuman")).toBeDefined();

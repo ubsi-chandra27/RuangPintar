@@ -10,13 +10,15 @@ async function main() {
     let row = [];
     for (let x = 520; x <= 720; x += 5) {
       const idx = (y * info.width + x) * 3;
-      const r = data[idx], g = data[idx+1], b = data[idx+2];
+      const r = data[idx],
+        g = data[idx + 1],
+        b = data[idx + 2];
       // Thumb rubber/glove is dark or textured
-      const isDark = (r < 140 && g < 140 && b < 140);
-      const isGray = (r < 200 && g < 200 && b < 200);
-      row.push(isDark ? '#' : (isGray ? '+' : '.'));
+      const isDark = r < 140 && g < 140 && b < 140;
+      const isGray = r < 200 && g < 200 && b < 200;
+      row.push(isDark ? "#" : isGray ? "+" : ".");
     }
-    console.log(`y=${y}: ${row.join('')}`);
+    console.log(`y=${y}: ${row.join("")}`);
   }
 }
 

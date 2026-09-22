@@ -75,7 +75,7 @@ export default async function TeacherManagementPage(props: TeacherManagementPage
 
   // Mode 2: Halaman manajemen guru sekolah tunggal
   const effectiveSekolahId = isSuperAdmin
-    ? searchParams?.sekolahId ?? user.sekolah_id
+    ? (searchParams?.sekolahId ?? user.sekolah_id)
     : user.sekolah_id;
 
   if (!effectiveSekolahId) {
@@ -142,10 +142,7 @@ export default async function TeacherManagementPage(props: TeacherManagementPage
                     Dashboard
                   </Link>
                   <span>/</span>
-                  <Link
-                    href="/guru-pengajaran"
-                    className="hover:text-[#2563EB] transition-colors"
-                  >
+                  <Link href="/guru-pengajaran" className="hover:text-[#2563EB] transition-colors">
                     Guru & Penugasan
                   </Link>
                   <span>/</span>

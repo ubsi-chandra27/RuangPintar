@@ -15,6 +15,7 @@ import { staffCapabilityService } from "@/shared/infrastructure/authorization/st
 import { AcademicShell } from "@/shared/components/shell/academic-shell";
 import { scheduleService } from "@/modules/schedule/application/schedule-service";
 import { MyScheduleView } from "@/modules/schedule/presentation/my-schedule-view";
+import { TeacherFirstClassSetupModal } from "@/shared/components/dashboard/cockpit/teacher-first-class-setup-modal";
 import { schoolProfileService } from "@/modules/school/application/school-profile-service";
 import { prisma } from "@/shared/infrastructure/database/prisma";
 
@@ -42,6 +43,7 @@ export default async function JadwalSayaPage() {
 
   let entries: any[] = [];
   let teacherProfile: any = null;
+  let initialScheduleRombelId: string | undefined;
 
   if (isTeacher) {
     teacherProfile = await prisma.guru.findFirst({
@@ -53,6 +55,14 @@ export default async function JadwalSayaPage() {
 
     if (teacherProfile) {
       entries = await scheduleService.listTeacherSchedule(teacherProfile.id, user.sekolah_id, true);
+      if (entries.length === 0) {
+        const assignment = await prisma.penugasanMengajar.findFirst({
+          where: { sekolah_id: user.sekolah_id, guru_id: teacherProfile.id, status: "AKTIF" },
+          select: { rombel_id: true },
+          orderBy: { created_at: "asc" },
+        });
+        initialScheduleRombelId = assignment?.rombel_id;
+      }
     }
   } else if (user.peran_dasar === "STUDENT") {
     // Look up student's active enrollment and rombel placement
@@ -183,7 +193,9 @@ export default async function JadwalSayaPage() {
           entries={entries}
           teacherName={teacherProfile?.nama_lengkap ?? user.nama_lengkap}
           isTeacher={isTeacher}
+          initialScheduleRombelId={initialScheduleRombelId}
         />
+        <TeacherFirstClassSetupModal shouldOpen={false} />
       </div>
     </AcademicShell>
   );

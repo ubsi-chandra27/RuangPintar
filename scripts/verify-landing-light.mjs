@@ -15,7 +15,9 @@ async function run() {
   });
   console.log("document.documentElement contains 'dark'?:", isDarkClassPresent);
 
-  const savePath = path.resolve("C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/landing_light_verified.png");
+  const savePath = path.resolve(
+    "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/landing_light_verified.png"
+  );
   await page.screenshot({ path: savePath });
   console.log("Saved screenshot:", savePath);
 

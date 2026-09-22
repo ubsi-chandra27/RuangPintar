@@ -5,9 +5,18 @@ import { DonutGauge } from "@/shared/components/dashboard/cockpit/donut-gauge";
 import { PerformanceBarChart } from "@/shared/components/dashboard/cockpit/performance-bar-chart";
 import { AttentionQueueCard } from "@/shared/components/dashboard/cockpit/attention-queue-card";
 import { TeachingTimelineRail } from "@/shared/components/dashboard/cockpit/teaching-timeline-rail";
+import { TeacherHeroActions } from "@/shared/components/dashboard/cockpit/teacher-hero-actions";
 import { MergedScheduleBlock } from "@/modules/schedule/domain/schedule-merger";
 
 describe("Teacher Teaching Cockpit Components (Academic Glass UI)", () => {
+  it("aksi hero guru hanya menampilkan akses operasional tanpa duplikasi setup rombel", () => {
+    render(<TeacherHeroActions />);
+
+    expect(screen.getByText("Presensi Kilat 15 Detik")).toBeInTheDocument();
+    expect(screen.getByText("Perangkat Ajar")).toBeInTheDocument();
+    expect(screen.queryByText(/Foto Absen AI/i)).not.toBeInTheDocument();
+  });
+
   it("DonutGauge harus merender persentase dan label dengan benar", () => {
     render(<DonutGauge percentage={94} label="Siswa Hadir" color="emerald" />);
     expect(screen.getByText("94%")).toBeInTheDocument();

@@ -49,7 +49,7 @@ export default async function SchoolManagementPage(props: SchoolManagementPagePr
 
   // Mode 2: Halaman detail institusi sekolah tunggal
   const effectiveSekolahId = isSuperAdmin
-    ? searchParams?.sekolahId ?? user.sekolah_id
+    ? (searchParams?.sekolahId ?? user.sekolah_id)
     : user.sekolah_id;
 
   if (!effectiveSekolahId) {
@@ -92,13 +92,9 @@ export default async function SchoolManagementPage(props: SchoolManagementPagePr
     redirect(isSuperAdmin ? "/sekolah" : "/dashboard");
   }
 
-  const units = canViewStructure
-    ? await organizationUnitService.getUnits(effectiveSekolahId)
-    : [];
+  const units = canViewStructure ? await organizationUnitService.getUnits(effectiveSekolahId) : [];
 
-  const positions = canViewStructure
-    ? await positionService.getPositions(effectiveSekolahId)
-    : [];
+  const positions = canViewStructure ? await positionService.getPositions(effectiveSekolahId) : [];
 
   const assignments = canViewStructure
     ? await positionAssignmentService.getAssignments(effectiveSekolahId)

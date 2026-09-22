@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import { prisma } from "@/shared/infrastructure/database/prisma";
 
 vi.mock("next/cache", () => ({
@@ -16,7 +16,9 @@ describe("Self-Service Profile Photo Feature", () => {
   beforeEach(async () => {
     // Clean up
     await prisma.guru.deleteMany({ where: { id: testTeacherId } });
+    await prisma.keanggotaanSekolah.deleteMany({ where: { pengguna_id: testUserId } });
     await prisma.pengguna.deleteMany({ where: { id: testUserId } });
+    await prisma.langgananTenant.deleteMany({ where: { sekolah_id: testSchoolId } });
     await prisma.sekolah.deleteMany({ where: { id: testSchoolId } });
 
     // Seed test school
@@ -184,5 +186,13 @@ describe("Self-Service Profile Photo Feature", () => {
     expect(screen.getByText("Ganti Foto")).toBeDefined();
     expect(screen.getByText("Hapus Foto")).toBeDefined();
     expect(screen.getByText("Terpasang")).toBeDefined();
+  });
+
+  afterAll(async () => {
+    await prisma.guru.deleteMany({ where: { id: testTeacherId } });
+    await prisma.keanggotaanSekolah.deleteMany({ where: { pengguna_id: testUserId } });
+    await prisma.pengguna.deleteMany({ where: { id: testUserId } });
+    await prisma.langgananTenant.deleteMany({ where: { sekolah_id: testSchoolId } });
+    await prisma.sekolah.deleteMany({ where: { id: testSchoolId } });
   });
 });

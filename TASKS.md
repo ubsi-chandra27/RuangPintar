@@ -1,8 +1,8 @@
 # TASKS.md
 ## Ruang Pintar — Active Implementation Tasks
 
-**Versi:** 18.0  
-**Current Active Phase:** PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT  
+**Versi:** 19.0  
+**Current Active Phase:** PHASE SAAS-04 — MULTI-TENANT FOUNDATION IMPLEMENTATION  
 **Status:** READY FOR HUMAN REVIEW  
 
 ---
@@ -10,25 +10,73 @@
 # 1. ACTIVE TASKS
 
 ```text
-PHASE 23 — SAAS MONETIZATION & GO-TO-MARKET: MIDTRANS QRIS CHECKOUT, SUBSCRIPTION WEBHOOK & MARKETING KIT [READY FOR HUMAN REVIEW]
+PHASE SAAS-04 — MULTI-TENANT FOUNDATION IMPLEMENTATION [READY FOR HUMAN REVIEW]
 ```
 
 Tujuan:
-> Mengintegrasikan gerbang pembayaran digital otomatis dan perangkat pemasaran resmi untuk meluncurkan Ruang Pintar ke pasar:
-> 1. Otomasi Pembayaran QRIS Berlangganan (Midtrans Snap & Resilient Simulator):
->    - Model database `TransaksiLangganan` untuk pencatatan order ID, nominal Rp 15.000/bln, status pembayaran (`PENDING` -> `PAID`), dan tanggal aktif lisensi.
->    - Adapter API Midtrans Snap dengan dual-mode: Real Production/Sandbox API & Interactive Simulator (memungkinkan pengujian instan tanpa API key).
->    - Webhook Publik (`/api/billing/midtrans-webhook`) dengan verifikasi keamanan SHA-512 Signature untuk aktivasi otomatis paket *Guru Pro* secara instan.
->    - Modal Checkout QRIS Interaktif (`SubscriptionCheckoutModal`) dengan barcode dinamis dan polling status pembayaran.
-> 2. Go-To-Market Marketing Kit & Panduan Operasional Guru:
->    - Halaman & Dokumen `/panduan`: Panduan ringkas 1 halaman (*Quick Start User Guide*) cara onboarding 30 detik & foto absensi AI.
->    - Template Pesan Siaran WhatsApp (*1-Click Copy*): 3 sudut pandang persuasif (Guru Perorangan, Komunitas MGMP, dan Kepala Sekolah/Tim BOS).
-> 3. Quality Gates:
->    - TypeScript, Linting, Prettier, Unit Tests, Build, dan Playwright Visual Walkthrough.
+> Mengimplementasikan fondasi arsitektur SaaS Multi-Tenant berdasarkan ADR-001, ADR-002, dan ADR-003 yang telah disetujui tanpa merusak modul akademik:
+> 1. Database Foundation:
+>    - Model `KeanggotaanSekolah` (relasi many-to-many pengguna–sekolah, peran per tenant, status lifecycle, ownership flag).
+>    - Model `LanggananTenant` (sumber kebenaran paket lisensi, status aktif, masa berlaku, dan snapshot entitlement per tenant).
+>    - Kolom `sekolah_aktif_id` pada `SesiPengguna` dengan relasi foreign key dan indeks performa.
+>    - Migrasi database `20260920120000_add_saas_multi_tenant_foundation` tervalidasi dan diterapkan secara forward.
+> 2. Tenant Context & Session:
+>    - `TenantContext` & `ActiveTenantMembership` server-authoritative yang tervalidasi di setiap request.
+>    - Sesi token memuat tenant aktif; Server Action `switchActiveTenantAction` untuk perpindahan tenant yang sah.
+> 3. Authorization Scope & Anti-Data-Leakage:
+>    - Pengecekan server-side ketat: akses domain dibatasi pada tenant aktif actor, mencegah kebocoran data antar-tenant.
+> 4. Entitlement & Read-Only Enforcement:
+>    - Evaluasi runtime status langganan/trial (`TRIAL_ACTIVE`, `ACTIVE`, `READ_ONLY`, `EXPIRED`).
+>    - Penegakan mode read-only otomatis bila masa aktif berakhir tanpa merusak data historis.
+> 5. Quality Gates:
+>    - TypeScript (tsc 0 errors), ESLint (0 errors), Prettier (100% compliant), Vitest (99 test files, 538 tests PASS), Next.js production build (28 routes compiled).
 
 ---
 
-# 2. Checklist Phase 23 — SaaS Monetization & Marketing Kit (M23)
+# 2. Checklist Phase SAAS-04 — Multi-Tenant Foundation Implementation
+
+## Domain & Invariants
+```text
+[x] User-to-Tenant Many-to-Many Relationship via KeanggotaanSekolah
+[x] Server-Authoritative Active Tenant Session via SesiPengguna.sekolah_aktif_id
+[x] Strict Tenant-Scoped Authorization to prevent cross-tenant data leaks
+[x] Tenant Entitlement & Runtime Evaluation (Trial, Active, Read-Only, Expired)
+[x] Audit Trail for Membership and Tenant Switching Mutations
+```
+
+## Data Layer & Application Services
+```text
+[x] Prisma Model KeanggotaanSekolah with unique([pengguna_id, sekolah_id]) and indexes
+[x] Prisma Model LanggananTenant with package status and entitlement snapshot
+[x] Migration 20260920120000_add_saas_multi_tenant_foundation applied forward safely
+[x] Backfill logic for legacy users and schools into KeanggotaanSekolah & LanggananTenant
+[x] TenantContext & ActiveTenantMembership resolvers in src/shared/infrastructure/tenant/
+[x] TenantMembershipService for join requests, approval, rejection, and role assignments
+[x] TenantEntitlementService for capability evaluation and read-only enforcement
+[x] Server Action switchActiveTenantAction in src/app/actions/tenant-actions.ts
+```
+
+## Presentation Layer & Cockpit Resilience
+```text
+[x] TeacherOnboardingCard on Teacher Dashboard when rombel count is zero
+[x] TeacherFirstClassSetupModal & ManualCreateClassModal for rapid zero-friction class setup
+[x] TeacherHeroActions and Class Schedule View alignment
+```
+
+## Quality Gates & Verification
+```text
+[x] Typecheck: TypeScript tsc --noEmit 0 errors
+[x] Lint check: ESLint 0 errors
+[x] Format check: Prettier 100% clean
+[x] Targeted Tests: src/test/saas/tenant-entitlement-foundation.test.ts (6/6 PASS)
+[x] Regression Suite: 99 test files, 538 tests passing (100% PASS)
+[x] Build: Next.js production compilation 100% PASS (28 routes generated)
+[x] Database: 23 migrations verified up-to-date
+```
+
+---
+
+# 3. Checklist Phase 23 — SaaS Monetization & Marketing Kit (M23)
 
 ## Domain & Invariants
 ```text
@@ -124,7 +172,7 @@ Tujuan:
 
 ---
 
-# 3. Previous Milestones & Completed Phases
+# 4. Previous Milestones & Completed Phases
 
 ```text
 [x] Milestone A — Bootstrap & Platform Foundation (Phase 00–02) [APPROVED]
@@ -141,24 +189,27 @@ Tujuan:
 [x] Milestone I — SaaS Growth & Market Readiness (Phase 22) [APPROVED BY HUMAN (18 September 2026)]
     └── [x] Phase 22 — SaaS Growth Engine, Landing Page & Live Device Tracking (M22) [APPROVED BY HUMAN (18 September 2026)]
 
-[ ] Milestone J — SaaS Monetization & Go-To-Market (Phase 23) [READY FOR HUMAN REVIEW]
-    └── [ ] Phase 23 — SaaS Monetization & Go-To-Market: Midtrans QRIS Checkout, Subscription Webhook & Marketing Kit (M23) [READY FOR HUMAN REVIEW]
+[x] Milestone J — SaaS Monetization & Go-To-Market (Phase 23) [APPROVED BY HUMAN (19 September 2026)]
+    └── [x] Phase 23 — SaaS Monetization & Go-To-Market: Midtrans QRIS Checkout, Subscription Webhook & Marketing Kit (M23) [APPROVED BY HUMAN (19 September 2026)]
+
+[ ] Milestone K — SaaS Multi-Tenant Architecture (Phase SAAS-04) [READY FOR HUMAN REVIEW]
+    └── [ ] Phase SAAS-04 — Multi-Tenant Foundation Implementation [READY FOR HUMAN REVIEW]
 ```
 
 ---
 
-# 4. Milestone I & J Historical Quality Gates
+# 5. Quality Gates & Historical Verification
 
 ```text
-[x] Phase 22 Quality Gates:
-    - Domain Invariants: Identity-First Device Telemetry, 30-Day Free Trial SaaS Growth, Bottom-Up School Procurement Proposal
+[x] Phase SAAS-04 Quality Gates:
+    - Domain Invariants: Many-to-many user-tenant via KeanggotaanSekolah, server-authoritative session tenant, strict tenant isolation, runtime entitlement & read-only enforcement
     - Format check: Prettier 100% clean (npm run format:check)
     - Lint check: 0 errors (npm run lint)
     - Typecheck: TypeScript tsc --noEmit 0 errors (npm run typecheck)
-    - Tests: 11 unit & component tests passing (src/test/auth/device-detector.test.ts, src/test/school/school-proposal-modal.test.tsx, src/test/smoke.test.tsx)
-    - Build: Next.js production compilation 100% PASS (26 routes generated)
-    - End-to-End Walkthrough: Playwright automated test & 6 visual screenshots PASS (scripts/qa-phase22-visual-walkthrough.mjs)
-    - Human Approval: APPROVED BY HUMAN (18 September 2026)
+    - Tests: 99 test files, 538 tests passing (100% PASS)
+    - Build: Next.js production compilation 100% PASS (28 routes generated)
+    - Migration: 20260920120000_add_saas_multi_tenant_foundation verified & applied
+    - Status: READY FOR HUMAN REVIEW
 
 [x] Phase 23 Quality Gates:
     - Domain Invariants: Pay-per-Transaction Zero-Cost Admin Guard, Dual-Mode Resilient Gateway (Production API & Interactive Simulator), Idempotent Signature-Protected Webhook, 1-Click Copy Multi-Persona Copywriting
@@ -168,6 +219,6 @@ Tujuan:
     - Tests: 12 unit & component tests passing (src/test/billing/, src/test/marketing/, src/test/smoke.test.tsx)
     - Build: Next.js production compilation 100% PASS (28 routes generated)
     - End-to-End Walkthrough: Playwright automated test & 5 visual screenshots PASS (scripts/qa-phase23-visual-walkthrough.mjs)
-    - Status: READY FOR HUMAN REVIEW
+    - Human Approval: APPROVED BY HUMAN (19 September 2026)
 ```
 

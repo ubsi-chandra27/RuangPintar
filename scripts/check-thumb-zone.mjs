@@ -15,7 +15,9 @@ async function main() {
     let thumbPixels = [];
     for (let x = 500; x < rx; x++) {
       const idx = (y * info.width + x) * 3;
-      const r = data[idx], g = data[idx+1], b = data[idx+2];
+      const r = data[idx],
+        g = data[idx + 1],
+        b = data[idx + 2];
       // Check if it's the dark rubber thumb (not light background)
       if (r < 140 && g < 140 && b < 140) {
         thumbPixels.push({ x, r, g, b });
@@ -24,7 +26,9 @@ async function main() {
     if (thumbPixels.length > 0) {
       const minX = thumbPixels[0].x;
       const maxX = thumbPixels[thumbPixels.length - 1].x;
-      console.log(`y=${y} (rx=${rx.toFixed(1)}): thumb from x=${minX} to ${maxX} (count: ${thumbPixels.length})`);
+      console.log(
+        `y=${y} (rx=${rx.toFixed(1)}): thumb from x=${minX} to ${maxX} (count: ${thumbPixels.length})`
+      );
     } else {
       console.log(`y=${y} (rx=${rx.toFixed(1)}): NO dark pixels inside screen`);
     }

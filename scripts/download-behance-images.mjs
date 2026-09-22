@@ -7,7 +7,7 @@ const images = [
   "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/8a3f85247507873.69de888012882.png",
   "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/1304c2247507873.69dfa8f315ee8.png",
   "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/73636d247507873.69dfa8f313129.png",
-  "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/9899bd247507873.69dfa8f316605.png"
+  "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/9899bd247507873.69dfa8f316605.png",
 ];
 
 const destDir = "scripts/behance_ref";

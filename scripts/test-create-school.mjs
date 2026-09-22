@@ -74,7 +74,10 @@ async function test() {
   const testSchoolName = "SMA Teladan Nusantara 1";
   await page.fill("input[placeholder='Contoh: SMA Negeri 1 Jakarta']", testSchoolName);
   await page.fill("input[placeholder='Contoh: 20101234']", "20109999");
-  await page.fill("textarea[placeholder='Jalan, Kota/Kabupaten, Provinsi...']", "Jl. Jenderal Sudirman No. 45, Jakarta Pusat");
+  await page.fill(
+    "textarea[placeholder='Jalan, Kota/Kabupaten, Provinsi...']",
+    "Jl. Jenderal Sudirman No. 45, Jakarta Pusat"
+  );
   await page.fill("input[placeholder='admin@sekolah.sch.id']", "info@smateladan.sch.id");
   await page.fill("input[placeholder='021-xxxxxxxx']", "021-5551234");
 
@@ -90,7 +93,10 @@ async function test() {
 
   if (isVisible) {
     const targetDir = path.resolve("docs/phases/screenshots");
-    await page.screenshot({ path: path.join(targetDir, "super-admin-sekolah-with-data.png"), fullPage: true });
+    await page.screenshot({
+      path: path.join(targetDir, "super-admin-sekolah-with-data.png"),
+      fullPage: true,
+    });
     console.log("Saved screenshot with created school!");
 
     // Test drill-down link "Kelola"
@@ -99,7 +105,10 @@ async function test() {
       await kelolaLink.click();
       await page.waitForTimeout(1000);
       console.log("Navigated to drill-down page:", page.url());
-      await page.screenshot({ path: path.join(targetDir, "super-admin-sekolah-drilldown.png"), fullPage: true });
+      await page.screenshot({
+        path: path.join(targetDir, "super-admin-sekolah-drilldown.png"),
+        fullPage: true,
+      });
       console.log("Saved drilldown screenshot!");
     }
   }

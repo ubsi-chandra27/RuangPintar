@@ -21,7 +21,9 @@ async function main() {
       }
     }
     if (darkXs.length > 0) {
-      console.log(`y=${y}: dark x from ${Math.min(...darkXs)} to ${Math.max(...darkXs)} (count: ${darkXs.length})`);
+      console.log(
+        `y=${y}: dark x from ${Math.min(...darkXs)} to ${Math.max(...darkXs)} (count: ${darkXs.length})`
+      );
     } else {
       console.log(`y=${y}: none`);
     }

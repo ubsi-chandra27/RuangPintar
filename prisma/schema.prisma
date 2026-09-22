@@ -81,6 +81,9 @@ model Sekolah {
   log_pengiriman_integrasi  LogPengirimanIntegrasi[]
   permintaan_setup_ai       PermintaanSetupKelasAi[]
   transaksi_langganan       TransaksiLangganan[]
+  keanggotaan_sekolah       KeanggotaanSekolah[]
+  langganan_tenant          LanggananTenant[]
+  sesi_tenant_aktif         SesiPengguna[] @relation("SesiTenantAktif")
 
   @@map("sekolah")
 }
@@ -262,6 +265,7 @@ model Pengguna {
   ekspor_laporan             RiwayatEksporLaporan[]   @relation("PembuatEksporLaporan")
   permintaan_setup_ai        PermintaanSetupKelasAi[]
   transaksi_langganan        TransaksiLangganan[]
+  keanggotaan_sekolah        KeanggotaanSekolah[]
 
   @@index([sekolah_id, peran_dasar])
   @@index([status_akun])
@@ -286,6 +290,7 @@ model KemampuanStaff {
 model SesiPengguna {
   id                  String   @id
   pengguna_id         String
+  sekolah_aktif_id    String?
   token_hash          String   @unique
   ip_address          String?
   user_agent          String?
@@ -297,9 +302,59 @@ model SesiPengguna {
   updated_at          DateTime @updatedAt
 
   pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Cascade)
+  sekolah_aktif Sekolah? @relation("SesiTenantAktif", fields: [sekolah_aktif_id], references: [id], onDelete: SetNull)
 
   @@index([pengguna_id, dicabut, berlaku_sampai])
+  @@index([sekolah_aktif_id, dicabut, berlaku_sampai])
   @@map("sesi_pengguna")
+}
+
+/// SaaS-04 — Hubungan identity global dengan tenant sekolah.
+/// Satu pengguna dapat menjadi anggota banyak sekolah, dengan lifecycle dan role per tenant.
+model KeanggotaanSekolah {
+  id                    String   @id
+  pengguna_id           String
+  sekolah_id            String
+  peran_dasar_di_tenant String
+  status_keanggotaan    String   @default("PENDING") // PENDING | ACTIVE | REJECTED | SUSPENDED | REMOVED
+  is_owner              Boolean  @default(false)
+  berlaku_mulai         DateTime?
+  berlaku_sampai        DateTime?
+  sumber_pendaftaran    String   @default("MIGRASI_LEGACY") // MIGRASI_LEGACY | OWNER_CREATE | INVITATION | JOIN_REQUEST
+  disetujui_oleh_id     String?
+  disetujui_pada        DateTime?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  pengguna Pengguna @relation(fields: [pengguna_id], references: [id], onDelete: Restrict)
+  sekolah  Sekolah  @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+
+  @@unique([pengguna_id, sekolah_id])
+  @@index([sekolah_id, status_keanggotaan])
+  @@index([pengguna_id, status_keanggotaan])
+  @@index([sekolah_id, is_owner, status_keanggotaan])
+  @@map("keanggotaan_sekolah")
+}
+
+/// SaaS-04 — Sumber kebenaran trial, subscription, dan entitlement per tenant.
+model LanggananTenant {
+  id                  String   @id
+  sekolah_id          String
+  paket               String   @default("TRIAL") // TRIAL | BASIC | PRO | ENTERPRISE
+  status              String   @default("TRIAL_ACTIVE") // TRIAL_ACTIVE | ACTIVE | PAST_DUE | READ_ONLY | SUSPENDED | CANCELLED
+  mulai_pada          DateTime @default(now())
+  berakhir_pada       DateTime?
+  entitlement_json    String?  // Snapshot feature family dan quota efektif, provider-agnostic
+  sumber_aktivasi     String   @default("MIGRASI_LEGACY") // TRIAL_PROVISIONING | PAYMENT | MANUAL_INVOICE | MIGRASI_LEGACY
+  transaksi_sumber_id String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  sekolah Sekolah @relation(fields: [sekolah_id], references: [id], onDelete: Restrict)
+
+  @@index([sekolah_id, status, berakhir_pada])
+  @@index([transaksi_sumber_id])
+  @@map("langganan_tenant")
 }
 
 /// M02 — Identity & Access: Pencatatan percobaan login untuk mitigasi brute force
@@ -1755,4 +1810,3 @@ model TransaksiLangganan {
   @@index([order_id])
   @@map("transaksi_langganan")
 }
-

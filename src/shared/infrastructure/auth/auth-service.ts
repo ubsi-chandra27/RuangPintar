@@ -10,6 +10,8 @@ import {
 } from "../../lib/session";
 import { checkLoginRateLimit, recordLoginAttempt } from "./rate-limiter";
 import { recordAuditEvent } from "../audit/audit-logger";
+import { resolveTenantContext } from "../tenant/tenant-context";
+import { tenantMembershipService } from "../tenant/tenant-membership-service";
 
 export interface LoginCredentialsInput {
   username: string;
@@ -29,6 +31,8 @@ export interface AuthenticatedUser {
   status_akun: string;
   harus_ganti_password: boolean;
   foto_url?: string | null;
+  keanggotaan_id?: string | null;
+  is_owner_tenant?: boolean;
 }
 
 export interface LoginResult {
@@ -160,7 +164,16 @@ export class AuthService {
       };
     }
 
-    // 5. Successful Login: Create Session
+    // 5. Select a tenant only when the account has exactly one active membership.
+    // Users with many tenants must choose explicitly through the tenant switch flow.
+    const activeMemberships = await prisma.keanggotaanSekolah.findMany({
+      where: { pengguna_id: user.id, status_keanggotaan: "ACTIVE" },
+      select: { sekolah_id: true },
+      take: 2,
+    });
+    const sekolahAktifId = activeMemberships.length === 1 ? activeMemberships[0].sekolah_id : null;
+
+    // 6. Successful Login: Create Session
     const sessionToken = generateSessionToken();
     const tokenHash = hashSessionToken(sessionToken);
     const durationMs = input.rememberMe
@@ -173,6 +186,7 @@ export class AuthService {
         data: {
           id: generateUlid(),
           pengguna_id: user.id,
+          sekolah_aktif_id: sekolahAktifId,
           token_hash: tokenHash,
           ip_address: ip,
           user_agent: input.userAgent ?? null,
@@ -190,7 +204,7 @@ export class AuthService {
 
     await recordLoginAttempt(username, ip, true);
     await recordAuditEvent({
-      sekolah_id: user.sekolah_id,
+      sekolah_id: sekolahAktifId,
       aktor_id: user.id,
       aktor_role: user.peran_dasar,
       aksi: "AUTH_LOGIN_SUCCESS",
@@ -205,7 +219,7 @@ export class AuthService {
       sessionToken,
       user: {
         id: user.id,
-        sekolah_id: user.sekolah_id,
+        sekolah_id: sekolahAktifId,
         username: user.username,
         email: user.email,
         nama_lengkap: user.nama_lengkap,
@@ -248,11 +262,12 @@ export class AuthService {
       });
     }
 
-    let effectiveSekolahId = session.pengguna.sekolah_id;
-    if (!effectiveSekolahId && session.pengguna.peran_dasar === "SUPER_ADMIN") {
-      const activeSchool = await prisma.sekolah.findFirst({ select: { id: true } });
-      effectiveSekolahId = activeSchool?.id ?? null;
-    }
+    // The session tenant is accepted only if its membership remains ACTIVE.
+    // Pengguna.sekolah_id is legacy compatibility data, not an authoritative
+    // tenant context for SaaS requests.
+    const tenantContext = await resolveTenantContext(session.pengguna.id, session.sekolah_aktif_id);
+    const effectiveSekolahId = tenantContext?.sekolahId ?? null;
+    const effectiveRole = tenantContext?.peranDasar ?? session.pengguna.peran_dasar;
 
     return {
       session,
@@ -262,10 +277,12 @@ export class AuthService {
         username: session.pengguna.username,
         email: session.pengguna.email,
         nama_lengkap: session.pengguna.nama_lengkap,
-        peran_dasar: session.pengguna.peran_dasar,
+        peran_dasar: effectiveRole,
         status_akun: session.pengguna.status_akun,
         harus_ganti_password: session.pengguna.harus_ganti_password,
         foto_url: session.pengguna.foto_url,
+        keanggotaan_id: tenantContext?.membershipId ?? null,
+        is_owner_tenant: tenantContext?.isOwner ?? false,
       },
     };
   }
@@ -294,12 +311,32 @@ export class AuthService {
     });
 
     await recordAuditEvent({
-      sekolah_id: session.pengguna.sekolah_id,
+      sekolah_id: session.sekolah_aktif_id,
       aktor_id: session.pengguna.id,
       aktor_role: session.pengguna.peran_dasar,
       aksi: "AUTH_LOGOUT",
       tipe_sumber: "PENGGUNA",
       id_sumber: session.pengguna.id,
+    });
+  }
+
+  /** Switches tenant only for the authenticated browser session. */
+  async switchActiveTenant(sessionToken: string, sekolahId: string): Promise<void> {
+    const tokenHash = hashSessionToken(sessionToken);
+    const session = await prisma.sesiPengguna.findUnique({
+      where: { token_hash: tokenHash },
+      include: { pengguna: true },
+    });
+
+    if (!session || session.dicabut || session.berlaku_sampai < new Date()) {
+      throw new Error("Sesi tidak valid atau telah berakhir.");
+    }
+
+    await tenantMembershipService.setActiveTenant({
+      sessionId: session.id,
+      penggunaId: session.pengguna_id,
+      sekolahId,
+      actorRole: session.pengguna.peran_dasar,
     });
   }
 

@@ -9,47 +9,89 @@ const step = 14;
 
 const continents = [
   // North America
-  { minX: 120, maxX: 360, minY: 70, maxY: 260, shape: (x, y) => {
-    if (x < 180 && y > 220) return false;
-    if (x > 320 && y > 180) return false;
-    return true;
-  }},
+  {
+    minX: 120,
+    maxX: 360,
+    minY: 70,
+    maxY: 260,
+    shape: (x, y) => {
+      if (x < 180 && y > 220) return false;
+      if (x > 320 && y > 180) return false;
+      return true;
+    },
+  },
   // Central America
-  { minX: 240, maxX: 330, minY: 250, maxY: 320, shape: (x, y) => Math.abs((x - 240) - (y - 250) * 1.1) < 40 },
+  {
+    minX: 240,
+    maxX: 330,
+    minY: 250,
+    maxY: 320,
+    shape: (x, y) => Math.abs(x - 240 - (y - 250) * 1.1) < 40,
+  },
   // South America
-  { minX: 280, maxX: 420, minY: 310, maxY: 500, shape: (x, y) => {
-    const relY = (y - 310) / 190;
-    const w = 120 * (1 - relY * 0.7);
-    return x >= 300 && x <= 300 + w;
-  }},
+  {
+    minX: 280,
+    maxX: 420,
+    minY: 310,
+    maxY: 500,
+    shape: (x, y) => {
+      const relY = (y - 310) / 190;
+      const w = 120 * (1 - relY * 0.7);
+      return x >= 300 && x <= 300 + w;
+    },
+  },
   // Europe
   { minX: 520, maxX: 680, minY: 70, maxY: 210, shape: (x, y) => true },
   // Africa
-  { minX: 510, maxX: 690, minY: 200, maxY: 460, shape: (x, y) => {
-    if (y < 300) return x >= 510 && x <= 690;
-    const relY = (y - 300) / 160;
-    const w = 150 * (1 - relY * 0.7);
-    return x >= 550 && x <= 550 + w;
-  }},
+  {
+    minX: 510,
+    maxX: 690,
+    minY: 200,
+    maxY: 460,
+    shape: (x, y) => {
+      if (y < 300) return x >= 510 && x <= 690;
+      const relY = (y - 300) / 160;
+      const w = 150 * (1 - relY * 0.7);
+      return x >= 550 && x <= 550 + w;
+    },
+  },
   // Asia
-  { minX: 680, maxX: 1040, minY: 70, maxY: 300, shape: (x, y) => {
-    if (x > 960 && y < 140) return false;
-    if (x < 740 && y > 250) return false;
-    return true;
-  }},
+  {
+    minX: 680,
+    maxX: 1040,
+    minY: 70,
+    maxY: 300,
+    shape: (x, y) => {
+      if (x > 960 && y < 140) return false;
+      if (x < 740 && y > 250) return false;
+      return true;
+    },
+  },
   // India
-  { minX: 740, maxX: 810, minY: 240, maxY: 330, shape: (x, y) => {
-    const relY = (y - 240) / 90;
-    return x >= 740 + relY * 25 && x <= 810 - relY * 25;
-  }},
+  {
+    minX: 740,
+    maxX: 810,
+    minY: 240,
+    maxY: 330,
+    shape: (x, y) => {
+      const relY = (y - 240) / 90;
+      return x >= 740 + relY * 25 && x <= 810 - relY * 25;
+    },
+  },
   // Southeast Asia & Indonesia Archipelago
   { minX: 810, maxX: 990, minY: 300, maxY: 390, shape: (x, y) => true },
   // Australia
-  { minX: 890, maxX: 1080, minY: 370, maxY: 490, shape: (x, y) => {
-    return x >= 910 && x <= 1060 && y >= 380 && y <= 480;
-  }},
+  {
+    minX: 890,
+    maxX: 1080,
+    minY: 370,
+    maxY: 490,
+    shape: (x, y) => {
+      return x >= 910 && x <= 1060 && y >= 380 && y <= 480;
+    },
+  },
   // Japan / Korea
-  { minX: 980, maxX: 1040, minY: 180, maxY: 260, shape: (x, y) => true }
+  { minX: 980, maxX: 1040, minY: 180, maxY: 260, shape: (x, y) => true },
 ];
 
 function isLand(x, y) {
@@ -67,8 +109,10 @@ for (let y = 30; y < height; y += step) {
   for (let x = 30; x < width; x += step) {
     const land = isLand(x, y);
     if (land) {
-      const isIndo = (x >= 810 && x <= 990 && y >= 300 && y <= 390);
-      dots.push(`<circle cx="${x}" cy="${y}" r="${isIndo ? 2.8 : 2.2}" class="${isIndo ? 'map-dot-indo' : 'map-dot-land'}" />`);
+      const isIndo = x >= 810 && x <= 990 && y >= 300 && y <= 390;
+      dots.push(
+        `<circle cx="${x}" cy="${y}" r="${isIndo ? 2.8 : 2.2}" class="${isIndo ? "map-dot-indo" : "map-dot-land"}" />`
+      );
     } else {
       if ((x + y) % (step * 2) === 0) {
         dots.push(`<circle cx="${x}" cy="${y}" r="1.1" class="map-dot-ocean" />`);

@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 import path from "path";
 
-const artifactDir = "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c";
+const artifactDir =
+  "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c";
 const appUrl = "http://localhost:3000";
 
 async function run() {

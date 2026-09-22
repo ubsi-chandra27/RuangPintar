@@ -13,6 +13,7 @@ import { accessControlEngine } from "./access-control";
 import { staffCapabilityService } from "./staff-capability-service";
 import { recordAuditEvent } from "../audit/audit-logger";
 import { ActorContext, EvaluationContext, PermissionString, ResourceContext } from "./types";
+import { requireTenantMutationEntitlement } from "../tenant/tenant-entitlement-service";
 
 export class AuthorizationError extends Error {
   public readonly statusCode: number = 403;
@@ -136,6 +137,12 @@ export async function requirePermission(
 ): Promise<AuthenticatedUser> {
   const user = await requireAuth();
 
+  if (user.peran_dasar !== "SUPER_ADMIN" && !user.sekolah_id) {
+    throw new AuthorizationError(
+      "Akses tenant memerlukan keanggotaan aktif dan sekolah aktif yang tervalidasi."
+    );
+  }
+
   let capabilities = undefined;
   if (user.peran_dasar === "SCHOOL_STAFF") {
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
@@ -176,6 +183,10 @@ export async function requirePermission(
     });
 
     throw new AuthorizationError(`Akses ditolak: ${decision.reason || "Izin tidak mencukupi."}`);
+  }
+
+  if (user.peran_dasar !== "SUPER_ADMIN" && user.sekolah_id) {
+    await requireTenantMutationEntitlement(user.sekolah_id, permission);
   }
 
   return user;

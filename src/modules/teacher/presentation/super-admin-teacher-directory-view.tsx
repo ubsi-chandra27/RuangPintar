@@ -101,8 +101,7 @@ export function SuperAdminTeacherDirectoryView({
         (teacher.nuptk && teacher.nuptk.includes(searchQuery)) ||
         teacher.sekolah.nama.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesSchool =
-        selectedSchoolId === "ALL" || teacher.sekolah_id === selectedSchoolId;
+      const matchesSchool = selectedSchoolId === "ALL" || teacher.sekolah_id === selectedSchoolId;
 
       const matchesStatus =
         selectedStatus === "ALL" ||
@@ -145,7 +144,8 @@ export function SuperAdminTeacherDirectoryView({
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              Pusat orkestrasi seluruh dewan guru, mata pelajaran yang diampu, dan penugasan mengajar di seluruh institusi sekolah mitra ekosistem Ruang Pintar.
+              Pusat orkestrasi seluruh dewan guru, mata pelajaran yang diampu, dan penugasan
+              mengajar di seluruh institusi sekolah mitra ekosistem Ruang Pintar.
             </p>
           </div>
 
@@ -309,8 +309,8 @@ export function SuperAdminTeacherDirectoryView({
               : "Coba sesuaikan kata kunci pencarian atau reset filter sekolah dan status."}
           </p>
 
-          {teachers.length === 0 && (
-            schools.length === 0 ? (
+          {teachers.length === 0 &&
+            (schools.length === 0 ? (
               <Link
                 href="/sekolah"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all active:scale-95"
@@ -327,8 +327,7 @@ export function SuperAdminTeacherDirectoryView({
                 <Plus className="size-4" />
                 <span>Daftarkan Guru Pertama</span>
               </button>
-            )
-          )}
+            ))}
         </div>
       ) : (
         <>
@@ -347,7 +346,11 @@ export function SuperAdminTeacherDirectoryView({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
                 {filteredTeachers.map((teacher) => {
-                  const displayName = [teacher.gelar_depan, teacher.nama_lengkap, teacher.gelar_belakang]
+                  const displayName = [
+                    teacher.gelar_depan,
+                    teacher.nama_lengkap,
+                    teacher.gelar_belakang,
+                  ]
                     .filter(Boolean)
                     .join(" ");
 
@@ -368,12 +371,16 @@ export function SuperAdminTeacherDirectoryView({
                             </div>
                             <div className="flex items-center gap-1.5 mt-0.5 text-slate-400 text-xs">
                               {teacher.pengguna ? (
-                                <span className="font-mono text-[11px]">@{teacher.pengguna.username}</span>
+                                <span className="font-mono text-[11px]">
+                                  @{teacher.pengguna.username}
+                                </span>
                               ) : (
                                 <span className="italic text-[11px]">Belum aktivasi login</span>
                               )}
                               <span>•</span>
-                              <span>{teacher.jenis_kelamin === "L" ? "Laki-laki" : "Perempuan"}</span>
+                              <span>
+                                {teacher.jenis_kelamin === "L" ? "Laki-laki" : "Perempuan"}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -460,7 +467,11 @@ export function SuperAdminTeacherDirectoryView({
           {/* Mobile Card View (sm:hidden) */}
           <div className="sm:hidden space-y-3">
             {filteredTeachers.map((teacher) => {
-              const displayName = [teacher.gelar_depan, teacher.nama_lengkap, teacher.gelar_belakang]
+              const displayName = [
+                teacher.gelar_depan,
+                teacher.nama_lengkap,
+                teacher.gelar_belakang,
+              ]
                 .filter(Boolean)
                 .join(" ");
 
@@ -481,7 +492,9 @@ export function SuperAdminTeacherDirectoryView({
                         <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-400">
                           <span>{teacher.sekolah.nama}</span>
                           <span>•</span>
-                          <span className="font-mono text-[10px]">{teacher.nip || "Tanpa NIP"}</span>
+                          <span className="font-mono text-[10px]">
+                            {teacher.nip || "Tanpa NIP"}
+                          </span>
                         </div>
                       </div>
                     </div>

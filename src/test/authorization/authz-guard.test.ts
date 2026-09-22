@@ -64,6 +64,17 @@ describe("Server-Side Authorization Guards (M02) — requirePermission & checkPe
     );
   });
 
+  it("menolak actor non-platform tanpa tenant aktif untuk resource tenant", async () => {
+    vi.spyOn(authGuardModule, "requireAuth").mockResolvedValue({
+      ...mockTeacher,
+      sekolah_id: null,
+    });
+
+    await expect(
+      requirePermission("academic.school.view", { sekolah_id: "SCH_01" })
+    ).rejects.toThrow("keanggotaan aktif");
+  });
+
   it("checkPermission returns true for allowed permission and false for disallowed", async () => {
     vi.spyOn(authGuardModule, "getCurrentUser").mockResolvedValue(mockStaff);
     vi.spyOn(staffCapabilityService, "getUserCapabilities").mockResolvedValue([

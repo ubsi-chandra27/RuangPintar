@@ -79,9 +79,11 @@ export function TrialBanner() {
       }
     });
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 1200);
+    window.dispatchEvent(
+      new CustomEvent("manual-class-created", {
+        detail: { rombelId, namaRombel },
+      })
+    );
   }
 
   const handleDismissExpiryModal = () => {

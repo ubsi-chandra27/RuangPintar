@@ -13,6 +13,10 @@ import {
 } from "@/modules/ai-assistant/domain/ai-types";
 import { getSessionCookieOptions } from "@/shared/lib/session";
 import { getCurrentUser } from "@/shared/infrastructure/auth/auth-guard";
+import { scheduleService } from "@/modules/schedule/application/schedule-service";
+import { timeSlotService } from "@/modules/schedule/application/time-slot-service";
+import { prisma } from "@/shared/infrastructure/database/prisma";
+import { HariBelajar } from "@/modules/schedule/domain/schedule-types";
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -25,6 +29,23 @@ export interface ConfirmClassResult {
   namaRombel: string;
   totalSiswa: number;
   mataPelajaran: string;
+}
+
+const HARI_BELAJAR: HariBelajar[] = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
+
+async function getTeacherAssignmentForRombel(userId: string, sekolahId: string, rombelId: string) {
+  const guru = await prisma.guru.findFirst({
+    where: { pengguna_id: userId, sekolah_id: sekolahId, status_aktif: true },
+    select: { id: true },
+  });
+  if (!guru) throw new Error("Profil guru tidak ditemukan.");
+
+  const penugasan = await prisma.penugasanMengajar.findFirst({
+    where: { sekolah_id: sekolahId, rombel_id: rombelId, guru_id: guru.id, status: "AKTIF" },
+    include: { rombel: { select: { nama: true } }, mata_pelajaran: { select: { nama: true } } },
+  });
+  if (!penugasan) throw new Error("Anda hanya dapat mengatur jadwal untuk rombel yang Anda ampu.");
+  return { guru, penugasan };
 }
 
 /**
@@ -218,16 +239,53 @@ export async function createManualClassAction(
       };
     }
 
-    // Ekstraksi nama siswa per baris jika ada
+    // Ekstraksi data siswa per baris (mendukung format NIS, Nama, dan Jenis Kelamin)
     const studentLines = siswa_raw
       .split("\n")
       .map((l) => l.trim())
-      .filter((l) => l.length > 0);
+      .filter((line) => line.length > 0 && !/^sep\s*=\s*[,;|\t]$/i.test(line));
 
-    const siswa = studentLines.map((nama) => ({
-      nama_lengkap: nama,
-      jenis_kelamin: "L" as const,
-    }));
+    const siswa = studentLines.map((line) => {
+      let nis: string | undefined = undefined;
+      let nama = line;
+      let jenis_kelamin: "L" | "P" = "L";
+
+      const separator = ["\t", ";", "|", ","].find((sep) => line.includes(sep));
+      if (separator) {
+        const parts = line
+          .split(separator)
+          .map((p) => p.trim())
+          .filter(Boolean);
+        if (parts.length >= 2) {
+          if (/^[\w\-./]+$/.test(parts[0]) && !/\s{2,}/.test(parts[0])) {
+            nis = parts[0];
+            nama = parts[1];
+            if (parts[2]) {
+              const jkClean = parts[2].toUpperCase().charAt(0);
+              if (jkClean === "P" || jkClean === "W") jenis_kelamin = "P";
+            }
+          } else {
+            nama = parts[0];
+            nis = parts[1];
+          }
+        }
+      } else if (line.includes(" - ")) {
+        const parts = line
+          .split(" - ")
+          .map((p) => p.trim())
+          .filter(Boolean);
+        if (parts.length >= 2) {
+          nis = parts[0];
+          nama = parts[1];
+        }
+      }
+
+      return {
+        nama_lengkap: nama,
+        nis,
+        jenis_kelamin,
+      };
+    });
 
     const result = await smartOnboardingService.confirmAndCreateClass(user.id, user.sekolah_id, {
       nama_kelas,
@@ -248,5 +306,149 @@ export async function createManualClassAction(
       success: false,
       error: error.message || "Gagal membuat kelas secara manual.",
     };
+  }
+}
+
+/**
+ * Opsi jadwal awal khusus guru mandiri. Akses dibatasi pada penugasan mengajar
+ * milik guru yang sedang login, bukan pengelolaan master jadwal sekolah.
+ */
+export async function getTeacherInitialScheduleOptionsAction(rombelId: string): Promise<
+  ActionResult<{
+    rombelNama: string;
+    mataPelajaran: string;
+    slots: Array<{ id: string; nama: string; jam_mulai: string; jam_selesai: string }>;
+  }>
+> {
+  try {
+    const user = await getCurrentUser();
+    if (!user?.sekolah_id || user.peran_dasar !== "TEACHER") {
+      return { success: false, error: "Akses setup jadwal hanya tersedia untuk guru." };
+    }
+
+    const { penugasan } = await getTeacherAssignmentForRombel(user.id, user.sekolah_id, rombelId);
+    let slots = await timeSlotService.listTimeSlots(user.sekolah_id);
+    if (!slots.length) {
+      slots = await timeSlotService.seedDefaultTimeSlotsIfEmpty(
+        user.id,
+        user.peran_dasar,
+        user.sekolah_id
+      );
+    }
+
+    return {
+      success: true,
+      data: {
+        rombelNama: penugasan.rombel.nama,
+        mataPelajaran: penugasan.mata_pelajaran.nama,
+        slots: slots
+          .filter((slot) => slot.status_aktif && !slot.is_istirahat && !slot.is_upacara)
+          .map((slot) => ({
+            id: slot.id,
+            nama: slot.nama,
+            jam_mulai: slot.jam_mulai,
+            jam_selesai: slot.jam_selesai,
+          })),
+      },
+    };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Gagal menyiapkan pilihan jadwal." };
+  }
+}
+
+/** Membuat jadwal awal guru mandiri pada sekolah yang belum memiliki jadwal terpublikasi. */
+export async function createTeacherInitialScheduleAction(input: {
+  rombelId: string;
+  slotWaktuId: string;
+  hari: HariBelajar;
+}): Promise<ActionResult> {
+  try {
+    const user = await getCurrentUser();
+    if (!user?.sekolah_id || user.peran_dasar !== "TEACHER") {
+      return { success: false, error: "Akses setup jadwal hanya tersedia untuk guru." };
+    }
+    if (!HARI_BELAJAR.includes(input.hari) || !input.slotWaktuId) {
+      return { success: false, error: "Hari dan jam mengajar wajib dipilih." };
+    }
+
+    const { penugasan } = await getTeacherAssignmentForRombel(
+      user.id,
+      user.sekolah_id,
+      input.rombelId
+    );
+    const [tahunAjaran, semester] = await Promise.all([
+      prisma.tahunAjaran.findFirst({
+        where: { sekolah_id: user.sekolah_id, status: "AKTIF" },
+        orderBy: { tanggal_mulai: "desc" },
+      }),
+      prisma.semester.findFirst({
+        where: { sekolah_id: user.sekolah_id, status: "AKTIF" },
+        orderBy: { tanggal_mulai: "desc" },
+      }),
+    ]);
+    if (!tahunAjaran || !semester) {
+      return { success: false, error: "Tahun ajaran atau semester aktif belum tersedia." };
+    }
+
+    const publishedVersion = await prisma.versiJadwal.findFirst({
+      where: { sekolah_id: user.sekolah_id, tahun_ajaran_id: tahunAjaran.id, status: "PUBLISHED" },
+      select: { id: true },
+    });
+    if (publishedVersion) {
+      return {
+        success: false,
+        error:
+          "Jadwal resmi sekolah sudah tersedia. Hubungi operator kurikulum untuk perubahan jadwal.",
+      };
+    }
+
+    const versionName = "Jadwal Awal Guru Mandiri";
+    const existingVersion = await prisma.versiJadwal.findFirst({
+      where: {
+        sekolah_id: user.sekolah_id,
+        tahun_ajaran_id: tahunAjaran.id,
+        nama: versionName,
+        status: "DRAFT",
+      },
+    });
+    let versionId = existingVersion?.id;
+    if (!versionId) {
+      const version = await scheduleService.createVersion(user.id, user.peran_dasar, {
+        sekolah_id: user.sekolah_id,
+        tahun_ajaran_id: tahunAjaran.id,
+        semester_id: semester.id,
+        nama: versionName,
+        catatan: "Jadwal awal dari onboarding guru mandiri.",
+      });
+      versionId = version.id;
+    }
+
+    const existingEntries = await scheduleService.listEntriesByVersion(versionId, user.sekolah_id);
+    if (existingEntries.some((entry) => entry.penugasan_mengajar_id !== penugasan.id)) {
+      return { success: false, error: "Versi jadwal awal sudah berisi alokasi guru lain." };
+    }
+
+    await scheduleService.createScheduleEntry(user.id, user.peran_dasar, {
+      sekolah_id: user.sekolah_id,
+      versi_jadwal_id: versionId,
+      rombel_id: input.rombelId,
+      penugasan_mengajar_id: penugasan.id,
+      slot_waktu_id: input.slotWaktuId,
+      hari: input.hari,
+    });
+    await scheduleService.publishVersion(
+      user.id,
+      user.peran_dasar,
+      user.nama_lengkap,
+      versionId,
+      user.sekolah_id
+    );
+
+    revalidatePath("/dashboard");
+    revalidatePath("/jadwal-saya");
+    revalidatePath("/sesi-pembelajaran");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Gagal menyimpan jadwal awal." };
   }
 }

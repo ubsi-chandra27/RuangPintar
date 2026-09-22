@@ -69,7 +69,10 @@ export async function createTeacherAction(
     const effectiveSekolahId = session.sekolah_id || formData.get("sekolah_id")?.toString();
 
     if (!effectiveSekolahId) {
-      return { success: false, message: "Konteks sekolah tidak valid. Silakan pilih sekolah tujuan." };
+      return {
+        success: false,
+        message: "Konteks sekolah tidak valid. Silakan pilih sekolah tujuan.",
+      };
     }
 
     await requirePermission("academic.teachers.manage", {

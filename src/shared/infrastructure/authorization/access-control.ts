@@ -35,7 +35,15 @@ export class AccessControlEngine {
     }
 
     // 2. Tenant / Cross-School Isolation (Kecuali SUPER_ADMIN)
-    if (actor.peran_dasar !== "SUPER_ADMIN" && actor.sekolah_id) {
+    if (actor.peran_dasar !== "SUPER_ADMIN") {
+      if (resource.sekolah_id && !actor.sekolah_id) {
+        return {
+          allowed: false,
+          reason: "Active tenant context is required for tenant-scoped resources.",
+          actorId: actor.id,
+          baseRole: actor.peran_dasar,
+        };
+      }
       if (resource.sekolah_id && resource.sekolah_id !== actor.sekolah_id) {
         return {
           allowed: false,

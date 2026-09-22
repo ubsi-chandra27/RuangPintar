@@ -1,15 +1,13 @@
 import sharp from "sharp";
 import path from "path";
 
-const inputPath = "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/astronaut_ipad_atm_mockup_1789785095125.jpg";
+const inputPath =
+  "C:/Users/vitam/.gemini/antigravity-cli/brain/651c150a-16e4-4324-8459-56cbd481e84c/astronaut_ipad_atm_mockup_1789785095125.jpg";
 const outputPath = path.resolve("public/images/illustrations/astronaut-large-ipad-transparent.png");
 
 async function run() {
   const image = sharp(inputPath);
-  const { data, info } = await image
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  const { data, info } = await image.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
 
   const { width, height, channels } = info;
   console.log(`Image loaded: ${width}x${height}, channels: ${channels}`);
@@ -83,7 +81,7 @@ async function run() {
       cx > 0 ? curr - 1 : -1,
       cx < width - 1 ? curr + 1 : -1,
       cy > 0 ? curr - width : -1,
-      cy < height - 1 ? curr + width : -1
+      cy < height - 1 ? curr + width : -1,
     ];
 
     for (let n = 0; n < 4; n++) {
@@ -133,9 +131,7 @@ async function run() {
     .png({ compressionLevel: 8 })
     .toBuffer();
 
-  const trimmed = await sharp(unclipped)
-    .trim({ threshold: 5 })
-    .toFile(outputPath);
+  const trimmed = await sharp(unclipped).trim({ threshold: 5 }).toFile(outputPath);
 
   console.log(`Successfully saved trimmed transparent mockup:`, trimmed);
 }
