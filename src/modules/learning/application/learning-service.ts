@@ -115,7 +115,7 @@ export class LearningService {
     input: UpdateLingkupMateriInput
   ): Promise<LingkupMateriDTO> {
     const validated = UpdateLingkupMateriSchema.parse(input);
-    const updated = await this.repository.updateLingkupMateri(id, validated);
+    const updated = await this.repository.updateLingkupMateri(id, validated, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -136,7 +136,7 @@ export class LearningService {
     id: string,
     sekolahId: string
   ): Promise<void> {
-    await this.repository.deleteLingkupMateri(id);
+    await this.repository.deleteLingkupMateri(id, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -181,7 +181,7 @@ export class LearningService {
     input: UpdateTujuanPembelajaranInput
   ): Promise<TujuanPembelajaranDTO> {
     const validated = UpdateTujuanPembelajaranSchema.parse(input);
-    const updated = await this.repository.updateTujuanPembelajaran(id, validated);
+    const updated = await this.repository.updateTujuanPembelajaran(id, validated, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -202,7 +202,7 @@ export class LearningService {
     id: string,
     sekolahId: string
   ): Promise<void> {
-    await this.repository.deleteTujuanPembelajaran(id);
+    await this.repository.deleteTujuanPembelajaran(id, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -247,7 +247,7 @@ export class LearningService {
     input: UpdateMateriInput
   ): Promise<MateriPembelajaranDTO> {
     const validated = UpdateMateriSchema.parse(input);
-    const updated = await this.repository.updateMateri(id, validated);
+    const updated = await this.repository.updateMateri(id, validated, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -268,7 +268,7 @@ export class LearningService {
     id: string,
     sekolahId: string
   ): Promise<void> {
-    await this.repository.deleteMateri(id);
+    await this.repository.deleteMateri(id, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -311,7 +311,7 @@ export class LearningService {
     id: string,
     sekolahId: string
   ): Promise<void> {
-    await this.repository.deleteTugas(id);
+    await this.repository.deleteTugas(id, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -356,7 +356,7 @@ export class LearningService {
     input: UpdateAdministrasiInput
   ): Promise<AdministrasiPembelajaranDTO> {
     const validated = UpdateAdministrasiSchema.parse(input);
-    const updated = await this.repository.updateAdministrasi(id, validated);
+    const updated = await this.repository.updateAdministrasi(id, validated, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,
@@ -377,7 +377,7 @@ export class LearningService {
     id: string,
     sekolahId: string
   ): Promise<void> {
-    await this.repository.deleteAdministrasi(id);
+    await this.repository.deleteAdministrasi(id, sekolahId);
 
     await recordAuditEvent({
       sekolah_id: sekolahId,

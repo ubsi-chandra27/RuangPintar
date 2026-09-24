@@ -143,6 +143,10 @@ export class GuardianRepository {
           siswa_id: studentId,
         },
       },
+      include: {
+        siswa: true,
+        wali: true,
+      },
     });
 
     if (!rel) {
@@ -151,6 +155,10 @@ export class GuardianRepository {
 
     if (rel.status_verifikasi !== "TERVERIFIKASI") {
       throw new UnverifiedRelationshipError(waliId, studentId);
+    }
+
+    if (rel.siswa.sekolah_id !== rel.wali.sekolah_id) {
+      throw new Error("Relasi lintas sekolah tidak valid.");
     }
   }
 

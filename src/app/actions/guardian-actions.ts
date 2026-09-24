@@ -31,6 +31,8 @@ export async function switchActiveChildAction(studentId: string): Promise<Guardi
       return { success: false, message: "Akses hanya untuk wali murid." };
     }
 
+    await guardianService.verifyGuardianChildAccess(user, studentId);
+
     const cookieStore = await cookies();
     cookieStore.set(ACTIVE_CHILD_COOKIE_KEY, studentId, {
       path: "/",

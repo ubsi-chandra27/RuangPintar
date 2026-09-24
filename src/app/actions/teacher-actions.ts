@@ -66,7 +66,26 @@ export async function createTeacherAction(
 ): Promise<ActionResult> {
   try {
     const session = await requireAuth();
-    const effectiveSekolahId = session.sekolah_id || formData.get("sekolah_id")?.toString();
+    const clientSekolahId = formData.get("sekolah_id")?.toString();
+    if (session.peran_dasar !== "SUPER_ADMIN") {
+      if (!session.sekolah_id) {
+        return {
+          success: false,
+          message: "Konteks sekolah tidak valid pada sesi aktif.",
+        };
+      }
+      if (clientSekolahId && clientSekolahId !== session.sekolah_id) {
+        return {
+          success: false,
+          message: "Akses ditolak: Akses data lintas sekolah dilarang.",
+        };
+      }
+    }
+
+    const effectiveSekolahId =
+      session.peran_dasar === "SUPER_ADMIN"
+        ? (session.sekolah_id || clientSekolahId)
+        : session.sekolah_id;
 
     if (!effectiveSekolahId) {
       return {

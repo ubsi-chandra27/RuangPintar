@@ -38,14 +38,18 @@ async function buildEvaluationContext(
   // 1. Load teacher active teaching assignments
   if (user.peran_dasar === "TEACHER" && !evaluationContext.teachingAssignments) {
     const guru = await prisma.guru.findFirst({
-      where: { pengguna_id: user.id },
-      select: { id: true },
+      where: {
+        pengguna_id: user.id,
+        ...(user.sekolah_id ? { sekolah_id: user.sekolah_id } : {}),
+      },
+      select: { id: true, sekolah_id: true },
     });
 
     if (guru) {
       const activeAssignments = await prisma.penugasanMengajar.findMany({
         where: {
           guru_id: guru.id,
+          sekolah_id: guru.sekolah_id,
           status: "AKTIF",
         },
         select: {
@@ -73,6 +77,7 @@ async function buildEvaluationContext(
         const activeHomerooms = await prisma.penugasanWaliKelas.findMany({
           where: {
             guru_id: guru.id,
+            sekolah_id: guru.sekolah_id,
             status: "AKTIF",
           },
           select: {
@@ -101,6 +106,7 @@ async function buildEvaluationContext(
     const activePositions = await prisma.penugasanJabatan.findMany({
       where: {
         personil_id: user.id,
+        ...(user.sekolah_id ? { sekolah_id: user.sekolah_id } : {}),
         status: "AKTIF",
       },
       include: {
@@ -143,6 +149,35 @@ export async function requirePermission(
     );
   }
 
+  // Cross-tenant boundary check:
+  // If user has a tenant context and resource explicitly provides a different sekolah_id, immediately reject.
+  if (user.sekolah_id && resource?.sekolah_id && resource.sekolah_id !== user.sekolah_id) {
+    await recordAuditEvent({
+      sekolah_id: user.sekolah_id,
+      aktor_id: user.id,
+      aktor_role: user.peran_dasar,
+      tipe_sumber: "AUTHORIZATION_GUARD",
+      id_sumber: user.id,
+      aksi: "AUTHZ_CROSS_TENANT_DENIED",
+      payload_sebelum: {
+        permission,
+        actorSekolahId: user.sekolah_id,
+        resourceSekolahId: resource.sekolah_id,
+      },
+    });
+    throw new AuthorizationError(
+      "Akses ditolak: Akses terhadap resource lintas sekolah tidak diizinkan."
+    );
+  }
+
+  const effectiveResource: ResourceContext = {
+    ...resource,
+    sekolah_id:
+      user.peran_dasar === "SUPER_ADMIN"
+        ? (resource?.sekolah_id ?? user.sekolah_id)
+        : user.sekolah_id,
+  };
+
   let capabilities = undefined;
   if (user.peran_dasar === "SCHOOL_STAFF") {
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
@@ -162,7 +197,7 @@ export async function requirePermission(
   const decision = accessControlEngine.evaluate({
     actor,
     permission,
-    resource,
+    resource: effectiveResource,
     context: evaluationContext,
   });
 
@@ -177,7 +212,7 @@ export async function requirePermission(
       aksi: "AUTHZ_ACCESS_DENIED",
       payload_sebelum: {
         permission,
-        resource: resource ?? {},
+        resource: effectiveResource,
         reason: decision.reason,
       },
     });
@@ -205,6 +240,22 @@ export async function checkPermission(
     return false;
   }
 
+  if (user.peran_dasar !== "SUPER_ADMIN" && !user.sekolah_id) {
+    return false;
+  }
+
+  if (user.sekolah_id && resource?.sekolah_id && resource.sekolah_id !== user.sekolah_id) {
+    return false;
+  }
+
+  const effectiveResource: ResourceContext = {
+    ...resource,
+    sekolah_id:
+      user.peran_dasar === "SUPER_ADMIN"
+        ? (resource?.sekolah_id ?? user.sekolah_id)
+        : user.sekolah_id,
+  };
+
   let capabilities = undefined;
   if (user.peran_dasar === "SCHOOL_STAFF") {
     capabilities = await staffCapabilityService.getUserCapabilities(user.id);
@@ -224,7 +275,7 @@ export async function checkPermission(
   const decision = accessControlEngine.evaluate({
     actor,
     permission,
-    resource,
+    resource: effectiveResource,
     context: evaluationContext,
   });
 

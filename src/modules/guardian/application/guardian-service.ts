@@ -39,7 +39,7 @@ export class GuardianService {
     this.assertGuardianRole(actor);
 
     const guardian = await this.repo.getGuardianProfileByUserId(actor.id);
-    if (!guardian) {
+    if (!guardian || guardian.sekolah_id !== actor.sekolah_id) {
       throw new GuardianNotFoundError(`User ${actor.id} (${actor.username})`);
     }
 
@@ -103,7 +103,7 @@ export class GuardianService {
     this.assertGuardianRole(actor);
 
     const guardian = await this.repo.getGuardianProfileByUserId(actor.id);
-    if (!guardian) {
+    if (!guardian || guardian.sekolah_id !== actor.sekolah_id) {
       throw new GuardianNotFoundError(actor.id);
     }
 
@@ -148,7 +148,7 @@ export class GuardianService {
     this.assertGuardianRole(actor);
 
     const guardian = await this.repo.getGuardianProfileByUserId(actor.id);
-    if (!guardian) {
+    if (!guardian || guardian.sekolah_id !== actor.sekolah_id) {
       throw new GuardianNotFoundError(actor.id);
     }
 
@@ -194,7 +194,7 @@ export class GuardianService {
     }
 
     const guardian = await this.repo.getGuardianProfileByUserId(actor.id);
-    if (!guardian) {
+    if (!guardian || guardian.sekolah_id !== actor.sekolah_id) {
       throw new GuardianNotFoundError(actor.id);
     }
 
@@ -222,6 +222,18 @@ export class GuardianService {
   }
 
   /**
+   * Memvalidasi bahwa aktor wali memiliki profil sah di sekolah aktif dan terhubung dengan siswa
+   */
+  async verifyGuardianChildAccess(actor: AuthenticatedUser, studentId: string): Promise<void> {
+    this.assertGuardianRole(actor);
+    const guardian = await this.repo.getGuardianProfileByUserId(actor.id);
+    if (!guardian || guardian.sekolah_id !== actor.sekolah_id) {
+      throw new GuardianNotFoundError(actor.id);
+    }
+    await this.repo.assertVerifiedRelationship(guardian.id, studentId);
+  }
+
+  /**
    * Memastikan pengguna memiliki peran dasar GUARDIAN
    */
   private assertGuardianRole(actor: AuthenticatedUser): void {
@@ -232,3 +244,4 @@ export class GuardianService {
     }
   }
 }
+

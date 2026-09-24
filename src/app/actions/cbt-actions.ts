@@ -680,8 +680,15 @@ export async function refreshExamTokenAction(
       newToken += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
+    const existingExam = await prisma.ujianCbt.findFirst({
+      where: { id: ujianId, sekolah_id: user.sekolah_id },
+    });
+    if (!existingExam) {
+      return { success: false, message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda." };
+    }
+
     await prisma.ujianCbt.update({
-      where: { id: ujianId },
+      where: { id: existingExam.id },
       data: { token_masuk: newToken, gunakan_token: true },
     });
 
@@ -792,8 +799,10 @@ export async function getExamPrintDataAction(
     const user = await requireAuth();
     if (!user.sekolah_id) return { success: false, message: "Sekolah tidak teridentifikasi." };
 
-    const exam = await prisma.ujianCbt.findUnique({
-      where: { id: ujianId },
+    await requirePermission("cbt.exam.manage", { sekolah_id: user.sekolah_id });
+
+    const exam = await prisma.ujianCbt.findFirst({
+      where: { id: ujianId, sekolah_id: user.sekolah_id },
       include: {
         sekolah: true,
         penugasan_mengajar: {
@@ -817,7 +826,7 @@ export async function getExamPrintDataAction(
       },
     });
 
-    if (!exam) return { success: false, message: "Ujian CBT tidak ditemukan." };
+    if (!exam) return { success: false, message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda." };
 
     let rawItems: any[] = [];
     const keysMap: Record<string, any> = {};
@@ -833,7 +842,7 @@ export async function getExamPrintDataAction(
       const bpList: any[] = JSON.parse(exam.blueprint || "[]");
       const qIds = bpList.map((b) => b.bank_soal_id);
       const bankQuestions = await prisma.bankSoal.findMany({
-        where: { id: { in: qIds } },
+        where: { id: { in: qIds }, sekolah_id: user.sekolah_id },
         include: { versi_soal: true },
       });
       rawItems = bpList

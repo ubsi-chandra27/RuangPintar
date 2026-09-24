@@ -59,6 +59,14 @@ export class HomeroomAssignmentService {
       throw new CrossSchoolBoundaryError(`Rombel ${validated.rombel_id}`);
     }
 
+    // 3. Cross-school validation: Tahun Ajaran
+    const academicYear = await prisma.tahunAjaran.findFirst({
+      where: { id: validated.tahun_ajaran_id, sekolah_id: validated.sekolah_id },
+    });
+    if (!academicYear) {
+      throw new CrossSchoolBoundaryError(`Tahun Ajaran ${validated.tahun_ajaran_id}`);
+    }
+
     // 3. Active Homeroom conflict check on the same rombel & academic year
     const existingActive = await TeacherRepository.findActiveHomeroomByRombel(
       validated.rombel_id,

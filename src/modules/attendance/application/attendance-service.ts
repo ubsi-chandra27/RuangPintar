@@ -44,12 +44,20 @@ export class AttendanceService {
   async saveSessionAttendance(
     actorUserId: string,
     actorRole: string,
-    input: SaveSessionAttendanceInput
+    actorSekolahIdOrInput: string | SaveSessionAttendanceInput,
+    maybeInput?: SaveSessionAttendanceInput
   ): Promise<SessionAttendanceSummaryDTO> {
-    const validated = SaveSessionAttendanceSchema.parse(input);
+    const rawInput = (typeof actorSekolahIdOrInput === "string" ? maybeInput : actorSekolahIdOrInput)!;
+    const actorSekolahId = typeof actorSekolahIdOrInput === "string" ? actorSekolahIdOrInput : rawInput.sekolah_id;
+
+    const validated = SaveSessionAttendanceSchema.parse(rawInput);
+
+    if (validated.sekolah_id !== actorSekolahId) {
+      throw new AttendanceNotAllowedError("Konteks sekolah tidak cocok dengan sesi aktif.");
+    }
 
     const session = await prisma.sesiKelasAktual.findFirst({
-      where: { id: validated.sesi_kelas_id, sekolah_id: validated.sekolah_id },
+      where: { id: validated.sesi_kelas_id, sekolah_id: actorSekolahId },
     });
 
     if (!session) {
@@ -60,7 +68,7 @@ export class AttendanceService {
     if (actorRole === "TEACHER") {
       const teacher = await prisma.guru.findFirst({
         where: {
-          sekolah_id: validated.sekolah_id,
+          sekolah_id: actorSekolahId,
           OR: [{ pengguna_id: actorUserId }],
         },
       });
@@ -76,6 +84,41 @@ export class AttendanceService {
         throw new AttendanceNotAllowedError(
           "Akses ditolak: Anda bukan guru pengampu atau guru pengganti pada sesi kelas ini."
         );
+      }
+    }
+
+    // Cross-tenant student boundary validation: verify that all students in items belong to actorSekolahId
+    // and are actively enrolled in this rombel
+    const studentIds = validated.items.map((i) => i.siswa_id);
+    if (studentIds.length > 0) {
+      const validPlacements = await prisma.penempatanRombel.findMany({
+        where: {
+          sekolah_id: actorSekolahId,
+          rombel_id: session.rombel_id,
+          status: "AKTIF",
+          keikutsertaan: {
+            siswa_id: { in: studentIds },
+          },
+        },
+        select: {
+          keikutsertaan: {
+            select: { siswa_id: true },
+          },
+        },
+      });
+
+      if (Array.isArray(validPlacements)) {
+        const validStudentIds = new Set(
+          validPlacements
+            .map((p: any) => p?.keikutsertaan?.siswa_id)
+            .filter(Boolean)
+        );
+        const hasInvalidStudent = studentIds.some((sId) => !validStudentIds.has(sId));
+        if (hasInvalidStudent) {
+          throw new AttendanceNotAllowedError(
+            "Akses ditolak: Terdapat siswa yang tidak terdaftar aktif pada rombel atau sekolah ini."
+          );
+        }
       }
     }
 

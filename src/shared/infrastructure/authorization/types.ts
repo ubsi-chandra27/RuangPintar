@@ -167,6 +167,7 @@ export interface IGuardianRelationshipContext {
   id: string;
   guardian_id: string;
   student_id: string;
+  sekolah_id?: string;
   relationship_type?: string;
   verified: boolean;
   valid_from: Date;

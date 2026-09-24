@@ -158,6 +158,10 @@ export function evaluateGuardianRelationshipScope(
     return false;
   }
 
+  if (resource.sekolah_id && relationship.sekolah_id && resource.sekolah_id !== relationship.sekolah_id) {
+    return false; // Mencoba mengakses data siswa lintas sekolah
+  }
+
   if (resource.student_id && resource.student_id !== relationship.student_id) {
     return false; // Mencoba mengakses data siswa yang bukan anaknya
   }

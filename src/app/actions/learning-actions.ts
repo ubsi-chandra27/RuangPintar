@@ -9,6 +9,7 @@ import { requireAuth } from "@/shared/infrastructure/auth/auth-guard";
 import { requirePermission } from "@/shared/infrastructure/authorization/authz-guard";
 import { learningService } from "@/modules/learning/application/learning-service";
 import { LocalStorageAdapter } from "@/shared/infrastructure/storage/local-storage-adapter";
+import { prisma } from "@/shared/infrastructure/database/prisma";
 
 export interface LearningActionResult<T = any> {
   success: boolean;
@@ -21,6 +22,33 @@ function getSafeErrorMessage(error: any): string {
     return error.message;
   }
   return "Terjadi kesalahan saat memproses data pembelajaran.";
+}
+
+async function assertTeachingAssignmentBelongsToSchool(
+  penugasanId: string,
+  sekolahId: string,
+  user: { id: string; peran_dasar: string }
+): Promise<{ guruId: string }> {
+  const penugasan = await prisma.penugasanMengajar.findFirst({
+    where: { id: penugasanId, sekolah_id: sekolahId },
+    select: { guru_id: true },
+  });
+  if (!penugasan) {
+    throw new Error("Penugasan mengajar tidak ditemukan atau bukan milik sekolah aktif.");
+  }
+
+  if (user.peran_dasar === "TEACHER") {
+    const teacher = await prisma.guru.findFirst({
+      where: { pengguna_id: user.id, sekolah_id: sekolahId },
+      select: { id: true },
+    });
+    if (!teacher || teacher.id !== penugasan.guru_id) {
+      throw new Error("Akses ditolak: Anda bukan pengampu penugasan mengajar ini.");
+    }
+    return { guruId: teacher.id };
+  }
+
+  return { guruId: penugasan.guru_id };
 }
 
 // ==========================================
@@ -37,6 +65,8 @@ export async function createLingkupMateriAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
+    await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
+
     const created = await learningService.createLingkupMateri(user.id, user.peran_dasar, {
       sekolah_id: user.sekolah_id,
       penugasan_mengajar_id: penugasanId,
@@ -132,9 +162,19 @@ export async function createTujuanPembelajaranAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
+    await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
+
+    const lingkupMateriId = formData.get("lingkup_materi_id") as string;
+    const lm = await prisma.lingkupMateri.findFirst({
+      where: { id: lingkupMateriId, sekolah_id: user.sekolah_id, penugasan_mengajar_id: penugasanId },
+    });
+    if (!lm) {
+      return { success: false, message: "Lingkup materi tidak valid pada kelas ini." };
+    }
+
     const created = await learningService.createTujuanPembelajaran(user.id, user.peran_dasar, {
       sekolah_id: user.sekolah_id,
-      lingkup_materi_id: formData.get("lingkup_materi_id") as string,
+      lingkup_materi_id: lingkupMateriId,
       kode: (formData.get("kode") as string) || null,
       deskripsi: formData.get("deskripsi") as string,
       urutan: Number(formData.get("urutan")) || 1,
@@ -221,7 +261,7 @@ export async function createMateriAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const guruId = formData.get("guru_id") as string;
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
 
     let berkasId: string | null = (formData.get("berkas_id") as string) || null;
     const file = formData.get("file") as File | null;
@@ -364,7 +404,7 @@ export async function createTugasAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const guruId = formData.get("guru_id") as string;
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
 
     const created = await learningService.createTugas(user.id, user.peran_dasar, {
       sekolah_id: user.sekolah_id,
@@ -429,7 +469,7 @@ export async function createAdministrasiAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const guruId = formData.get("guru_id") as string;
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
     const tpIdsRaw = formData.getAll("tp_ids") as string[];
 
     const created = await learningService.createAdministrasi(user.id, user.peran_dasar, {

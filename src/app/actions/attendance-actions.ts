@@ -59,11 +59,25 @@ export async function saveSessionAttendanceAction(
       return { success: false, message: "Sekolah tidak teridentifikasi." };
     }
 
+    if (input.sekolah_id && input.sekolah_id !== user.sekolah_id) {
+      return { success: false, message: "Akses ditolak: Akses data lintas sekolah dilarang." };
+    }
+
     await requirePermission("attendance.session.record", {
       sekolah_id: user.sekolah_id,
     });
 
-    const summary = await attendanceService.saveSessionAttendance(user.id, user.peran_dasar, input);
+    const secureInput: SaveSessionAttendanceInput = {
+      ...input,
+      sekolah_id: user.sekolah_id,
+    };
+
+    const summary = await attendanceService.saveSessionAttendance(
+      user.id,
+      user.peran_dasar,
+      user.sekolah_id,
+      secureInput
+    );
 
     revalidatePath("/sesi-pembelajaran");
     revalidatePath("/kelas-saya");

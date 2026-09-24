@@ -121,6 +121,24 @@ export class TeachingAssignmentService {
       throw new CrossSchoolBoundaryError(`Rombel ${validated.rombel_id}`);
     }
 
+    // 4. Cross-school validation: Tahun Ajaran
+    const academicYear = await prisma.tahunAjaran.findFirst({
+      where: { id: validated.tahun_ajaran_id, sekolah_id: validated.sekolah_id },
+    });
+    if (!academicYear) {
+      throw new CrossSchoolBoundaryError(`Tahun Ajaran ${validated.tahun_ajaran_id}`);
+    }
+
+    // 5. Cross-school validation: Semester (jika disediakan)
+    if (validated.semester_id) {
+      const semester = await prisma.semester.findFirst({
+        where: { id: validated.semester_id, sekolah_id: validated.sekolah_id },
+      });
+      if (!semester) {
+        throw new CrossSchoolBoundaryError(`Semester ${validated.semester_id}`);
+      }
+    }
+
     // 4. Duplicate/Conflict validation (active assignment for same subject in same rombel & period)
     const conflict = await TeacherRepository.findActiveAssignmentConflict(
       validated.sekolah_id,

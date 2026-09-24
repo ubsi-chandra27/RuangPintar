@@ -216,8 +216,11 @@ export async function deleteAnnouncementAction(id: string): Promise<Communicatio
  */
 export async function getAnnouncementDetailAction(id: string): Promise<CommunicationActionResult> {
   try {
-    await requireAuth();
-    const item = await communicationService.getAnnouncementById(id);
+    const user = await requireAuth();
+    if (!user.sekolah_id) {
+      return { success: false, message: "Konteks sekolah tidak ditemukan." };
+    }
+    const item = await communicationService.getAnnouncementById(id, user.sekolah_id);
     return {
       success: true,
       message: "Pengumuman berhasil dimuat.",

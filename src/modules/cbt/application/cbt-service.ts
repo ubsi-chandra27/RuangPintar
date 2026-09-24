@@ -101,6 +101,7 @@ export class CbtService {
 
     const penempatan = await prisma.penempatanRombel.findFirst({
       where: {
+        sekolah_id: sekolahId,
         rombel_id: penugasan.rombel_id,
         status: "AKTIF",
         keikutsertaan: {

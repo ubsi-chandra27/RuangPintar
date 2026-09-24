@@ -1,332 +1,215 @@
 # AGENTS.md
-## Ruang Pintar — Entry Point untuk AI Coding Agent
+## Ruang Pintar — Operating Contract & Navigation Guide untuk AI Coding Agent
 
-**Versi:** 1.0  
-**Status:** BASELINE OPERASIONAL  
-
----
-
-# 1. Baca Ini Terlebih Dahulu
-
-Anda sedang bekerja pada proyek:
-
-```text
-Ruang Pintar
-```
-
-Sebelum melakukan coding:
-
-```text
-1. Baca AGENTS.md
-2. Baca MEMORY.md
-3. Baca TASKS.md
-4. Baca docs/BRD.md
-5. Baca docs/PRD.md
-6. Baca docs/FRD.md
-7. Baca docs/00–09 yang relevan
-8. Identifikasi ACTIVE PHASE
-9. Kerjakan hanya ACTIVE PHASE
-10. Berhenti pada READY FOR HUMAN REVIEW
-```
+| Field | Nilai |
+| --- | --- |
+| **Project Identity** | Ruang Pintar — School Digital Operating Platform |
+| **Product Type** | Application (Modular Monolith SaaS Multi-Tenant) |
+| **Current Phase** | PHASE SAAS-04 — MULTI-TENANT FOUNDATION IMPLEMENTATION |
+| **Phase Lifecycle Gate** | `TEST` (Stabilization, Regression & Verification Gate) |
+| **Status** | `active` |
+| **Version** | 2.0 (Fikran Engineering Aligned) |
+| **Operating Contract** | `.gemini/config/skills/fikran-engineering/SKILL.md` |
 
 ---
 
-# 2. Bahasa
+# 1. Project Identity & Current Phase
 
-Gunakan Bahasa Indonesia untuk:
+Ruang Pintar adalah:
+> **School Digital Operating Platform modular yang menyatukan proses akademik, pembelajaran, administrasi, komunikasi, monitoring, dan layanan sekolah dalam satu ekosistem digital terintegrasi.**
 
-- laporan;
-- dokumentasi `.md`;
-- catatan phase;
-- penjelasan;
-- prompt internal.
-
-Pertahankan istilah teknis/framework bila lebih tepat.
+- **Target Pengguna & Peran:** `SUPER_ADMIN`, `SCHOOL_STAFF`, `TEACHER`, `STUDENT`, `GUARDIAN` (dengan posisi kontekstual `HEADMASTER` dan `HOMEROOM_TEACHER`).
+- **Fase Aktif Saat Ini:** `PHASE SAAS-04 — MULTI-TENANT FOUNDATION IMPLEMENTATION` (Status: `READY FOR HUMAN REVIEW`).
+- **Fokus Fase:** Stabilisasi fondasi SaaS multi-tenant (`KeanggotaanSekolah`, `sekolah_aktif_id`, `TenantEntitlementService`), kepatuhan quality gate, dan audit pencegahan kebocoran data antar-sekolah.
 
 ---
 
-# 3. Baseline Teknis
+# 2. Documentation Map & Subject Responsibility
 
-```text
-Architecture:
-Modular Monolith
+Repositori menggunakan prinsip **Single Source of Truth** per subjek. Detail lengkap dan resolusi alias dipetakan di [docs/README.md](file:///c:/laragon/www/Ruang-Pintar/docs/README.md):
 
-Framework:
-Next.js stable secure release
-
-Language:
-TypeScript
-
-Runtime:
-Node.js
-
-Styling:
-Tailwind CSS
-
-UI:
-shadcn/ui + Base UI
-Academic Glass UI
-
-Database:
-SQLite
-
-ORM:
-Prisma ORM
-
-Identifier:
-ULID 26 karakter
-
-Deployment:
-Single-school-per-deployment
-```
+| Subjek | Sumber Utama Canonical | Status | Tanggung Jawab Subjek |
+| --- | --- | :---: | --- |
+| **Peta Dokumen & Indeks** | `docs/README.md` | `active` | Indeks master, resolusi alias dokumen, dan aturan siklus dokumentasi. |
+| **Visi & Konteks Bisnis** | `docs/BRD.md` | `active` | Alasan platform dibangun, proses operasional sekolah, stakeholder, dan sasaran bisnis. |
+| **Kebutuhan & Scope Produk** | `docs/PRD.md` | `active` | Modul fungsional, prioritas, persona/role, journeys, dan batasan release. |
+| **Perilaku & Acceptance** | `docs/FRD.md` | `active` | Detail flow, state antarmuka, validasi bisnis, dan kriteria penerimaan fungsional. |
+| **Domain & Data Invariants** | `docs/02-DOMAIN-MODEL.md` | `active` | Entitas domain, integritas relasi, dan domain invariants akademik. |
+| **Arsitektur Sistem & Modul** | `docs/05-SYSTEM-ARCHITECTURE.md` | `active` | Modular monolith Next.js, batas modul di `src/modules/`, dan runtime. |
+| **Keamanan & Otorisasi** | `docs/SECURITY.md` | `active` | STRIDE threat model, klasifikasi data, isolasi tenant, dan matriks otorisasi server-side. |
+| **UI/UX & Design System** | `docs/07-UI-UX-DESIGN-SYSTEM.md` | `active` | Academic Glass UI tokens, responsivitas, mobile teaching cockpit, anti-slop rules. |
+| **Strategi & Bukti Test** | `docs/TEST_PLAN.md` | `active` | Public seams, test suite Vitest, risk-based TDD, dan evidence regression. |
+| **Deployment & Operasional** | `docs/DEPLOY.md` | `active` | Kesiapan runtime, langkah rilis database, smoke checks, dan prosedur rollback. |
+| **Spesifikasi Kompleks Aktif** | `docs/specs/active/<feature>.md` | `active` | Spesifikasi perilaku dan acceptance untuk pekerjaan multi-alur yang sedang berjalan. |
+| **Rencana Kompleks Aktif** | `docs/plans/active/<feature>.md` | `active` | Urutan task, dependensi, perintah verifikasi, dan rollback pekerjaan aktif. |
 
 ---
 
-# 4. Baseline Produk
+# 3. Required Reading by Task Type
 
-Produk:
+Sebelum memulai perubahan, baca dokumen sesuai bidang kerja:
 
-> School Digital Operating Platform modular untuk aktivitas digital sekolah.
-
-Base role:
-
-```text
-SUPER_ADMIN
-SCHOOL_STAFF
-TEACHER
-STUDENT
-GUARDIAN
-```
+1. **Perubahan Produk & Scope:** `AGENTS.md` → `TASKS.md` → `docs/BRD.md` → `docs/PRD.md` → `docs/FRD.md`
+2. **Pekerjaan UI, Frontend & Komponen:** `AGENTS.md` → `docs/07-UI-UX-DESIGN-SYSTEM.md` → `.agents/rules/ui-taste-and-antislop.md` → Dokumen Experience Peran terkait
+3. **Pekerjaan Backend, Data & Database:** `AGENTS.md` → `docs/02-DOMAIN-MODEL.md` → `prisma/schema.prisma` → `docs/05-SYSTEM-ARCHITECTURE.md`
+4. **Keamanan, Auth & Tenant Isolation:** `AGENTS.md` → `docs/SECURITY.md` → `docs/04-ROLE-ACCESS.md` → `docs/adr/ADR-001` s/d `ADR-003`
+5. **Testing, QA & Verifikasi:** `AGENTS.md` → `docs/TEST_PLAN.md` → `vitest.config.ts` → `src/test/`
+6. **DevOps & Rilis:** `AGENTS.md` → `docs/DEPLOY.md` → `package.json` → `.env.example`
 
 ---
 
-# 5. Source of Truth
+# 4. Non-Negotiables (Aturan Baku Tak Terlanggar)
 
-Urutan:
-
-```text
-1. Instruksi Human terbaru
-2. Dokumen APPROVED / LOCKED
-3. TASKS.md
-4. MEMORY.md
-5. Existing implementation yang APPROVED
-6. AI inference
-```
-
-Jika ada konflik, jangan menebak.
-
----
-
-# 6. Rule Paling Penting
-
-```text
-SATU PHASE AKTIF.
-```
-
-Dilarang mengerjakan phase berikutnya.
-
-Dilarang scope creep.
-
-Dilarang opportunistic feature.
-
----
-
-# 7. Human Approval
-
-AI boleh mengatakan:
-
-```text
-READY FOR HUMAN REVIEW
-```
-
-AI tidak boleh menetapkan:
-
-```text
-APPROVED
-LOCKED
-```
-
-tanpa keputusan Human.
-
----
-
-# 8. UI Rule
-
-```text
-REFERENCE = CONTRACT
-```
-
-Academic Glass UI wajib.
-
-Dashboard role-specific.
-
-Dilarang generic dashboard.
-
-Dilarang fake KPI.
-
-Dilarang redesign tanpa approval.
-
-UI Standards & Craftsmanship:
-- Taste Skill (.agents/skills/taste-skill/SKILL.md)
-- Anti-Slop Directive (.agents/skills/anti-slop/SKILL.md)
-- Active Rules: .agents/rules/ui-taste-and-antislop.md
-- Purpose Test: Setiap elemen visual wajib memiliki tujuan nyata (bukan sekadar hiasan klise AI).
-
----
-
-# 9. Domain Rule
-
-Pertahankan invariant:
-
+### 4.1. Domain Invariants
+Pertahankan invariant domain berikut dalam setiap perubahan:
 ```text
 Student ≠ Enrollment ≠ Rombel Placement
-
 Teacher ≠ Subject ≠ Teaching Assignment
-
 Calendar ≠ Schedule ≠ Actual Class Session
-
 School Attendance ≠ Class Session Attendance
-
 Assessment ≠ Grade ≠ Grade Publication
-
 Missing Grade ≠ Zero Grade
 ```
 
----
-
-# 10. Authorization Rule
-
-Authorization harus server-side.
-
-Model:
-
+### 4.2. Database & Persistence Rules
 ```text
-Identity
-↓
-Base Role
-↓
-Position / Assignment / Relationship
-↓
-Permission
-↓
-Resource Scope
-↓
-Effective Access
+Bahasa: Bahasa Indonesia & snake_case untuk entitas first-party
+Identifier: ULID 26 karakter
+Engine: SQLite + Prisma ORM
+Immutability: Migrasi yang telah diterapkan bersifat immutable (dilarang rewrite destructive)
 ```
 
-Default deny.
-
----
-
-# 11. Database Rule
-
-Database first-party menggunakan:
-
+### 4.3. UI & Experience Rules (Academic Glass UI)
 ```text
-Bahasa Indonesia
-snake_case
+REFERENCE = CONTRACT
+Style: Academic Glass UI (Glassmorphism akademik yang jernih, purposeful, anti-slop)
+Role-Specific: Setiap peran memiliki cockpit dan dashboard yang unik sesuai konteks tugasnya
+Dilarang: Generic dashboard, fake KPI, visual slop tanpa fungsi, redesign tanpa human approval
+Craftsmanship: Patuhi Taste Skill (.agents/skills/taste-skill/SKILL.md) dan Anti-Slop Directive (.agents/skills/anti-slop/SKILL.md)
+Active Rules: .agents/rules/ui-taste-and-antislop.md
+Purpose Test: Setiap elemen visual wajib memiliki tujuan nyata (bukan sekadar hiasan klise AI)
 ```
 
-Baseline database:
-
+### 4.4. Server-Side Authorization & Anti-Data-Leakage
 ```text
-SQLite
-Prisma
-ULID
+Model Hierarki: Identity → Base Role → Position/Assignment/Relationship → Permission → Resource Scope → Effective Access
+Default Deny: Wajib di-resolve server-side di setiap Server Action dan route handler
+Tenant Isolation: Seluruh mutasi dan query wajib terikat pada context sekolah_aktif_id actor
+Client-Side Trust: Dilarang mempercayai role, tenant_id, timer CBT, atau status bayar dari client
 ```
 
-Applied migration dianggap immutable.
+### 4.5. Git & Workspace Hygiene
+```text
+Jangan: force push, git reset --hard, destructive clean, commit/push tanpa instruksi
+Selalu: periksa git status dan git diff sebelum checkpoint
+```
 
 ---
 
-# 12. Git Rule
+# 5. Lifecycle & Routing
 
-Jangan:
-
-- force push;
-- reset hard;
-- destructive clean;
-- rewrite history;
-- push tanpa instruksi.
-
-Selalu inspect:
-
+Patuhi siklus gerbang:
 ```text
-git status
-git diff
+PLAN → ARCHITECTURE → BUILD → TEST → DEPLOY
 ```
 
-sebelum checkpoint.
+### 5.1. Klasifikasi Pekerjaan (Simple vs Complex)
+- **Simple Route (Pekerjaan Ringan):** Perubahan terisolasi (copywriting, styling minor, perbaikan bug lokal non-auth, tanpa alur/peran baru). Cukup dengan inline checklist & verifikasi terfokus tanpa memaksa pembuatan spec/plan terpisah.
+- **Complex Route (Pekerjaan Kompleks):** Memenuhi salah satu kriteria:
+  - Melibatkan 2+ alur atau peran pengguna;
+  - Perubahan model data, skema Prisma, atau migrasi database;
+  - Perubahan autentikasi, otorisasi, atau batas isolasi multi-tenant;
+  - Integrasi eksternal atau memiliki risiko deployment.
+  - **Wajib menggunakan pasangan folder:**
+    - Buat `docs/specs/active/<feature-slug>.md` (memuat *apa* yang harus benar dan kriteria penerimaan).
+    - Buat `docs/plans/active/<feature-slug>.md` (memuat *bagaimana* pekerjaan diurutkan, diverifikasi, dan di-rollback).
+    - Jalankan siklus `SPEC → PLAN → IMPLEMENT → REVIEW → VERIFY`.
+    - Setelah lolos verifikasi dan disetujui, pindahkan bersama ke `docs/specs/done/` dan `docs/plans/done/`.
+
+### 5.2. Risk-Based TDD
+Gunakan loop `RED → GREEN` vertikal saat ada perubahan *observable behavior* yang memiliki risiko regresi signifikan. Jangan memaksakan TDD pada copy atau styling statis.
+
+### 5.3. Stop Gate & Human Approval
+- AI boleh menyatakan: `READY FOR HUMAN REVIEW`.
+- AI **DILARANG** menetapkan status `APPROVED`, `LOCKED`, atau mengeksekusi `DEPLOY` tanpa otorisasi eksplisit dari Human.
+- Jika task aktif selesai: **STOP**. Jangan melompat ke fase/task berikutnya sebelum Human review.
 
 ---
 
-# 13. Quality Gate
+# 6. Verification & Definition of Done
 
-Sesuai phase, buktikan:
+Setiap fase atau tugas yang dikerjakan wajib membuktikan kelulusan Quality Gate sebelum mengajukan review:
 
-```text
-typecheck
-lint
-format
-test
-build
-migration
-authorization
-responsive
-accessibility
-visual review
+```bash
+npm run typecheck    # Wajib 0 errors (TypeScript 5.8)
+npm run lint         # Wajib 0 errors (ESLint 9)
+npm run format:check # Wajib 100% clean (Prettier)
+npm run test         # Wajib 100% PASS (Vitest suite)
+npm run build        # Wajib 100% PASS (Next.js production build)
 ```
 
-Build PASS tidak sama dengan phase approved.
-
----
-
-# 14. Laporan Wajib
-
-Setiap phase minimal melaporkan:
-
+### Laporan Wajib (Setiap Deliverable Minimal Melaporkan):
 ```text
-PHASE
+PHASE / TASK
 STATUS
 FILES CREATED
 FILES MODIFIED
 DEPENDENCIES
 MIGRATIONS
-DOMAIN
-AUTHORIZATION
-UI
-TESTS
-BUILD
-VISUAL QA
-KNOWN LIMITATIONS
-OUT-OF-SCOPE CONFIRMATION
+DOMAIN INVARIANTS CHECK
+AUTHORIZATION & TENANT ISOLATION CHECK
+UI VISUAL QA
+TESTS & EVIDENCE
+BUILD VERIFICATION
+KNOWN LIMITATIONS & RESIDUAL RISK
 GIT STATUS
 READY FOR HUMAN REVIEW
 ```
 
 ---
 
-# 15. Dokumen Lengkap Aturan AI
+# 7. Conflict Precedence (Hierarki Sumber Kebenaran)
 
-Baca:
-
+Jika terjadi pertentangan informasi:
 ```text
-docs/09-AI-CODING-RULES.md
+1. Instruksi Human terbaru
+2. Dokumen Canonical APPROVED / LOCKED (docs/PRD.md, docs/BRD.md, docs/SECURITY.md, docs/02-DOMAIN-MODEL.md)
+3. Active Feature Spec & Plan (docs/specs/active/, docs/plans/active/)
+4. TASKS.md & MEMORY.md
+5. Implementasi kode & test yang telah lulus verifikasi
+6. Inferensi AI (AI tidak boleh berspekulasi atau menebak keputusan baru)
 ```
-
-Dokumen ini hanya entry point.
 
 ---
 
-# 16. Stop
+# 8. Canonical Commands
 
-Jika task aktif selesai:
+Daftar perintah resmi proyek yang terverifikasi pada runtime:
 
-```text
-STOP
+```bash
+# Development Server
+npm run dev                  # Menjalankan Next.js dev server pada 0.0.0.0:3000
+
+# Quality Gates & Verification
+npm run typecheck            # Pengecekan tipe TypeScript (tsc --noEmit)
+npm run lint                 # Linter kode (eslint .)
+npm run format:check         # Pengecekan kepatuhan Prettier
+npm run format               # Memformat ulang kode dengan Prettier
+npm run test                 # Menjalankan seluruh test suite Vitest
+npm run test:watch           # Menjalankan test runner dalam mode interaktif watch
+npm run build                # Kompilasi produksi Next.js
+
+# Database (Prisma)
+npx prisma migrate status    # Memeriksa status migrasi database
+npx prisma migrate dev       # Membuat dan menerapkan migrasi lokal
+npx prisma migrate deploy    # Menerapkan migrasi pada target produksi
+npx prisma generate          # Mengenerate Prisma Client terbaru
+npx prisma studio            # Membuka UI web inspector database
+
+# Data Scripts
+npm run data:jadwal:check    # Memeriksa data impor jadwal
+npm run data:jadwal:import   # Mengimpor jadwal ke database
 ```
-
-Jangan mulai task berikutnya sebelum Human review.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

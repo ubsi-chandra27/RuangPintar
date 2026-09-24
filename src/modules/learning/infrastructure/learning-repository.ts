@@ -420,8 +420,16 @@ export class LearningRepository {
 
   async updateLingkupMateri(
     id: string,
-    input: UpdateLingkupMateriInput
+    input: UpdateLingkupMateriInput,
+    sekolahId?: string
   ): Promise<LingkupMateriDTO> {
+    const existing = await prisma.lingkupMateri.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Lingkup materi dengan ID '${id}' tidak ditemukan.`);
+    }
+
     const updated = await prisma.lingkupMateri.update({
       where: { id },
       data: {
@@ -439,7 +447,14 @@ export class LearningRepository {
     };
   }
 
-  async deleteLingkupMateri(id: string): Promise<void> {
+  async deleteLingkupMateri(id: string, sekolahId?: string): Promise<void> {
+    const existing = await prisma.lingkupMateri.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Lingkup materi dengan ID '${id}' tidak ditemukan.`);
+    }
+
     await prisma.lingkupMateri.delete({
       where: { id },
     });
@@ -473,8 +488,16 @@ export class LearningRepository {
 
   async updateTujuanPembelajaran(
     id: string,
-    input: UpdateTujuanPembelajaranInput
+    input: UpdateTujuanPembelajaranInput,
+    sekolahId?: string
   ): Promise<TujuanPembelajaranDTO> {
+    const existing = await prisma.tujuanPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Tujuan pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     const updated = await prisma.tujuanPembelajaran.update({
       where: { id },
       data: {
@@ -491,7 +514,14 @@ export class LearningRepository {
     };
   }
 
-  async deleteTujuanPembelajaran(id: string): Promise<void> {
+  async deleteTujuanPembelajaran(id: string, sekolahId?: string): Promise<void> {
+    const existing = await prisma.tujuanPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Tujuan pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     await prisma.tujuanPembelajaran.delete({
       where: { id },
     });
@@ -564,7 +594,14 @@ export class LearningRepository {
     };
   }
 
-  async updateMateri(id: string, input: UpdateMateriInput): Promise<MateriPembelajaranDTO> {
+  async updateMateri(id: string, input: UpdateMateriInput, sekolahId?: string): Promise<MateriPembelajaranDTO> {
+    const existing = await prisma.materiPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Materi pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     const updated = await prisma.materiPembelajaran.update({
       where: { id },
       data: {
@@ -603,7 +640,14 @@ export class LearningRepository {
     };
   }
 
-  async deleteMateri(id: string): Promise<void> {
+  async deleteMateri(id: string, sekolahId?: string): Promise<void> {
+    const existing = await prisma.materiPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Materi pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     await prisma.materiPembelajaran.delete({
       where: { id },
     });
@@ -671,7 +715,14 @@ export class LearningRepository {
     };
   }
 
-  async deleteTugas(id: string): Promise<void> {
+  async deleteTugas(id: string, sekolahId?: string): Promise<void> {
+    const existing = await prisma.definisiTugas.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Tugas dengan ID '${id}' tidak ditemukan.`);
+    }
+
     await prisma.definisiTugas.delete({
       where: { id },
     });
@@ -740,8 +791,16 @@ export class LearningRepository {
 
   async updateAdministrasi(
     id: string,
-    input: UpdateAdministrasiInput
+    input: UpdateAdministrasiInput,
+    sekolahId?: string
   ): Promise<AdministrasiPembelajaranDTO> {
+    const existing = await prisma.administrasiPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Administrasi pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       const adm = await tx.administrasiPembelajaran.update({
         where: { id },
@@ -798,7 +857,14 @@ export class LearningRepository {
     };
   }
 
-  async deleteAdministrasi(id: string): Promise<void> {
+  async deleteAdministrasi(id: string, sekolahId?: string): Promise<void> {
+    const existing = await prisma.administrasiPembelajaran.findFirst({
+      where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
+    });
+    if (!existing) {
+      throw new Error(`Administrasi pembelajaran dengan ID '${id}' tidak ditemukan.`);
+    }
+
     await prisma.administrasiPembelajaran.delete({
       where: { id },
     });

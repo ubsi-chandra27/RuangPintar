@@ -90,7 +90,7 @@ export class CommunicationService {
     input: UpdateAnnouncementInput
   ): Promise<AnnouncementItem> {
     const existing = await this.repository.findById(announcementId);
-    if (!existing) {
+    if (!existing || (existing.sekolah_id && existing.sekolah_id !== sekolahId)) {
       throw new AnnouncementNotFoundError(announcementId);
     }
 
@@ -177,7 +177,7 @@ export class CommunicationService {
     authorUser: { id: string; nama: string; peran: BaseRole }
   ): Promise<void> {
     const existing = await this.repository.findById(announcementId);
-    if (!existing) {
+    if (!existing || (existing.sekolah_id && existing.sekolah_id !== sekolahId)) {
       throw new AnnouncementNotFoundError(announcementId);
     }
 
@@ -207,9 +207,9 @@ export class CommunicationService {
   /**
    * Mengambil detail satu pengumuman.
    */
-  async getAnnouncementById(announcementId: string): Promise<AnnouncementItem> {
+  async getAnnouncementById(announcementId: string, sekolahId?: string): Promise<AnnouncementItem> {
     const item = await this.repository.findById(announcementId);
-    if (!item) {
+    if (!item || (sekolahId && item.sekolah_id && item.sekolah_id !== sekolahId)) {
       throw new AnnouncementNotFoundError(announcementId);
     }
     return item;
