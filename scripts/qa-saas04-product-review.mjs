@@ -184,7 +184,9 @@ async function main() {
   // -------------------------------------------------------------
   // SCENARIO 2: Registrasi Guru ke Sekolah yang Sudah Ada (Join Request)
   // -------------------------------------------------------------
-  console.log("📸 [2/7] Capturing Scenario 2: Registrasi Guru ke Sekolah Existing (Join Request)...");
+  console.log(
+    "📸 [2/7] Capturing Scenario 2: Registrasi Guru ke Sekolah Existing (Join Request)..."
+  );
   let userRian = await prisma.pengguna.findUnique({ where: { username: "guru_rian" } });
   if (!userRian) {
     userRian = await prisma.pengguna.create({
@@ -406,7 +408,10 @@ async function main() {
     }
 
     // Buat sesi di mana sekolah_aktif_id diarahkan ke School B
-    const { sessionId, rawToken: tokenSwitch } = await createTestSession(userChandra.id, schoolA.id);
+    const { sessionId, rawToken: tokenSwitch } = await createTestSession(
+      userChandra.id,
+      schoolA.id
+    );
 
     // Switch tenant secara server-authoritative
     await tenantMembershipService.setActiveTenant({

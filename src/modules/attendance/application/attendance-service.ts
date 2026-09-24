@@ -47,8 +47,11 @@ export class AttendanceService {
     actorSekolahIdOrInput: string | SaveSessionAttendanceInput,
     maybeInput?: SaveSessionAttendanceInput
   ): Promise<SessionAttendanceSummaryDTO> {
-    const rawInput = (typeof actorSekolahIdOrInput === "string" ? maybeInput : actorSekolahIdOrInput)!;
-    const actorSekolahId = typeof actorSekolahIdOrInput === "string" ? actorSekolahIdOrInput : rawInput.sekolah_id;
+    const rawInput = (
+      typeof actorSekolahIdOrInput === "string" ? maybeInput : actorSekolahIdOrInput
+    )!;
+    const actorSekolahId =
+      typeof actorSekolahIdOrInput === "string" ? actorSekolahIdOrInput : rawInput.sekolah_id;
 
     const validated = SaveSessionAttendanceSchema.parse(rawInput);
 
@@ -109,9 +112,7 @@ export class AttendanceService {
 
       if (Array.isArray(validPlacements)) {
         const validStudentIds = new Set(
-          validPlacements
-            .map((p: any) => p?.keikutsertaan?.siswa_id)
-            .filter(Boolean)
+          validPlacements.map((p: any) => p?.keikutsertaan?.siswa_id).filter(Boolean)
         );
         const hasInvalidStudent = studentIds.some((sId) => !validStudentIds.has(sId));
         if (hasInvalidStudent) {

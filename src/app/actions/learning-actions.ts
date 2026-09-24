@@ -166,7 +166,11 @@ export async function createTujuanPembelajaranAction(
 
     const lingkupMateriId = formData.get("lingkup_materi_id") as string;
     const lm = await prisma.lingkupMateri.findFirst({
-      where: { id: lingkupMateriId, sekolah_id: user.sekolah_id, penugasan_mengajar_id: penugasanId },
+      where: {
+        id: lingkupMateriId,
+        sekolah_id: user.sekolah_id,
+        penugasan_mengajar_id: penugasanId,
+      },
     });
     if (!lm) {
       return { success: false, message: "Lingkup materi tidak valid pada kelas ini." };
@@ -261,7 +265,11 @@ export async function createMateriAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(
+      penugasanId,
+      user.sekolah_id,
+      user
+    );
 
     let berkasId: string | null = (formData.get("berkas_id") as string) || null;
     const file = formData.get("file") as File | null;
@@ -404,7 +412,11 @@ export async function createTugasAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(
+      penugasanId,
+      user.sekolah_id,
+      user
+    );
 
     const created = await learningService.createTugas(user.id, user.peran_dasar, {
       sekolah_id: user.sekolah_id,
@@ -469,7 +481,11 @@ export async function createAdministrasiAction(
     if (!user.sekolah_id) return { success: false, message: "Konteks sekolah tidak valid." };
 
     const penugasanId = formData.get("penugasan_mengajar_id") as string;
-    const { guruId } = await assertTeachingAssignmentBelongsToSchool(penugasanId, user.sekolah_id, user);
+    const { guruId } = await assertTeachingAssignmentBelongsToSchool(
+      penugasanId,
+      user.sekolah_id,
+      user
+    );
     const tpIdsRaw = formData.getAll("tp_ids") as string[];
 
     const created = await learningService.createAdministrasi(user.id, user.peran_dasar, {

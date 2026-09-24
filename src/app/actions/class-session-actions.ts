@@ -65,7 +65,8 @@ export async function openClassSessionAction(
       jadwal_pelajaran_id: (formData.get("jadwal_pelajaran_id") as string) || null,
       penugasan_mengajar_id: penugasanId,
       rombel_id: (formData.get("rombel_id") as string) || penugasan.rombel_id,
-      mata_pelajaran_id: (formData.get("mata_pelajaran_id") as string) || penugasan.mata_pelajaran_id,
+      mata_pelajaran_id:
+        (formData.get("mata_pelajaran_id") as string) || penugasan.mata_pelajaran_id,
       guru_id: guruId,
       guru_pengganti_id: (formData.get("guru_pengganti_id") as string) || null,
       tahun_ajaran_id: (formData.get("tahun_ajaran_id") as string) || penugasan.tahun_ajaran_id,

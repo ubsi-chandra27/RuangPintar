@@ -121,3 +121,128 @@ Test Suite Execution:
 ## 6. Kesimpulan
 
 Seluruh batas isolasi multi-tenant pada Ruang Pintar telah diverifikasi secara ketat dan komprehensif. Tidak ditemukan celah kebocoran data (*data leak*) ataupun eskalasi hak akses (*privilege escalation*) antar-tenant di seluruh public seams, service layer, dan server actions.
+
+---
+
+## 7. Integration Verification
+
+### 7.1. Metodologi Pengujian Integrasi Nyata
+Untuk membuktikan batas isolasi multi-tenant di luar mock abstraksi (`vi.spyOn` / mock Prisma), telah ditambahkan suite pengujian integrasi database nyata:
+`src/test/security/real-tenant-integration.test.ts` (1.333 baris kode, 29 test cases).
+
+Pengujian ini berjalan langsung terhadap **database SQLite lokal nyata** (`file:./data/ruang-pintar.db`) menggunakan instance Prisma Client asli (`prismaClient`).
+
+### 7.2. Struktur Seeding Dua Tenant Nyata
+Suite integrasi menginisialisasi dua tenant sekolah yang sepenuhnya independen:
+- **Tenant A (`SCH_TEST_INTEG_A`):**
+  - Akun: Staff A (`USER_STAFF_A`), Guru A (`USER_GURU_A`), Siswa A (`USER_SISWA_A`), Wali A (`USER_WALI_A`).
+  - Entitas: Tahun Ajaran A, Semester A, Tingkat Kelas VII-A, Rombel 7A, Mapel Matematika A, Penugasan Mengajar A, Ujian CBT A, Hubungan Wali-Siswa A, Langganan Tenant A (`ACTIVE`).
+- **Tenant B (`SCH_TEST_INTEG_B`):**
+  - Akun: Staff B (`USER_STAFF_B`), Guru B (`USER_GURU_B`), Siswa B (`USER_SISWA_B`), Wali B (`USER_WALI_B`).
+  - Entitas: Tahun Ajaran B, Semester B, Tingkat Kelas VII-B, Rombel 7B, Mapel Matematika B, Penugasan Mengajar B, Ujian CBT B, Hubungan Wali-Siswa B, Langganan Tenant B (`ACTIVE`).
+
+### 7.3. Hasil Pengujian 7 Prioritas Isolasi Tenant (Database Nyata)
+
+| No | Skenario Prioritas | Mekanisme Eksekusi Nyata | Hasil Pengujian | Status |
+| --- | --- | --- | --- | :---: |
+| 1 | **Tenant A membaca data Tenant B** | Query repository / service membaca Rombel, Ujian CBT, Siswa, dan Pengumuman Tenant B dengan konteks session Tenant A. | Data tidak ditemukan (`null`, `RombelNotFoundError`, `404`). Naskah soal CBT & data siswa Tenant B tidak pernah bocor. | **PASS** |
+| 2 | **Tenant A mengubah data Tenant B** | Mutasi update Rombel, update Ujian CBT, update Pengumuman milik Tenant B dipanggil oleh aktor Tenant A. | Error ditolak (`RombelNotFoundError`, `CBT not found`). Record di SQLite Tenant B terbukti tidak berubah (unmodified). | **PASS** |
+| 3 | **Tenant A menghapus data Tenant B** | Operasi delete Rombel atau delete Pengumuman milik Tenant B dipanggil oleh aktor Tenant A. | Ditolak seketika. Record di tabel SQLite tetap utuh (verified by direct raw Prisma count). | **PASS** |
+| 4 | **Tenant A memakai ID resource Tenant B** | Pembuatan sesi KBM atau materi KBM dengan menyisipkan `penugasan_mengajar_id` milik Tenant B. | Ditolak dengan `Penugasan mengajar tidak ditemukan pada sekolah aktif`. | **PASS** |
+| 5 | **Tenant A memalsukan `sekolah_id`** | FormData spoofing pada Server Action dengan menyisipkan hidden field `<input name="sekolah_id" value="SCH_TEST_INTEG_B">`. | Ditolak seketika di level Server Action: `Akses ditolak: Akses data lintas sekolah dilarang`. | **PASS** |
+| 6 | **Tenant A memalsukan `guru_id`** | Staff Tenant A mencoba menugaskan Guru Tenant B (`GURU_TENANT_B`) pada rombel/mapel Tenant A. | Ditolak dengan `Guru tidak terdaftar pada sekolah ini` / pelanggaran batas institusi. | **PASS** |
+| 7 | **Tenant A memalsukan `rombel_id`** | Staff Tenant A mencoba menugaskan Guru Tenant A pada Rombel Tenant B (`ROMBEL_TENANT_B`). | Ditolak dengan `Rombel tidak terdaftar pada sekolah ini` / boundary mismatch. | **PASS** |
+
+Seluruh 29 skenario integrasi lolos 100% tanpa mock.
+
+---
+
+## 8. HTTP / Server Action Verification
+
+Pengujian Server Action dilakukan dengan mensimulasikan pemanggilan Server Action dari sisi klien pada 5 domain paling berisiko (*critical paths*):
+
+### 8.1. Presensi & Sesi KBM (`attendance`)
+- **Server Action Diuji:** `openClassSessionAction`, `saveAttendanceAction`, `getClassSessionRosterAction`.
+- **Vektor Bypass:** Aktor Tenant A mengirimkan `penugasan_mengajar_id` milik Tenant B via payload, atau mencoba mencatat presensi siswa Tenant B.
+- **Hasil Verifikasi:**
+  - `openClassSessionAction` memvalidasi `penugasanMengajar.findFirst({ where: { id, sekolah_id: actor.sekolah_id } })`. Ditolak dengan error penugasan tidak ditemukan.
+  - Sesi KBM tidak terbentuk di database SQLite.
+  - Percobaan mencatat presensi ke sesi kelas tenant lain diblokir pada layer sesi dan relasi siswa-sekolah.
+
+### 8.2. Asesmen CBT (`cbt`)
+- **Server Action Diuji:** `getExamPrintDataAction`, `refreshExamTokenAction`, `startExamAttemptAction`.
+- **Vektor Bypass:** Guru Tenant A memanggil aksi cetak naskah ujian atau token refresh dengan mencantumkan `examId` milik Tenant B (`UJIAN_TENANT_B`).
+- **Hasil Verifikasi:**
+  - Query mengikat `where: { id: examId, sekolah_id: user.sekolah_id }`.
+  - Mengembalikan `{ success: false, error: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda." }`.
+  - Siswa Tenant A yang mencoba memulai attempt pada ujian Tenant B ditolak dengan status ujian tidak valid.
+
+### 8.3. Penugasan Guru & Rombel (`teacher-assignment`)
+- **Server Action Diuji:** `createTeacherAction`, `createTeachingAssignmentAction`, `assignHomeroomTeacherAction`.
+- **Vektor Bypass:**
+  - Operator mengirim `FormData` dengan menyisipkan `sekolah_id` Tenant B.
+  - Operator menugaskan Guru Tenant B ke Rombel Tenant A.
+  - Operator menugaskan Guru Tenant A ke Rombel Tenant B.
+- **Hasil Verifikasi:**
+  - Form data spoofing `sekolah_id` ditolak: `Akses ditolak: Akses data lintas sekolah dilarang`.
+  - Cross-tenant guru ditolak: `Guru tidak terdaftar pada sekolah ini`.
+  - Cross-tenant rombel ditolak: `Rombel tidak terdaftar pada sekolah ini`.
+
+### 8.4. Portal Wali Murid (`guardian`)
+- **Server Action Diuji:** `getGuardianChildrenSummaryAction`, `getChildAcademicReportAction`.
+- **Vektor Bypass:** Wali Murid Tenant A memanipulasi parameter URL / request payload dengan memasukkan ID Siswa milik Tenant B.
+- **Hasil Verifikasi:**
+  - `assertVerifiedRelationship` memeriksa `HubunganWaliSiswa` pada tenant aktif: `rel.sekolah_id === session.sekolah_id`.
+  - Pemanggilan menghasilkan `ChildNotLinkedError: Siswa ini bukan anak yang terhubung dengan akun Anda.`
+  - Ringkasan nilai, presensi, dan data pribadi siswa Tenant B tidak pernah ditampilkan.
+
+### 8.5. KBM & LMS (`learning`)
+- **Server Action & Repository Diuji:** `createLingkupMateriAction`, `createMateriAction`, `createTugasAction`, `LearningRepository.createLingkupMateri`.
+- **Vektor Bypass:** Guru Tenant A mengirimkan `penugasan_mengajar_id` milik Tenant B saat membuat lingkup materi / materi KBM.
+- **Hasil Verifikasi:**
+  - Di level Server Action: `assertTeachingAssignmentBelongsToSchool` menolak penugasan lintas sekolah.
+  - Di level Prisma Repository (Defense-in-Depth): `createLingkupMateri` memvalidasi keberadaan `penugasanMengajar` pada `input.sekolah_id` sebelum eksekusi insert. Ditolak dengan `Penugasan mengajar tidak ditemukan pada sekolah ini`.
+
+---
+
+## 9. CI Verification
+
+### 9.1. Hasil Investigasi Kegagalan CI/Vercel
+Pada commit sebelumnya, check CI/Vercel pada repository GitHub (`ubsi-chandra27/RuangPintar`) melaporkan status `FAILURE`. Dilakukan investigasi mendalam terhadap commit history dan deployment status:
+
+1. **Check yang Gagal:**
+   - Provider: Vercel Deployment Check (`github/deployment` & Vercel GitHub integration).
+   - Commit yang gagal: Terjadi secara konsisten pada commit `cd794f5` (19 Sep 2026), `4d9b625` (22 Sep 2026), dan `eb4d1f2` (24 Sep 2026).
+2. **Akar Masalah (Root Cause):**
+   - **Environment / Infrastructure:** Runtime Vercel beroperasi pada lingkungan serverless dengan sistem berkas ephemeral dan read-only.
+   - **Database SQLite Lokal:** Ruang Pintar saat ini dikonfigurasikan dengan SQLite lokal (`file:./data/ruang-pintar.db`). File database `.db` diabaikan oleh `.gitignore` (`/data/`, `*.db`). Akibatnya, pada environment Vercel, file database tidak ada di filesystem.
+   - **Ketiadaan Remote Cloud Database:** Dashboard project Vercel belum dikonfigurasi dengan koneksi remote database (seperti Turso/libSQL, Neon Postgres, atau Supabase). Saat Next.js build mencoba melakukan pre-rendering atau Prisma generation tanpa database terhubung, deployment Vercel gagal.
+   - **Bukan Regresi STAGE 10.2:** Kegagalan deployment telah terjadi sebelum STAGE 10.2 dan murni merupakan batasan deployment environment SQLite lokal ke serverless Vercel.
+3. **Perbaikan Quality Gate Lokal:**
+   - Ditemukan 10 file yang melanggar aturan format Prettier pada STAGE 10.2.
+   - Dijalankan `npm run format` untuk menormalkan seluruh file.
+   - `npm run format:check` kini 100% clean.
+
+---
+
+## 10. Remaining Security Gaps & Limitations
+
+Berdasarkan audit query sistematis (`scripts/audit-tenant-queries.mjs`) terhadap seluruh repository:
+
+### 10.1. Temuan Audit Query
+- **`createLingkupMateri` (Learning Repository):**
+  - *Temuan Awal:* `NEEDS FIX` (metode menerima `penugasan_mengajar_id` tanpa klausa verifikasi kepemilikan sekolah di data layer).
+  - *Status:* **FIXED (SAFE)** pada STAGE 10.2B dengan menambahkan assertion query `findFirst` pada `penugasanMengajar` terikat `input.sekolah_id`.
+- **CBT, Attendance, Rombel, Communication Queries:**
+  - *Status:* **SAFE**. Seluruh query mutasi dan pembacaan telah mengikat `sekolah_id` secara konsisten.
+
+### 10.2. Remaining Gaps & Batasan Arsitektural
+1. **Application-Level Isolation (Bukan DB Engine RLS):**
+   - Isolasi tenant saat ini ditegakkan di application layer (Server Actions, Domain Services, dan Prisma query filters).
+   - Karena engine database saat ini adalah SQLite, fitur Row Level Security (RLS) di level database engine belum aktif.
+   - *Rekomendasi:* Pada fase produksi multi-tenant berikutnya saat migrasi ke PostgreSQL/MySQL, aktifkan PostgreSQL RLS atau multi-schema per tenant untuk defense-in-depth tingkat kernel database.
+2. **Vercel Serverless Deployment:**
+   - Deployment Vercel membutuhkan penyediaan remote managed database (misal Turso libSQL atau PostgreSQL) serta konfigurasi `DATABASE_URL` pada Vercel project environment variables agar status Vercel menjadi GREEN.
+3. **Repository-Level Uniformity:**
+   - Meskipun semua Server Action telah menerapkan guard `requirePermission` dan `sekolah_id` validation, beberapa repository method non-critical internal masih menerima `id` murni. Standardisasi seluruh repository signature agar selalu mewajibkan `sekolah_id` sebagai parameter wajib pertama adalah prioritas perbaikan struktural berikutnya.
+

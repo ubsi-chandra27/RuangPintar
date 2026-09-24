@@ -398,6 +398,15 @@ export class LearningRepository {
   // ==========================================
 
   async createLingkupMateri(input: CreateLingkupMateriInput): Promise<LingkupMateriDTO> {
+    const penugasan = await prisma.penugasanMengajar.findFirst({
+      where: { id: input.penugasan_mengajar_id, sekolah_id: input.sekolah_id },
+    });
+    if (!penugasan) {
+      throw new Error(
+        `Penugasan mengajar dengan ID '${input.penugasan_mengajar_id}' tidak ditemukan atau bukan milik sekolah aktif.`
+      );
+    }
+
     const id = generateUlid();
     const created = await prisma.lingkupMateri.create({
       data: {
@@ -594,7 +603,11 @@ export class LearningRepository {
     };
   }
 
-  async updateMateri(id: string, input: UpdateMateriInput, sekolahId?: string): Promise<MateriPembelajaranDTO> {
+  async updateMateri(
+    id: string,
+    input: UpdateMateriInput,
+    sekolahId?: string
+  ): Promise<MateriPembelajaranDTO> {
     const existing = await prisma.materiPembelajaran.findFirst({
       where: { id, ...(sekolahId ? { sekolah_id: sekolahId } : {}) },
     });

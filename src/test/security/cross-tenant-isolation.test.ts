@@ -8,14 +8,20 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { requirePermission, AuthorizationError } from "@/shared/infrastructure/authorization/authz-guard";
+import {
+  requirePermission,
+  AuthorizationError,
+} from "@/shared/infrastructure/authorization/authz-guard";
 import * as authGuardModule from "@/shared/infrastructure/auth/auth-guard";
 import * as auditLoggerModule from "@/shared/infrastructure/audit/audit-logger";
 import { prisma } from "@/shared/infrastructure/database/prisma";
 
 import { AttendanceService } from "@/modules/attendance/application/attendance-service";
 import { AttendanceRepository } from "@/modules/attendance/infrastructure/attendance-repository";
-import { AttendanceNotAllowedError, SessionNotFoundError } from "@/modules/attendance/domain/attendance-errors";
+import {
+  AttendanceNotAllowedError,
+  SessionNotFoundError,
+} from "@/modules/attendance/domain/attendance-errors";
 
 import { CommunicationService } from "@/modules/communication/application/communication-service";
 import { CommunicationRepository } from "@/modules/communication/infrastructure/communication-repository";
@@ -27,7 +33,10 @@ import { HomeroomAssignmentService } from "@/modules/teacher/application/homeroo
 import { TeacherRepository } from "@/modules/teacher/infrastructure/teacher-repository";
 import { GuardianService } from "@/modules/guardian/application/guardian-service";
 import { GuardianRepository } from "@/modules/guardian/infrastructure/guardian-repository";
-import { GuardianNotFoundError, ChildNotLinkedError } from "@/modules/guardian/domain/guardian-errors";
+import {
+  GuardianNotFoundError,
+  ChildNotLinkedError,
+} from "@/modules/guardian/domain/guardian-errors";
 import { getExamPrintDataAction, refreshExamTokenAction } from "@/app/actions/cbt-actions";
 import { RombelService } from "@/modules/academic/application/rombel-service";
 import { AcademicRepository } from "@/modules/academic/infrastructure/academic-repository";
@@ -362,16 +371,11 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
       } as any);
 
       await expect(
-        attendanceService.saveSessionAttendance(
-          "USER_TENANT_A",
-          "TEACHER",
-          "SCH_TENANT_A",
-          {
-            sesi_kelas_id: "SESI_TENANT_B",
-            sekolah_id: "SCH_TENANT_A",
-            items: [{ siswa_id: "SISWA_B_1", status: "HADIR" }],
-          }
-        )
+        attendanceService.saveSessionAttendance("USER_TENANT_A", "TEACHER", "SCH_TENANT_A", {
+          sesi_kelas_id: "SESI_TENANT_B",
+          sekolah_id: "SCH_TENANT_A",
+          items: [{ siswa_id: "SISWA_B_1", status: "HADIR" }],
+        })
       ).rejects.toThrow(SessionNotFoundError);
     });
 
@@ -400,16 +404,11 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
       (prisma.penempatanRombel.findMany as any).mockResolvedValue([]);
 
       await expect(
-        attendanceService.saveSessionAttendance(
-          "USER_TENANT_A",
-          "TEACHER",
-          "SCH_TENANT_A",
-          {
-            sesi_kelas_id: "SESI_TENANT_A",
-            sekolah_id: "SCH_TENANT_A",
-            items: [{ siswa_id: "SISWA_SPOOFED_TENANT_B", status: "HADIR" }],
-          }
-        )
+        attendanceService.saveSessionAttendance("USER_TENANT_A", "TEACHER", "SCH_TENANT_A", {
+          sesi_kelas_id: "SESI_TENANT_A",
+          sekolah_id: "SCH_TENANT_A",
+          items: [{ siswa_id: "SISWA_SPOOFED_TENANT_B", status: "HADIR" }],
+        })
       ).rejects.toThrow(AttendanceNotAllowedError);
     });
 
@@ -506,9 +505,9 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
 
       (prisma.lingkupMateri.findFirst as any).mockResolvedValue(null);
 
-      await expect(
-        learningRepo.deleteLingkupMateri("LM_TENANT_B", "SCH_TENANT_A")
-      ).rejects.toThrow("Lingkup materi dengan ID 'LM_TENANT_B' tidak ditemukan.");
+      await expect(learningRepo.deleteLingkupMateri("LM_TENANT_B", "SCH_TENANT_A")).rejects.toThrow(
+        "Lingkup materi dengan ID 'LM_TENANT_B' tidak ditemukan."
+      );
 
       expect(prisma.lingkupMateri.delete).not.toHaveBeenCalled();
     });
@@ -546,9 +545,9 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
 
       (prisma.definisiTugas.findFirst as any).mockResolvedValue(null);
 
-      await expect(
-        learningRepo.deleteTugas("TUGAS_TENANT_B", "SCH_TENANT_A")
-      ).rejects.toThrow("Tugas dengan ID 'TUGAS_TENANT_B' tidak ditemukan.");
+      await expect(learningRepo.deleteTugas("TUGAS_TENANT_B", "SCH_TENANT_A")).rejects.toThrow(
+        "Tugas dengan ID 'TUGAS_TENANT_B' tidak ditemukan."
+      );
 
       expect(prisma.definisiTugas.delete).not.toHaveBeenCalled();
     });
@@ -558,9 +557,9 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
 
       (prisma.materiPembelajaran.findFirst as any).mockResolvedValue(null);
 
-      await expect(
-        learningRepo.deleteMateri("MATERI_TENANT_B", "SCH_TENANT_A")
-      ).rejects.toThrow("Materi pembelajaran dengan ID 'MATERI_TENANT_B' tidak ditemukan.");
+      await expect(learningRepo.deleteMateri("MATERI_TENANT_B", "SCH_TENANT_A")).rejects.toThrow(
+        "Materi pembelajaran dengan ID 'MATERI_TENANT_B' tidak ditemukan."
+      );
 
       expect(prisma.materiPembelajaran.delete).not.toHaveBeenCalled();
     });
@@ -631,11 +630,11 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
       });
 
       await expect(
-        commService.deleteAnnouncement(
-          "PENGUMUMAN_TENANT_B",
-          "SCH_TENANT_A",
-          { id: "STAFF_TENANT_A", nama: "Staff A", peran: "SCHOOL_STAFF" }
-        )
+        commService.deleteAnnouncement("PENGUMUMAN_TENANT_B", "SCH_TENANT_A", {
+          id: "STAFF_TENANT_A",
+          nama: "Staff A",
+          peran: "SCHOOL_STAFF",
+        })
       ).rejects.toThrow(AnnouncementNotFoundError);
     });
   });
@@ -718,7 +717,9 @@ describe("CRIT-01 — Comprehensive Cross-Tenant Isolation Tests", () => {
       const result = await createMateriAction(null, formData);
 
       expect(result.success).toBe(false);
-      expect(result.message).toBe("Penugasan mengajar tidak ditemukan atau bukan milik sekolah aktif.");
+      expect(result.message).toBe(
+        "Penugasan mengajar tidak ditemukan atau bukan milik sekolah aktif."
+      );
     });
   });
 });

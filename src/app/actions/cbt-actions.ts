@@ -684,7 +684,10 @@ export async function refreshExamTokenAction(
       where: { id: ujianId, sekolah_id: user.sekolah_id },
     });
     if (!existingExam) {
-      return { success: false, message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda." };
+      return {
+        success: false,
+        message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda.",
+      };
     }
 
     await prisma.ujianCbt.update({
@@ -826,7 +829,11 @@ export async function getExamPrintDataAction(
       },
     });
 
-    if (!exam) return { success: false, message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda." };
+    if (!exam)
+      return {
+        success: false,
+        message: "Ujian CBT tidak ditemukan atau bukan milik sekolah Anda.",
+      };
 
     let rawItems: any[] = [];
     const keysMap: Record<string, any> = {};

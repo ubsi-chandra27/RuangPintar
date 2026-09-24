@@ -84,7 +84,7 @@ export async function createTeacherAction(
 
     const effectiveSekolahId =
       session.peran_dasar === "SUPER_ADMIN"
-        ? (session.sekolah_id || clientSekolahId)
+        ? session.sekolah_id || clientSekolahId
         : session.sekolah_id;
 
     if (!effectiveSekolahId) {
