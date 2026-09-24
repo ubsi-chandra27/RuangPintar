@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: "./src/test/setup.ts",
     testTimeout: 15000,
+    env: {
+      DATABASE_URL: "file:./data/ruang-pintar-test.db",
+    },
   },
   resolve: {
     alias: {
